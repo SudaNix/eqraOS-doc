@@ -1,0 +1,6 @@
+#ifndef CSTDINT_H
+#define CSTDINT_H
+
+#include <stdint.h>
+
+#endif //CSTDINT_H

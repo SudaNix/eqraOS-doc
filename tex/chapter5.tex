@@ -1,0 +1,682 @@
+\documentclass[document.tex]{subfiles} 
+
+\begin{document}
+
+\chapter{مقدمة حول نواة نظام التشغيل}
+أحد أهم المكونات في نظام التشغيل هي نواة النظام (\en{Kernel}) حيث تدير هذه النواة عتاد وموارد الحاسب وتوفر واجهة برمجية عالية تسمح لبرامج المستخدم من الاستفادة من هذه الموارد  بشكل جيد.وتعتبر برمجة نواة النظام من أصعب المهمات البرمجية على الاطلاق ، حيث تؤثر هيكلته وتصميمه على كافة نظام التشغيل وهذا ما يميز بعض الانظمة ويجعلها قابلة للعمل في أجهزة معينة.
+% Brandon Friesen
+وفي هذا الفصل سنلقي نظرة على النواة وبرمجتها باستخدام لغة السي و السي++ وكذلك سيتم الحديث عن طرق تصميم النواة  وميزات وعيوب كلٌ على حدة.
+
+\section{نواة نظام التشغيل}
+تعرَّف نواة نظام التشغيل بأنها الجزء الأساسي في النظام والذي تعتمد عليه بقية مكونات نظام التشغيل. ويكمن دور نواة النظام في التعامل المباشر مع عتاد الحاسب وإدارته بحيث تكوِّن طبقة برمجية تبعد برامج المستخدم من تفاصيل وتعقيدات العتاد ، ولا تقتصر على ذلك بل توفر واجهة برمجية مبسطة (يمكن استخدامها من لغة البرمجة المدعومة على النظام) بحيث تمكن برامج المستخدم الاستفادة من موارد الحاسب . وفي الحقيقة لا يوجد قانون ينص على إلزامية وجود نواة للنظام ، حيث يمكن لبرنامج ما (يعمل في الحلقة صفر) التعامل المباشر مع العتاد ومع كل الجداول في الحاسب والوصول الى أي بايت في الذاكرة لكن هذا ما سيجعل عملية كتابة البرامج عملية شبه مستحيلة ! حيث يجب على كل مبرمج يريد كتابة تطبيق بسيط أن يجيد برمجة العتاد وأساسيات الاقلاع حتى يعمل برنامجه ، اضافة على ذلك لا يمكن تشغيل أكثر من برنامج في نفس الوقت نظرا لعدم وجود بنية تحتية توفر مثل هذه الخصائص ، ولاننسى اعداد وتهيئة جداول النظام وكتابة وظائف التعامل مع المقاطعات والأخطاء، ودوال حجز وتحرير الذاكرة وغيرها من الخصائص الضرورية لأي برنامج.كل هذا يجعل عملية تطوير برنامج للعمل على حاسب ما بدون نواة له أمراً غير مرغوبا ، خاصة إذا ذكرنا أن البرنامج يجب تحديثه مجدداً عند نقله الى منصة أخرى ذات عتاد مختلف. اذاً يمكن أن نقول أن نواة النظام هي الجزء الاهم في نظام التشغيل ككل ،حيث تدير النواة عتاد الحاسب من المعالج والذاكرة الرئيسية والأقراص الصلبة والمرنة وغيرها من الأجهزة المحيطة بالحاسب.
+
+وحتى نفهم علاقة النواة مع بقية أجزاء النظام ، فانه يمكن تقسيم الحاسب الى عدة مستويات من التجريد بحيث كل مستوى يخدم المستوى الذي يليه .
+
+\subsection{مستويات التجريد}
+العديد من البرمجيات يتم بنائها على شكل مستويات ، وظيفة كل مستوى هو توفير واجهة للمستوى الذي يليه بحيث تخفي هذه الواجهة العديد من التعقيدات والتفاصيل وكذلك ربما يحمي مستوى ما بعض الخصائص من المستوى الذي يليه ، وغالبا ما يتبع نظام التشغيل لهذا النوع من البرمجيات حيث يمكن تقسيم النظام ككل الى عدة مستويات.
+\subsubsection{المستوى الأول: مستوى العتاد}
+مستوى العتاد هو أدنى مستوى يمكن أن نعرفه ويظهر على شكل متحكمات لعتاد الحاسب ، حيث يرتبط متحكم ما في اللوحة الأم مع متحكم آخر في العتاد نفسه. وظيفة المتحكم في اللوحة الأم هي التخاطب مع المتحكم الاخر في العتاد والذي بدوره يقوم بتنفيذ الأوامر المستقبلة.
+كيف يقوم المتحكم بتنفيذ الأوامر ؟ هذا هو دور المستوى الثاني.
+\subsubsection{المستوى الثاني: مستوى برامج العتاد \en{Firmware}}
+برامج العتاد (\en{Firmware}) هي برامج موجودة على ذاكرة بداخل المتحكم (غالبا ذاكرة \en{EEPROM}) ، وظيفة هذه البرامج هي تنفيذ الأوامر المرسلة الى المتحكم. ومن الامثلة على مثل هذه البرمجيات برنامج البايوس وأي برنامج موجود في أي متحكم مثل متحكم لوحة المفاتيح.
+\subsubsection{المستوى الثالث: مستوى النواة (الحلقة صفر)}
+النواة وهي أساس نظام التشغيل ، وظيفتها ادارة موارد الحاسب وتوفير واجهة لبقية أجزاء النظام ، وتعمل النواة في الحلقة صفر ، اي أنه يمكن تنفيذ أي أمر والوصول المباشر الى أي عنوان في الذاكرة.
+\subsubsection{المستوى الرابع: مستوى مشغلات الأجهزة (الحلقة 1 و 2)}
+مشغلات الأجهزة هي عبارة عن برامج للنظام وظيفتها التعامل مع متحكمات العتاد (وذلك عن طريق النواة) سواءا لقراءة النتائج او لارسال الأوامر ، هذه البرامج تحتاج الى أن تعمل في الحلقة 1 و 2 حتى تتمكن من تنفيذ العديد من الأوامر ، وفي حالة تم تنفيذها على الحلقة صفر فان هذا قد يؤدي الى خطورة تعطل النظام في حالة كان هناك عطل في احد المشغلات كذلك ستكون صلاحيات المشغل عالية فقد يقوم أحد المشغلات بتغيير أحد جداول المعالج مثل جدول الواصفات العام (\en{GDT}) والذي بدوره قد يعطل النظام.
+\subsubsection{المستوى الخامس: مستوى برامج المستخدم (الحلقة 3)}
+المستوى الاخير وهو مستوى برامج المستخدم حيث لا يمكن لهذه البرامج الوصول الى النواة وانما تتعامل فقط مع واجهة برمجة التطبيقات (\en{Application Progeamming Interface}) والتي تعرف بدوال (\en{API}).
+
+\section{وظائف نواة النظام}
+تختلف مكونات ووظائف نواة نظام التشغيل تبعاً لطريقة التصميم المتبعة ،فهناك العديد من الطرق لتصميم الانوية  بعضاً منها يجعل ما هو متعارف عليه بأنه يتبع لنواة النظام ببرنامج للمستخدم (\en{User Program})\footnote{المقصود أنها برامج تعمل في الحلقة 3.} والبعض الاخر عكس ذلك . لذلك سنذكر حالياً المكونات الشائعة في نواة النظام وفي القسم التالي عند الحديث عن هيكلة وطرق تصميم الأنوبة سنفصل أكثر في هذه المكونات ونقسمها بحسب طريقة التصميم.
+
+\subsection{إدارة الذاكرة}
+% راجع هذه المعلومات ..
+أهم وظيفة لنواة النظام هي إدارة الذاكرة حيث أن أي برنامج يجب ان يتم تحمليه على الذاكرة الرئيسية قبل أن يتم تنفيذه ، لذلك من مهام مدير الذاكرة هي معرفة الأماكن الشاغرة ، والتعامل مع مشاكل التجزئة (\en{Fragmentation}) حيث من الممكن أن تحوي الذاكرة على الكثير من المساحات الصغيرة والتي لا تكفي لتحميل أي برنامج أو حتى حجز مساحة لبرنامج ما.
+أحد المشاكل التي على مدير الذاكرة التعامل معها هي معرفة مكان تحميل البرنامج ، حيث يجب أن يكون البرنامج مستقلا عن العنواين  (\en{Position Independent}) لكي يتم تحمليه  وإلا فلن نعرف ما هو عنوان البداية (\en{Base Address}) لهذا البرنامج.
+فلو فرضنا ان لدينا برنامج \en{binary} ونريد تحميله الى الذاكرة فهنا لن نتمكن من معرفة ما هو العنوان الذي يجب أن يكون عليه البرنامج ، لذلك عادة فان الناتج من عملية ترجمة وربط أي برنامج هو انها تبدأ من العنوان \cmd{0x0}، وهكذا سنتمكن دوما من تحميل أي برنامج في بداية الذاكرة.
+بهذا الشكل لن نتمكن من تنفيذ أكثر من برنامج واحد ، حيث سيكون هناك برنامجا واحدا فقط يبدأ من العنوان \cmd{0x0} ، والحل لهذه المشاكل هو باستخدام مساحة العنونة التخيلية (\en{Virtual Address Space}) حيث يتم تخصيص مساحة تخيلية من الذاكرة لكل برنامج بحيث تبدأ العنونة تخيليا من \cmd{0x0} وبهذا تم حل مشكلة تحميل أكثر من برنامج وحل مشكلة \en{relocation}.
+ومساحة العنوان التخيلية (\en{VAS}) هي مساحة من العناوين لكل برنامج بحيث تيدأ من ال \cmd{0x0} ومفهوم هذه المساحة هو أن كل برنامج سيتعامل مع مساحة العناوين الخاصة به وهذا ما يؤدي الى حماية الذاكرة ، حيث لن يستطيع أي برنامج الوصول الى أي عنوان آخر بخلاف العناوين الموجودة في \en{VAS}.
+ونظراً لعدم ارتباط ال \en{VAS} مع الذاكرة الرئيسية فانه يمكن ان يشير عنوان تخيلي الى ذاكرة اخرى بخلاف الذاكرة الرئيسية (مثلا القرص الصلب). وهذا يحل مشكلة انتهاء المساحات الخالية في الذاكرة.
+ويجدر بنا ذكر أن التحويل بين العناوين التخيليه الى الحقيقية يتم عن طريق العتاد بواسطة وحدة ادارة الذاكرة بداخل المعالج (\en{Memory Management Unit}).وكذلك مهمة حماية الذاكرة والتحكم في الذاكرة \en{Cache} وغيرها من الخصائص والتي سيتم الإطلاع عليها في الفصل الثامن - بمشيئة الله-.
+
+
+\subsection{إدارة العمليات}
+
+\subsection{نظام الملفات}
+
+\section{هيكلة وتصميم النواة}
+توجد العديد من الطرق لتصميم الأنوية وسنستعرض بعض منها في هذا البحث ، لكن قبل ذلك يجب الحديث عن طريقة مفيدة في هيكلة وتصميم الأنوية الا وهي تجريد العتاد (\en{Hardware Abstraction}) أي بمعنى فصل النواة من التعامل المباشر مع العتاد ، وانشاء طبقة برمجية (\en{Software Layer}) تسمى طبقة \en{HAL} (اختصارا لكلمة \en{Hardware Abstraction Layer}) بين النواة وبين العتاد ، وظيفة طبقة \en{HAL} هي توفير واجهة لعتاد الحاسب بحيث تمكِّن النواة من التعامل مع العتاد.
+
+% hal photo
+
+فصل النواة من العتاد تُتيح العديد من الفوائد ،أولاً شفرة النواة ستكون أكثر مقروئية وأسهل في الصيانة والتعديل لأن النواة ستتعامل مع واجهة أخرى أكثر سهولة من تعقيدات العتاد ، الميزة الثانية والأكثر أهمية هي امكانية نقل النواة (\en{Porting}) لأجهزة ذات عتاد مختلف (مثل \en{SPARC,MIPS,...etc}) بدون التغيير في شفرة النواة ، فقط سيتم تعديل طبقة \en{HAL} من ناحية التطبيق (\en{Implementation}) بالاضافة الى إعادة كتابة مشغلات الأجهزة (\en{Devcie Drivers}) مجدداً\footnote{أغلب أنوية أنظمة التشغيل الحالية تستخدم طبقة \en{HAL}، هل تسائلت يوما كيف يعمل نظام جنو/لينوكس على أجهزة سطح المكتب والأجهزة المضمنة!}.
+
+\subsection{النواة الضخمة \en{Monolithic Kernel}}
+تعتبر الأنوية المصممة بطريقة \en{Monolitic}\footnote{كلمة \en{Mono} تعني واحد ، أما كلمة \en{Lithic} فتعني حجري ، والمقصود بأن النواة تكون على شكل كتلة حجرية ليست مرنة وتطويرها وصيانتها معقد.} أسرع وأكفأ أنوية في العمل وذلك نظرا لان كل برامج النظام (\en{System Process}) تكون ضمن النواة وتعمل في الحلقة صفر ، والشكل التالي يوضح مخطط لهذه الأنوية.
+
+% Monolithic kernel photo
+
+المشكلة الرئيسية لهذا التصميم هو انه عند حدوث أي مشكلة في أي من برامج النظام فان النظام سوف يتوقف عن العمل وذلك نظرا لانها تعمل في الحلقة صفر وكما ذكرنا سابقا أن أي خلل في هذا المستوى يؤدي الى توقف النظام عن العمل. مشكلة اخرى يمكن ذكرها وهي ان النواة غير مرنة بمعنى أنه لتغيير نظام الملفات مثلا يجب اعادة تشغيل النظام مجددا.
+
+وكأمثلة على أنظمة تشغيل تعمل بهذا التصميم هي أنظمة يونكس ولينوكس ، وأنظمة ال \en{DOS} القديمة وويندوز  ما قبل \en{NT}.
+
+\subsection{النواة المصغرة \en{MicroKernel}}
+
+الأنوية \en{MicroKernel} هي الأكثر ثباتا واستقرار ومرونة والأسهل في الصيانة والتعديل والتطوير وذلك نظرا لان النواة تكون أصغر ما يمكن ، حيث أن الوظائف الأساسية فقط تكون ضمن النواة وهي ادارة الذاكرة وادارة العمليات (مجدول العمليات،أساسيات \en{IPC})، أما بقية برامج النظام مثل نظام الملفات ومشغلات الأجهزة وغيرها تتبع لبرامج المستخدم وتعمل في نمط المستخدم (الحلقة 3) ، وهذا يعني في حالة حدوث خطأ في هذه البرامج فان النظام لن يتأثر كذلك يمكن تغيير هذه البرامج (مثلا تغيير نظام الملفات) دون الحاجة الى اعادة تشغيل الجهاز حيث أن برامج النظام تعمل كبرامج المستخدم . والشكل التالي يوضح مخطط هذه الأنوية.
+
+% MicroKernel  photo
+
+المشكلة الرئيسية لهذا التصميم هو بطئ عمل النظام وذلك بسبب أن برامج النظام عليها أن تتخاطب مع بعضها البعض عن طريق تمرير الرسائل (\en{Message Passing}) أو مشاركة جزء من الذاكرة (\en{Shared Memory}) وهذا ما يعرف ب \en{Interprocess Communication}.
+
+وأشهر مثال لنظام تشغيل يتبع هذا التصميم هو نظام مينكس الاصدار الثالث.
+
+
+\subsection{النواة الهجينة \en{Hybrid Kernel}}
+هذا التصميم للنواة ما هو إلا مزيج من التصميمين السابقين ، حيث تكون النواة \en{MicroKernel} لكنها تطبق ك \en{Monolithic Kernel} ، ويسمى هذا التصميم \en{Hybrid Kernel} أو \en{Modified MicroKernel}. والشكل التالي يوضح مخطط لهذا التصميم.
+
+%  Hybrid Kernel  photo
+
+وكأمثلة على أنظمة تعمل بهذا التصميم هو أنظمة ويندوز التي تعتمد على معمارية \en{NT} ، ونظام \en{BeOS} و \en{Plane 9}.
+
+
+
+\section{برمجة نواة النظام}
+يمكن برمجة نواة نظام التشغيل بأي لغة برمجة ، لكن يجب التأكد من أن اللغة تدعم استخدام لغة التجميع (\en{Inline Assemlby}) حيث أن النواة كثيرا ما يجب عليها التعامل المباشر مع أوامر لغة التجميع (مثلا عند  تحميل جدول الواصفات العام وجدول المقاطعات وكذلك عند غلق المقطاعات وتفعيلها وغيرها).
+
+الشيء الاخر الذي يجب وضعه في الحسبان هو أنه لا يمكن استخدام لغة برمجة تعتمد على مكتبات في وقت التشغيل (ملفات \en{dll} مثلا) دون إعادة برمجة هذه المكتبات(مثال ذلك لا يمكن استخدام لغات دوت نت دون إعادة برمجة إطار العمل). وكذلك لا يمكن الإعتماد على دوال النظام الذي تقوم بتطوير نظامك الخاص فيه (مثلا لن تتمكن من استخدام \cmd{new} لحجز الذاكرة وذلك لانها تعتمد كليا على نظام التشغيل، أيضا دوال الادخال والاخراج تعتمد كليا على النظام).
+
+لذلك غالبا تستخدم لغة السي والسي++ لبرمجة أنوية أنظمة التشغيل نظرا لما تتمتع به اللغتين من ميزات فريدة تميزها عن باقي اللغات ، وتنتشر لغة السي بشكل أكبر لاسباب كثيرة منها هو أنها لا تحتاج الى مكتبة وقت التشغيل (\en{RunTime Library}) حتى تعمل البرامج المكتوبة بها على عكس لغة سي++ والتي تحتاج الى (\en{RunTime Library}) لدعم الكثير من الخصائص مثل الاستثنائات و دوال البناء والهدم.
+
+وفي حالة استخدام لغة سي أو سي++ فانه يجب إعادة تطوير اجزاء من مكتبة السي والسي++ القياسية (\en{Standard C/C++ Library}) وهي الأجزاء التي تعتمد على نظام التشغيل مثل دوال \cmd{printf} و \cmd{scanf} و دوال حجز الذواكر \cmd{malloc/new} وتحريرها \cmd{free/delete}.
+
+ونظرا لاننا بصدد برمجة نظام \cmd{32} بت ، فان النواة أيضا يجب أن تكون \cmd{32} بت وهذا يعني أنه يجب استخدام مترجم سي أو سي++ \cmd{32} بت . مشكلة هذه المترجمات أن المخرج منها (البرنامج) لا يأتي بالشكل الثنائي فقط (\en{Flat Binary}) \footnote{كبرنامج محمل النظام الذي قمنا بتطويره في بداية هذا البحث.}، وانما يضاف على الشفرة الثنائية العديد من الأشياء \en{Headers,...etc}. ولتحميل مثل هذه البرامج فانه يجب البحث عن نقطة الإنطلاق للبرنامج (\en{main routine}) ومن ثم البدء بتنفيذ الأوامر منها.
+
+وسيتم استخدام مترجم فيجوال سي++ لترجمة النواة ، وفي الملحق سيتم توضيح خطوات تهيئة المشروع وازالة أي اعتمادية على مكتبات أو ملفات وقت التشغيل. 
+
+وسنعيد كتابة النواة التي قمنا ببرمجتها بلغة التجميع في الفصل السابق ولكن بلغة السي والسي++ ، وسنناقش كيفية تحميل وتنفيذ هذه النواة حيث أن المخرج من مترجم الفيجوال سي++ هو ملف تنفيذي (\en{Portable Executable}) ولديه صيغة محددة يجب التعامل معها حتى نتمكن من تنفيذ الدالة الرئيسية للنواة (\cmd{main()}) ، كذلك سنبدأ في تطوير ملفات وقت التشغيل للغة سي++ وذلك حتى يتم دعم بعض خصائص اللغة والتي تحتاج الى دعم وقت التشغيل مثل دوال البناء والهدم والدوال الظاهرية (\en{Pure Virtual Function}) ، وفي الوقت الحالي لا يوجد دعم للإستثنائات (\en{Exceptions}) في لغة السي++ . 
+
+\subsection{تحميل وتنفيذ نواة \en{PE}}
+بما أننا سنستخدم مترجم فيجوال سي++ والذي يخرج لنا ملف تنفيذي (\en{Portable Executable}) فانه يجب أن نعرف ما هي  شكل هذه الصيغة حتى نتمكن عند تحميل النواة أن ننقل التنفيذ الى الدالة الرئيسية وليست الى أماكن أخرى.ويمكن استخدام مترجمات سي++ أخرى (مثل مترجم \en{g++}) لكن يجب ملاحظة أن هذا المترجم يخرج لنا ملف بصيغة \en{ELF} وهي صيغة الملفات التنفيذية على نظام جنو/لينوكس. والشكل التالي يوضح صيغة ملف \en{PE} الذي نحن بصدد التعامل معه.
+
+% PE photo
+
+يوجد أربع اضافات(\en{headers}) لصيغة \en{PE} سنطلع عليها بشكل سريع وفي حالة قمنا بتطوير محمل خاص لهذه الصيغة فسيتم دراستها بالتفصيل. و يمكن أن نصف هذه الاضافات بلغة السي++ كالتالي.
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+%ex4-1.cpp
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+// header information format for PE files 
+
+typedef struct _IMAGE_DOS_HEADER {  // DOS .EXE header
+    unsigned short e_magic;  // Magic number (Should be MZ
+    unsigned short e_cblp;    // Bytes on last page of file
+    unsigned short e_cp;      // Pages in file
+    unsigned short e_crlc;     // Relocations
+    unsigned short e_cparhdr;  // Size of header in paragraphs
+    unsigned short e_minalloc;   // Minimum extra paragraphs needed
+    unsigned short e_maxalloc;   // Maximum extra paragraphs needed
+    unsigned short e_ss;    // Initial (relative) SS value
+    unsigned short e_sp;    // Initial SP value
+    unsigned short e_csum;   // Checksum
+    unsigned short e_ip;     // Initial IP value
+    unsigned short e_cs;    // Initial (relative) CS value
+    unsigned short e_lfarlc;   // File address of relocation table
+    unsigned short e_ovno;    // Overlay number
+    unsigned short e_res[4];    // Reserved words
+    unsigned short e_oemid;   // OEM identifier (for e_oeminfo)
+    unsigned short e_oeminfo;  // OEM information; e_oemid specific
+    unsigned short e_res2[10];    // Reserved words
+    long   e_lfanew;    // File address of new exe header
+  } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
+
+  
+// Real mode stub program 
+
+typedef struct _IMAGE_FILE_HEADER {
+    unsigned short  Machine;
+    unsigned short  NumberOfSections;
+    unsigned long   TimeDateStamp;
+    unsigned long   PointerToSymbolTable;
+    unsigned long   NumberOfSymbols;
+    unsigned short  SizeOfOptionalHeader;
+    unsigned short  Characteristics;
+} IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;
+
+typedef struct _IMAGE_OPTIONAL_HEADER {
+    unsigned short  Magic;
+    unsigned char   MajorLinkerVersion;
+    unsigned char   MinorLinkerVersion;
+    unsigned long   SizeOfCode;
+    unsigned long   SizeOfInitializedData;
+    unsigned long   SizeOfUninitializedData;
+    unsigned long   AddressOfEntryPoint;   // offset of kernel_entry
+    unsigned long   BaseOfCode;
+    unsigned long   BaseOfData;
+    unsigned long   ImageBase;   // Base address of kernel_entry
+    unsigned long   SectionAlignment;
+    unsigned long   FileAlignment;
+    unsigned short  MajorOperatingSystemVersion;
+    unsigned short  MinorOperatingSystemVersion;
+    unsigned short  MajorImageVersion;
+    unsigned short  MinorImageVersion;
+    unsigned short  MajorSubsystemVersion;
+    unsigned short  MinorSubsystemVersion;
+    unsigned long   Reserved1;
+    unsigned long   SizeOfImage;
+    unsigned long   SizeOfHeaders;
+    unsigned long   CheckSum;
+    unsigned short  Subsystem;
+    unsigned short  DllCharacteristics;
+    unsigned long   SizeOfStackReserve;
+    unsigned long   SizeOfStackCommit;
+    unsigned long   SizeOfHeapReserve;
+    unsigned long   SizeOfHeapCommit;
+    unsigned long   LoaderFlags;
+    unsigned long   NumberOfRvaAndSizes;
+    IMAGE_DATA_DIRECTORY DataDirectory[DIRECTORY_ENTRIES];
+} IMAGE_OPTIONAL_HEADER, *PIMAGE_OPTIONAL_HEADER;
+
+\end{lstlisting}
+\end{english}
+
+ما نريد الحصول عليه هو عنوان الدالة الرئيسية للنواة (\cmd{kernel entry()}) والتي سيبدأ تنفيذ النواة منها ، هذا العنوان موجود في أحد المتغيرات في آخر إضافة (\en{header}) وهي \en{IMAGE OPTIONAL HEADER} ، وحتى نحصل على عنوان هذه الأضافة يجب أن نبدأ من أول إضافة وذلك بسبب أن الاضافة الثانية ذات حجم متغير وليست ثابته مثل بقية الاضافات.
+
+
+وبالنظر الى أول إضافة  \en{IMAGE DOS HEADER} وبالتحديد الى المتغير \en{e lfanew} حيث يحوي عنوان الإضافة الثالثة \en{IMAGE FILE HEADER} والتي هي اضافة ثابته الحجم ، ومنها نصل الى آخر إضافة ونقرأ المتغير \en{AddressOfEntryPoint} الذي يحوي عنوان \en{offset} للدالة الرئيسية وكذلك نقرأ المتغير \en{ImageBase} والذي يحوي عنوان البداية للدالة ويجب اضافته لقيمة ال \en{offset} ، وبعد ذلك يتم نقل التنفيذ الى الدالة بواسطة الامر \cmd{call}. والشفرة التالية توضح طريقة ذلك (ويتم تنفيذها في المرحلة الثانية من محمل النظام مباشرة بعدما يتم تحميل النواة الى الذاكرة على العنوان \en{KERNEL PMODE BASE}).
+
+%ex4-2.asm
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+		
+	mov ebx,[KERNEL_PMODE_BASE+60]
+	add ebx,KERNEL_PMODE_BASE			; ebx = _IMAGE_FILE_HEADER
+		
+	add ebx,24			; ebx = _IMAGE_OPTIONAL_HEADER
+		
+	add ebx,16			; ebx point to AddressOfEntryPoint
+		
+	mov ebp,dword[ebx]	; epb = AddressOfEntryPoint
+		
+	add ebx,12			; ebx point to ImageBase
+		
+	add ebp,dword[ebx]	; epb = kernel_entry
+		
+	cli
+		
+	call ebp
+		
+
+\end{lstlisting}
+\end{english}
+
+
+\subsection{تطوير بيئة التشغيل للغة سي++}
+حتى نتمكن من استخدام جميع خصائص لغة سي++  فانه يجب كتابة بعض الشفرات التشغيلية (\en{startup}) والتي تمهد وتعرف العديد من الخصائص في اللغة ، وفي هذا الجزء سيتم تطوير مكتبة وقت التشغيل للغة سي++ (\en{C++ Runtime Library})  وذلك نظراً لأننا قد الغينا الإعتماد على مكتبة وقت التشغيل التي تأتي مع المترجم المستخدم في بناء النظام (النظام الخاص بنا) حيث أن هذه المكتبة  تعتمد على نظام التشغيل المستخدم في عملية التطوير مما يسبب مشاكل استدعاء دوال ليست موجودة.
+
+وبدون تطوير هذه المكتبة فلن يمكن تهيئة الكائنات العامة (\en{Global Object})  و حذف الكائنات ، وكذلك لن يمكن استخدام بعض المعاملات (\cmd{new,delete}) و \en{RTTI} والاستثنائات (\en{Exceptions}).
+
+
+\subsubsection{المعاملات العامة \en{Global Operator}}
+
+سيتم تعريف معامل حجز الذاكرة  (\cmd{new}) وتحريرها (\cmd{delete}) في لغة السي++ ، ولكن لاننا حاليا لم نبرمج مديراً للذاكرة فان التعريف سيكون خاليا.والمقطع التالي يوضح ذلك.
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+void* __cdecl ::operator new (unsigned int size){return 0;}
+void* __cdecl operator new[] (unsigned int size){return 0;}
+void __cdecl ::operator delete (void * p){}
+void __cdecl operator delete[] (void * p){}
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{\en{Pure virtual function call handler}}
+ايضا يجب تعريف دالة للتعامل مع الدوال الظاهرية النقية (\en{Pure virtual function })\footnote{عند تعريف دالة بأنها \en{Pure virtual} داخل أي فئة فإن هذا يدل على أن الفئة مجردة (\en{Abstract}) ويجب إعادة تعريف الدالة (\en{Override}) في الفئات المشتقة من الفئة التي تحوي هذه الدالة، والا ستكون الفئة المشتقة .}، حيث سيقوم المترجم باستدعاء الدالة \cmd{purecall()}\footnote{هذه الدالة يقوم مترجم الفيجوال سي++ باستدعائها.وقد تختلف من مترجم لآخر.} أينما وجد عملية استدعاء لدالة \en{Pure virtual} ، لذلك أن أردنا دعم الدوال \en{Pure virtual} يجب تعريف الدالة \cmd{purecall} ، وحاليا سيكون التعريف كالاتي.
+
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+int __cdecl ::_purecall() { for (;;); return 0; }
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{دعم الفاصلة العائمة \en{Floating Point Support}}
+لدعم الفاصلة العائمة (\en{Floating Point}) في سي++ فانه يجب تعيين القيمة \cmd{1} للمتغير \cmd{fltused} ، وكذلك يجب تعريف الدالة \cmd{ftol2 sse()} والتي تحول من النوع \cmd{float} الى النوع \cmd{long} كالتالي.
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+
+extern "C" long __declspec (naked) _ftol2_sse() {
+	int a;
+#ifdef i386
+	_asm {
+		fistp [a]
+		mov	ebx, a
+	}
+#endif
+}
+
+extern "C" int _fltused = 1;
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{تهيئة الكائنات العامة والساكنة}
+عندما يجد المترجم كائنا فانه يضيف مهيئاً ديناميكيا له (\en{Dynamic initializer}) في قسم خاص من البرنامج\footnote{في أي برنامج تنفيذي يوجد العديد من الأقسام، مثلا قسم البيانات \cmd{.data} وقسم الشفرة \cmd{.code} والمكدس \cmd{.stack} وغيرها.} وهو القسم \cmd{.crt}. وقبل أن يعمل البرنامج فان وظيفة مكتبة وقت التشغيل هي استدعاء وتنفيذ كل المهيئات وذلك حتى تأخذ الكائنات قيمها الابتدائية (عبر  دالة البناء \en{Constructor}). وبسبب أننا أزلنا مكتبة وقت التشغيل فانه يجب انشاء القسم \cmd{.crt} وهذا يتم عن طريق موجهات المعالج  التمهيدي(\en{Preprocessor}) الموجودة في المترجم.
+
+% اعد كتابة الحرف $.
+هذا القسم \cmd{.crt} يحوي مصفوفة من مؤشرات الدوال (\en{Function Pointer}) ، ووظيفة مكتبة وقت التشغيل هي استدعاء كل الدوال الموجودة وذلك بالمرور على مصفوفة المؤشرات الموجودة . و يجب أن نعلم أن مصفوفة المؤشرات موجودة حقيقة داخل القسم \cmd{.crt:xcu} حيث أن الجزء الذي يلي العلامة \en{dollar sign} يحدد المكان بداخل القسم ،  وحتى نتمكن من استدعاء وتنفيذ الدوال عن طريق مصفوفة المؤشرات فانه يجب انشاء مؤشر الى بداية القسم \cmd{.crt:xcu} وفي نهايته ، مؤشر البداية سيكون في القسم  \cmd{.crt:xca} وهو يسبق القسم \cmd{.crt:xcu} مباشرة ، ومؤشر النهاية سيكون في القسم \cmd{.crt:xcz} ويلي القسم \cmd{.crt:xcu} مباشرة .
+
+وبخصوص القسم \cmd{.crt} الذي سننشئه فاننا لا نملك صلاحيات قراءة وكتابة فيه ، لذلك الحل في أن نقوم بدمج هذا القسم مع قسم البيانات \cmd{.data} .
+
+والشفرة التالية توضح ما سبق.
+ 
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+// Function pointer typedef for less typing
+typedef void (__cdecl *_PVFV)(void);
+
+// __xc_a points to beginning of initializer table
+#pragma data_seg(".CRT$XCA")
+_PVFV __xc_a[] = { 0 };
+
+// __xc_z points to end of initializer table
+#pragma data_seg(".CRT$XCZ")
+_PVFV __xc_z[] = { 0 };
+
+// Select the default data segment again (.data) for the rest of the unit
+#pragma data_seg()
+
+// Now, move the CRT data into .data section so we can read/write to it
+#pragma comment(linker, "/merge:.CRT=.data")
+
+
+// initialize all global initializers (ctors, statics, globals, etc..)
+void __cdecl _initterm ( _PVFV * pfbegin, _PVFV * pfend ) {
+
+	//! Go through each initializer
+    while ( pfbegin < pfend )
+    {
+	  //! Execute the global initializer
+      if ( *pfbegin != 0 )
+            (**pfbegin) ();
+
+	    //! Go to next initializer inside the initializer table
+        ++pfbegin;
+    }
+}
+
+// execute all constructors and other dynamic initializers
+void _cdecl init_ctor() {
+
+   _atexit_init();
+   _initterm(__xc_a, __xc_z); 
+}
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{حذف الكائنات}
+لكي يتم حذف الكائنات (\en{Objects}) يجب انشاء مصفوفة من مؤشرات دوال الهدم (\en{deinitializer array}) ، وذلك بسبب أن المترجم عندما يجد دالة هدم فانه يضيف مؤشراً الى دالة الهدم بداخل هذه المصفوفة وذلك حتى يتم استدعائها لاحقا (عند استدعاء الدالة \cmd{exit()})، ويجب تعريف الدالة \cmd{atexit} حيث أن مترجم الفيجوال سي++ يقوم باستدعائها عندما يجد أي كائن ، وظيفة هذه الدالة هي اضافة مؤشر لدالة هدم الكائن الى مصفوفة المؤشرات ،وبخصوص مصفوفة المؤشرات فانه يمكن حفظها في أي مكان على الذاكرة . والشفرة التالية توضح ما سبق.
+
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+/! function pointer table to global deinitializer table
+static _PVFV * pf_atexitlist = 0;
+
+// Maximum entries allowed in table. Change as needed
+static unsigned max_atexitlist_entries = 32;
+
+// Current amount of entries in table
+static unsigned cur_atexitlist_entries = 0;
+
+//! initialize the de-initializer function table
+void __cdecl _atexit_init(void) {
+
+    max_atexitlist_entries = 32;
+
+	// Warning: Normally, the STDC will dynamically allocate this. Because we have no memory manager, just choose
+	// a base address that you will never use for now
+	pf_atexitlist = (_PVFV *)0x5000;
+}
+
+//! adds a new function entry that is to be called at shutdown
+int __cdecl atexit(_PVFV fn) {
+
+	//! Insure we have enough free space
+	if (cur_atexitlist_entries>=max_atexitlist_entries)
+		return 1;
+	else {
+
+		//! Add the exit routine
+		*(pf_atexitlist++) = fn;
+		cur_atexitlist_entries++;
+	}
+	return 0;
+}
+
+//! shutdown the C++ runtime; calls all global de-initializers
+void _cdecl exit () {
+
+	//! Go through the list, and execute all global exit routines
+	while (cur_atexitlist_entries--) {
+
+			//! execute function
+			(*(--pf_atexitlist)) ();
+	}
+}
+
+\end{lstlisting}
+\end{english}
+
+\subsection{نقل التنفيذ الى النواة}
+بعد أن قمنا بعمل تحليل (\en{Parsing}) لصيغة ملف \en{PE} ونقل التنفيذ الى الدالة \cmd{kernel\_entry()} والتي تعتبر أول دالة يتم تنفيذها في نواة النظام ، وأول ما يجب تنفيذه فيها هو تحديد قيم مسجلات المقاطع وانشاء مكدس (\en{Stack}) وبعد ذلك يجب تهئية الكائنات العامة ومن ثم استدعاء الدالة \cmd{main()} التي تحوي شفرة النواة ، واخيرا عندما تعود الدالة \cmd{main()} يتم حذف الكائنات وايقاف النظام (\en{Hang}). والشفرة التالية توضح ذلك
+
+%kernel/entry.cpp
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+
+extern void _cdecl main ();		// main function.
+extern void _cdecl init_ctor();		// init constructor.
+extern void _cdecl exit ();  		// exit.
+
+void _cdecl kernel_entry ()
+{
+
+#ifdef i386
+	_asm {
+		cli						
+		
+		mov ax, 10h				// select data descriptor in GDT.
+		mov ds, ax
+		mov es, ax
+		mov fs, ax
+		mov gs, ax
+		mov ss, ax				// Set up base stack
+		mov esp, 0x90000
+		mov ebp, esp			// store current stack pointer
+		push ebp
+	}
+#endif
+
+	// Execute global constructors
+	init_ctor();
+
+	// Call kernel entry point
+	main();
+
+	// Cleanup all dynamic dtors
+	exit();
+
+#ifdef i386
+	_asm cli
+#endif
+
+	for(;;);
+}
+\end{lstlisting}
+\end{english}
+
+وتعريف الدالة \cmd{main()} حالياً سيكون خاليا.
+
+\section{نظرة على شفرة نظام إقرأ}
+أهم الخصائص التي يجب مراعتها أثناء برمجة نواة نظام التشغيل هي خاصية المحمولية على صعيد الأجهزة والمنصات\footnote{على عكس محمل النظام \en{Bootloader} والذي يعتمد على معمارية العتاد والمعالج.} وخاصية قابلية توسعة النواة (\en{Expandibility}) و لذلك تم الإتفاق على أن تصميم نواة نظام تشغيل إقرأ سيتم بنائها على طبقة \en{HAL} حتى تسمح لأي مطور فيما بعد إعادة تطبيق هذه الطبقة لدعم أجهزة وعتاد آخر. وحتى نحصل على أعلى قدر من المحمولية وقابلية التوسعة في نواة النظام فانه سيتم تقسيم الشفرات البرمجية للنواة الى وحدات مستقلة بحيث تؤدي كل وحدة وظيفة ما ، وفي نفس الوقت يجب أن تتوافر واجهة عامة (\en{Interface}) لكل وحدة بحيث نتمكن من الاستفادة من خدمات هذه الوحدة دون الحاجة لمعرفة تفاصيلها الداخلية. وفي بداية تصميم المشروع فان عملية تصميم الواجهة تعتبر أهم بكثير من عملية برمجة محتويات الوحدة أو ما يسمى بالتنفيذ (\en{Impelmentation}) نظراً لان التنفيذ قد لا يؤثر على هيكلة المشروع ومعماريته مثلما تؤثر الواجهة .
+
+\begin{english}
+
+\begin{itemize}
+\item \en{eqraOS:}
+
+\begin{itemize}
+\item \en{boot: first-stage and second-stage bootloader.}
+
+
+\item \en{core:}
+\begin{itemize}
+\item \en{kernel:Kernel program PE executable file type.}
+\item \en{hal:Hardware abstraction layer.}
+\item \en{lib:Standard library runtime and standard C/C++ library.}
+\item \en{include:Standard include headers.}
+\item \en{debug:Debug version of eqraOS.}
+\item \en{release:Final release of eqraOS.}
+\end{itemize}
+
+\end{itemize}
+\end{itemize}
+\end{english}
+
+\section{مكتبة السي القياسية}
+نظراّ لأنه قد تم إلغاء الاعتماد على مكتبة السي والسي++ القياسية أثناء تطوير نواة نظام التشغيل فانه يجب انشاء هذه المكتبة حتى نتمكن من استخدام لغة سي وسي++ ، وبسبب أن عملية إعادة برمجة هذه المكتبات يتطلب وقتاّ وجهدا فاننا سنركز على بعض الملفات المستخدمة بكثرة ونترك البقية للتطوير لاحقا.
+
+\subsubsection{تعريف \cmd{NULL}}
+في لغة سي++ يتم تعريف \cmd{NULL} على أنها القيمة \cmd{0} بينما في لغة السي تعرف ب \cmd{(void*)0}.
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=null_def,caption=null.h:Definition of NULL in C and C++]
+
+#ifndef NULL_H
+#define NULL_H
+
+#if define (_MSC_VER) && (_MSC_VER > = 1020)
+#pargma once
+#endif
+
+#ifdef NULL
+#undev NULL
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+/* C++ NULL definition */
+#define NULL 0
+
+#ifdef __cplusplus
+}
+#else
+
+/* C NULL definition */
+#define NULL (void*)0
+
+#endif
+
+#endif //NULL_H
+\end{lstlisting}
+\end{english}
+
+وعند ترجمة النواة بمترجم سي++ فان القيمة \cmd{\_\_cplusplus} تكون معرَّفة لديه ، أما في حالة ترجمة النواة بمترجم سي فان المترجم لا يُعرِّف تلك القيمة.
+
+\subsubsection{تعريف \cmd{size\_t}}
+يتم تعريف \cmd{size\_t} على أنها عدد صحيح \cmd{32-bit} بدون إشارة (\cmd{unsigned}).
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=sizet_def,caption=size\_t.h:Definition of size\_t in C/C++]
+
+#ifndef SIZE_T_H
+#define SIZE_T_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+/* Stdandard definition of size_t */
+typedef unsigned size_t;
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif //SIZE_T_H
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{إعادة تعريف أنواع البيانات}
+أنواع البيانات (\en{Data Types}) تختلف حجمها بحسب المترجم والنظام الذي تم ترجمة البرنامج عليه ، ويفضل أن يتم اعادة تعريفها (\en{typedef}) لتوضيح الحجم والنوع في آن واحد .
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=type_def,caption=stdint.h:typedef data type]
+
+#ifndef STDINT_H
+#define STDINT_H`
+
+#define __need_wint_t
+#define __need_wchar_t
+
+/* Exact-width integer type */
+typedef 	char 				int8_t;
+typedef 	unsigned char 		uint8_t;
+typedef		short				int16_t;
+typedef		unsigned short		uint16_t;
+typedef		int					int32_t;
+typedef		unsigned int		uint32_t;
+typedef		long long			int64_t;
+typedef		unsigned long long	uint64_t;
+
+
+// to be continue..
+
+#endif //STDINT_H
+
+\end{lstlisting}
+\end{english}
+
+ولدعم ملفات الرأس للغة سي++ فان الملف السابق سيتم تضمينه في ملف \cmd{cstdint} وهي التسمية التي تتبعها السي++ في ملفات الرأس\footnote{ملفات الرأس للغة سي++ تتبع نفس هذا الأسلوب لذلك لن يتم ذكرها مجددا وسنكتفي بذكر ملفات الرأس للغة سي.}.
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=type_def,caption=cstdint:C++ typedef data type]
+
+#ifndef CSTDINT_H
+#define CSTDINT_H
+
+#include <stdint.h>
+
+#endif //CSTDINT_H
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{نوع الحرف}
+ملف \cmd{ctype.h} يحوي العديد من الماكرو (\en{Macros}) والتي تحدد نوع الحرف (عدد،حرف،حرف صغير،مسافة،حرف تحكم،...الخ).
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=char_type,caption=ctype.h:determine character type]
+
+#ifndef CTYPE_H
+#define CTYPE_H
+
+#ifdef _MSC_VER
+#pragma warning (disable:4244)
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+extern char _ctype[];
+
+/* constants */
+
+#define	CT_UP 		0x01	// upper case
+#define CT_LOW		0x02	// lower case
+#define CT_DIG		0x04	// digit
+#define CT_CTL		0x08	// control
+#define CT_PUN		0x10	// punctuation
+#define CT_WHT		0x20	// white space (space,cr,lf,tab).
+#define CT_HEX		0x40	// hex digit
+#define CT_SP		0x80	// sapce.
+
+/* macros */
+
+#define isalnum(c)		( (_ctype+1)[(unsigned)(c)] & (CT_UP|CT_LOW|CT_DIG) )
+#define isalpha(c)		((_ctype + 1)[(unsigned)(c)] & (CT_UP | CT_LOW))
+#define iscntrl(c)	    ((_ctype + 1)[(unsigned)(c)] & (CT_CTL))
+
+
+// to be continue..
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // CTYPE_H
+
+\end{lstlisting}
+\end{english}
+
+\subsubsection{دعم الدوال بعدد غير محدود من الوسائط}
+% write it..
+
+\section{دالة طباعة المخرجات للنواة}
+
+\end{document}

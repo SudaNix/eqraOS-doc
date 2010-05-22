@@ -1,0 +1,6 @@
+#ifndef CSTRING_H
+#define CSTRING_H
+
+#include <string.h>
+
+#endif //CSTRING_H

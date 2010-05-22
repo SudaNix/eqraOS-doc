@@ -1,0 +1,15 @@
+*~
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.obj
+*.bin
+*.sys
+*.dll
+*.lib
+*.idb
+*.lol
+*.lof
+*.toc
+BuildLog.htm

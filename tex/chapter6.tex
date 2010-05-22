@@ -1,0 +1,383 @@
+\documentclass[document.tex]{subfiles} 
+
+\begin{document}
+
+\chapter{المقاطعات \en{Interrupts}}
+المقاطعات هي طريقة لإيقاف المعالج بشكل مؤقت من تنفيذ عملية ما (\en{Current Process}) والبدء بتنفيذ أوامر أخرى . وكمثال على ذلك هو عند الضغط على أي حرف في لوحة المفاتيح فان هذا يولد مقاطعة (\en{Interrupt}) تأتي كإشارة الى المعالج بأن يوقف ما يعمل عليه حاليا ويحفظ كل القيم التي يحتاجها لكي يستطيع مواصلة ما تم قطعه ، وفي حالة وجود دالة للتعامل مع هذه المقاطعة (مقاطعة لوحة المفاتيح) وتسمى دالة معالجة المقاطعة (\en{Interrupt Handler}) أو دالة خدمة المقاطعة (\en{Interrupt Service Rountine}) فان التنفيذ يتنقل اليها تلقائيا ، و يتم فيها معالجة هذه المقاطعة (مثلا يتم قراءة الحرف الذي تم ادخاله من متحكم لوحة المفاتيح ومن ثم ارساله الى متغير في الذاكرة) وعندما تنتهي دالة معالجة المقاطعة من عملها فان المعالج يعود ليُكْمِل تنفيذ العملية التي كان يعمل عليها. والمقاطعات إما تكون مقاطعات عتادية (\en{Hardware Interrupt}) وتصدر من عتاد الحاسب أو تكون برمجية (\en{Software Interrupt}) وتصدر من خلال البرامج عن طريق تعليمة \cmd{int n}. كذلك هناك مقاطعات يصدرها المعالج نفسه عند حدوث خطأ ما (مثلا عن القسمة على العدد صفر أو عند حدوث \en{Page Fault}) وتسمى هذه المقاطعات بأخطاء المعالج أو استثنائات المعالج (\en{Exceptions}) ويجب معالجة هذه الأخطاء (\en{Error Handler}) لأنها توقف عمل النظام في حالة لم تتوفر دالة لمعالجتها.
+
+
+\section{المقاطعات البرمجية \en{Software Interrupts}}
+المقاطعات البرمجية هي مقاطعات يتم اطلاقها من داخل البرنامج (عن طريق الأمر \cmd{int n}) لِنقل التنفيذ الى دالة أخرى تعالج هذه المقاطعة (\en{Interrupt handler})، وغالبا ما تستخدم هذه المقاطعات في برامج المستخدم (\en{Ring3 user mode}) للاستفادة من خدمات النظام (مثلا للقراءة والكتابة في أجهزة الإدخال والإخراج حيث لا توجد طريقة اخرى لذلك في نمط المستخدم).
+
+\subsection{المقاطعات في النمط الحقيقي}
+في النمط الحقيقي عندما يتم تنفيذ أمر المقاطعة (وهو ما يسمى بطلب تنفيذ المقاطعة (\en{Interrupt Request}) وتختصر بـ\en{IRQ})  فان المعالج يأخذ رقم المقاطعة المطلوب تنفيذها ويذهب بها الى جدول المقاطعات (\en{Interrupt Vector Table}) ، هذا الجدول يبدأ من العنوان الحقيقي \cmd{0x0} وينتهي عند العنوان \cmd{0x3ff} ويحوي كل سجل فيه على عنوان دالة معالجة المقاطعة (\en{IR}) والتي يجب تنفيذها لتخديم المقاطعة المطلوبة. حجم العنوان هو أربع بايت وتكون كالتالي:
+
+\begin{english}
+\begin{itemize}
+\item \en{Byte 0: Low offset address of IR.}
+\item \en{Byte 1: High offset address of IR.}
+\item \en{Byte 2: Low Segment address of IR.}
+\item \en{Byte 3: High Segment Address of IR.}
+\end{itemize}
+\end{english}
+
+ويتكون الجدول من \cmd{256} مقاطعة (وبحسبة بسيطة يكون حجم الجدول هو \cmd{1024} بايت وهي ناتجة من ضرب عدد المقاطعات في حجم كل سجل )، بعض منها محجوز والبعض الاخر يستخدمه المعالج والبقية متروكة لمبرمج نظام التشغيل لدعم المزيد من المقطاعات. وبسبب أن الجدول يتكون فقط من عناوين لدوال معالجة المقاطعات فان هذا يمكننا من وضع الدالة في أي مكان على الذاكرة ومن ثم وضع عنوانها داخل هذا السجل (يتم هذا عن طريق مقاطعات البايوس)، والجدول التالي يوضح \en{IVT} والمقاطعات الموجودة فيه.
+
+\begin{english}
+\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\begin{tabular}{ | l | l | l |}
+\hline  
+Base Address & Interrupt Number & Description \\
+\hline \hline
+0x000	& 0 & Divide by 0 \\
+0x004	& 1 & Single step (Debugger) \\
+0x008	& 2 & Non Maskable Interrupt (NMI) Pin \\
+0x00C	& 3 & Breakpoint (Debugger) \\
+0x010	& 4 & Overflow \\
+0x014	& 5 & Bounds check \\
+0x018	& 6 & Undefined Operation Code \\
+0x01C	& 7 & No coprocessor \\
+0x020	& 8 & Double Fault \\
+0x024	& 9 & Coprocessor Segment Overrun \\
+0x028	& 10 & Invalid Task State Segment (TSS) \\
+0x02C	& 11 & Segment Not Present \\
+0x030	& 12 & Stack Segment Overrun \\
+0x034	& 13 & General Protection Fault (GPF) \\
+0x038	& 14 & Page Fault \\
+0x03C	& 15 & Unassigned \\
+0x040	& 16 & Coprocessor error \\
+0x044	& 17 & Alignment Check (486+ Only) \\
+0x048	& 18 & Machine Check (Pentium/586+ Only) \\
+0x05C	& 19-31 & Reserved exceptions \\
+0x068 - 0x3FF & 32-255 & Interrupts free for software use \\
+ \hline  
+\end{tabular}
+\end{english}
+
+\subsection{المقاطعات في النمط المحمي}
+في النمط المحمي يستخدم المعالج جدولاً خاصاً يسمى بجدول واصفات المقاطعات (\en{Interrupt Descriptor Table}) ويختصر ب \en{IDT} ، هذا الجدول يشابه جدول \en{IVT} حيث يتكون من \cmd{256} واصفة كل واصفة مخصصة لمقاطعة ما (اذاً الجدول يحوي \cmd{256} مقاطعة) ، حجم كل واصفة هو \cmd{8} بايت  تحوي عنوان دالة معالجة المقاطعة (\en{IR}) و نوع الناخب (\en{selector type: code or data}) في جدول \en{GDT}  الذي تعمل عليه دالة معالجة المقاطعة ، بالاضافة الى مستوى الحماية المطلوب والعديد من الخصائص توضحها التركيبة التالية.
+
+\begin{english}
+\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+
+\begin{itemize}
+\item Bits 0-15:
+\begin{itemize}
+\item Interrupt / Trap Gate: Offset address Bits 0-15 of IR
+\item Task Gate: Not used. 
+\end{itemize}
+
+\item Bits 16-31:
+\begin{itemize}
+\item Interrupt / Trap Gate: Segment Selector (Useually 0x10)
+\item Task Gate: TSS Selector
+\end{itemize}
+
+\item Bits 31-35: Not used
+\item Bits 36-38:
+\begin{itemize}
+\item Interrupt / Trap Gate: Reserved. Must be 0.
+\item Task Gate: Not used.
+\end{itemize}
+
+\item Bits 39-41:
+\begin{itemize}
+\item Interrupt Gate: Of the format 0D110, where D determins size
+\begin{itemize}
+\item 01110 - 32 bit descriptor
+\item 00110 - 16 bit descriptor
+\end{itemize}
+\item Task Gate: Must be 00101
+\item Trap Gate: Of the format 0D111, where D determins size
+\begin{itemize}
+\item 01111 - 32 bit descriptor
+\item 00111 - 16 bit descriptor
+\end{itemize}
+
+\end{itemize}
+
+\item Bits 42-44: Descriptor Privedlge Level (DPL)
+\begin{itemize}
+\item 00: Ring 0
+\item 01: Ring 1
+\item 10: Ring 2
+\item 11: Ring 3
+\end{itemize}
+
+\item Bit 45: Segment is present (1: Present, 0:Not present)
+\item Bits 46-62: 
+\begin{itemize}
+\item Interrupt / Trap Gate: Bits 16-31 of IR address
+\item Task Gate: Not used
+\end{itemize}
+
+\end{itemize}
+\end{english}
+
+والمثال التالي يوضح انشاء واصفة واحدة بلغة التجميع حتى يسهل تتبع القيم ، وسيتم كتابة مثال كامل لاحقا بلغة السي.
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+
+\begin{lstlisting}[label=idt_desc,caption=Example of interrupt descriptor]
+
+idt_descriptor:
+   baseLow     	dw   0x0 
+   selector      	dw   0x8
+   reserved     	db   0x0 
+   flags      	db   0x8e           ; 010001110
+   baseHi      	dw   0x0
+
+\end{lstlisting}
+\end{english}
+
+المتغير الأول \cmd{baseLow} هو أول \cmd{16} بت من عنوان دالة معالجة المقاطعة \en{IR} ويكمل الجزء الاخر من العنوان المتغير \cmd{baseHi} وفي هذا المثال العنوان هو \cmd{0x0} بمعنى أن دالة تخديم المقاطعة ستكون في العنوان \cmd{0x0}.  وبما أن دالة معالجة (تخديم) المقاطعة تحوي شفرة برمجية للتنفيذ وليست بيانات (\en{Data}) فان قيمة المتغير \cmd{selector} يجب أن تكون \cmd{0x8} للإشارة الى ناخب الشفرة (\en{Code Selector}) في جدول الواصفات العام (\en{GDT}).  أما المتغير \cmd{flags} فان قيمته هي \cmd{010001110b} دلالة على أن الواصفة هي \cmd{32-bit} وأن مستوى الحماية هو الحلقة صفر (\en{Ring0}).
+
+
+وبعد أن يتم انشاء أغلب الواصفات بشكل متسلسل (في أي مكان على الذاكرة) ، يجب أن ننشئ جدول \en{IDT} وهذا يتم عن طريق حفظ عنوان أول واصفة في متغير وليكن \cmd{idt\_start} وعنوان نهاية الواصفات في المتغير \cmd{idt\_end} ومن ثم انشاء مؤشراً يسمى \cmd{idt\_ptr} والذي يجب أن يكون في صورة معينة بحيث يحفظ عنوان بداية الجدول ونهايته :
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+
+\begin{lstlisting}[label=idt_ptr,caption=Value to put in IDTR]
+idt_ptr:
+	limit	dw idt_end - idt_start	; bits 0-15 is size of idt
+	base	dd idt_start		; base of idt
+\end{lstlisting}
+\end{english}
+
+هذا المؤشر يجب أن يتم تحميله الى المسجل \cmd{IDTR} (وهو مسجل داخل المعالج) عن طريق تنفيذ الامر \cmd{lidt}\footnote{بعد تنفيذ هذا الأمر فان جدول المقاطعات سيتم استبداله بالجدول الجديد والذي نجد عنوانه بداخل المسجل \cmd{idtr} ، وهذا الأمر لا يُنفَّذ إلاَّ  اذا كانت قيمة العلم (\en{CPL flag}) هي صفر.} بالشكل التالي \cmd{lidt [idt\_ptr]}.
+
+وعند حدوث أي مقاطعة فان المعالج ينهي الأمر الذي يعمل عليه و يأخذ رقم المقاطعة ويذهب به الى جدول \en{IDT} (عنوان هذا الجدول يتواجد بداخل المسجل \en{IDTR}) ، وبعد ذلك يقوم بحساب مكان الواصفة بالمعادلة \cmd{int\_num * 8} وذلك بسبب أن حجم كل واصفة في جدول \en{IDT} هو \cmd{8} بايت. وقبل أن ينقل التنفيذ الى دالة معالجة المقاطعة فانه يجب أن يقوم بعملية حفظ للمكان الذي توقف فيه حتى يستطيع أن يتابع عمله عندما تعود دالة معالجة المقاطعة . ويتم حفظ الأعلام \cmd{EFLAGS} ومسجل مقطع الشفرة \cmd{CS} ومسجل عنوان التعليمة التالية \cmd{IP} في المكدس (\en{Stack})  الحالي ، وفي حالة حدوث خطأ ما فانه يتم دفع شفرة الخطأ (\en{Error Code}) الى المكدس أيضا. وشفرة الخطأ هي بطول \cmd{32-bit} وتتبع التركيبة التالية.
+
+\begin{english}
+\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+
+\begin{itemize}
+\item Bit 0: External event
+\begin{itemize}
+\item 0: Internal or software event triggered the error.
+\item 1: External or hardware event triggered the error.
+\end{itemize}
+\item Bit 1: Description location
+\begin{itemize}
+\item 0: Index portion of error code refers to descriptor in GDT or current LDT.
+\item 1: Index portion of error code refers to gate descriptor in IDT.
+\end{itemize}
+\item Bit 2: GDT/LDT. Only use if the descriptor location is 0.
+\begin{itemize}
+\item 0: This indicates the index portion of the error code refers to a descriptor in the current GDT.
+\item 1: This indicates the index portion of the error code refers to a segment or gate descriptor in the LDT.
+\end{itemize}
+\item Bits 3-15: Segment selector index. This is an index into the IDT, GDT, or current LDT to the segment or gate selector bring refrenced by the error code.
+\item  Bits 16-31: Reserved.
+
+\end{itemize}
+\end{english}
+
+وعندما تنتهي دالة معالجة المقاطعة من عملها فانه يجب أن تنفذ الأمر \cmd{iret} أو \cmd{iretd} حتى يتم ارجاع القيم التي تم دفعها الى المكدس (قيم الأعلام \en{FLAGS}). وبالتالي يُكْمِل المعالج عمله.
+
+ 
+
+\subsection{أخطاء المعالج}
+خلال تنفيذ المعالج للأوامر فانه ربما يحدث خطأ ما مما يجعل المعالج يقوم بتوليد استثناء يعرف باستثناء المعالج ، ويوجد له عدة أنواع:
+
+\begin{itemize}
+\item الخطأ \en{Fault}: عندما تعمل دالة معالجة هذا النوع من الاستثناء فربما يتم اصلاح هذا الخطأ ، وعنوان العودة الذي يتم دفعه الى المكدس هو عنوان الأمر الذي تسبب في هذا الخطأ.
+\item الخطأ \en{Trap}: عنوان العودة هو عنوان التعليمة التي تلي الأمر الذي تسبب في الخطأ.
+\item الخطأ \en{Abort}: لا يوجد عنوان للعودة ، ولن يكمل البرنامج عمله بعد انتهاء دالة معالجة الخطأ. 
+\end{itemize}
+
+والجدول التالي يوضح أخطاء المعالج والمقاطعات التي يقوم بتوليدها.
+
+% x86 Processor Exceptions Table.
+\begin{english}
+\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\begin{tabular}{ | l | l | l |}
+\hline  
+Interrupt Number & Class & Description \\
+\hline \hline
+0 & Fault & Divide by 0 \\
+1 & Trap/Fault & Single step\\
+2 & Unclassed & Non Maskable Interrupt (NMI) Pin \\
+3 & Trap & Breakpoint\\
+4 & Trap & Overflow \\
+5 & Fault & Bounds check \\
+6 & Fault & Unvalid OPCode \\
+7 & Fault & Device not available \\
+8 & Abort & Double Fault \\
+9 & Abort & Coprocessor Segment Overrun \\
+10 & Fault & Invalid Task State Segment\\
+11 & Fault & Segment Not Present \\
+12 & Fault & Stack Fault Exception \\
+13 & Fault & General Protection Fault\\
+14 & Fault & Page Fault \\
+15 & -	& Unassigned \\
+16 & Fault & x87 FPU Error \\
+17 & Fault & Alignment Check \\
+18 & Abort & Machine Check  \\
+19 & Fault & SIMD FPU Exception \\
+20-31 & - & Reserved \\
+32-255 & - & Avilable for software use  \\
+ \hline  
+\end{tabular}
+\end{english}
+
+ويجدر بنا الوقوف على ملاحظة كنّا قد ذكرناها في الفصول السابقة وهي إلغاء المقاطعات (بواسطة الأمر \cmd{cli}) عند الانتقال الى النمط المحمي حتى لا يتسبب في حدوث خطأ \en{General Protection Fault} وبالتالي توقف النظام عن العمل وسبب ذلك هو أن عدم تنفيذ الأمر \cmd{cli} يعني أن المقاطعات العتادية مفعلة وبالتالي أي عتاد يمكنه أن يرسل مقاطعة الى المعالج لكي ينقل التنفيذ الى دالة تخديمها . وعند بداية الانتقال الى النمط المحمي فان جدول المقاطعات \en{IDT} لم يتم انشائه وأي محاولة لاستخدامه سيؤدي الى هذا الخطأ. أحد المتحكمات التي ترسل مقاطعات الى المعالج بشكل ثابت هو متحكم \en{Prpgrammable Interval Timer} وتختصر بمتحكم \en{PIT} وهي تمثل ساعة النظام \en{System Timer} بحيث ترسل مقاطعة بشكل دائم الى المعالج والذي بدوره ينقل التنفيذ الى دالة تخديم هذه المقاطعة . وبسبب أن جدول المقطاعات غير متواجد في بداية المرحلة الثانية من محمل النظام وكذلك لا توجد دالة لتخديم هذه المقاطعة فان هذا يؤدي الى توقف النظام ، لذلك يجب ايقاف المقاطعات العتادية لحين انشاء جدول المقطاعات وكتابة دوال معالجة المقاطعات. كذلك توجد مشكلة أخرى لبعض المقاطعات العتادية حيث انها تستخدم نفس أرقام المقاطعات التي يستخدمها المعالج للإستثناءات وحلها هو بإعادة برمجة الشريحة المسؤولة عن استقبال الاشارات من العتاد وتحويلها الى مقاطعات وارسالها الى المعالج ، هذه الشريحة تسمى \en{Programmable Interrupt Controller} وتختصر ب \en{PIC} ويجب إعادة برمجتها وتغيير ارقام المقاطعات للأجهزة التي تستخدم أرقاماً متشابهة.
+
+وفيما يلي سيتم إنشاء جدول المقاطعات (\en{IDT}) باستخدام لغة السي وتوفير ال \cmd{256} دالة لمعالجة المقطاعات وحاليا سيقتصر عمل الدوال على طباعة رسالة ، وقبل ذلك سنقوم بانشاء جدول الواصفات العام (\en{GDT}) مجددا (أي سيتم الغاء الجدول الذي قمنا بانشائه في مرحلة الاقلاع) وبعد ذلك سنبدأ في برمجة متحكم \en{PIC} واعادة ترقيم مقاطعات الأجهزة وكذلك برمجة ساعة النظام لارسال مقاطعة بوقت محدد.  
+
+\subsection{إنشاء جدول الواصفات العام \en{GDT}}
+الهدف الرئيسي في نواة نظام التشغيل هي المحمولية على صعيد المنصات ، وهذا ما أدى الى اعتماد فكرة طبقة \en{HAL} والتي يقبع تحتها كل ما يتعلق بعتاد الحاسب وادارته وكل ما يجعل النظام معتمداً على معمارية معينة أيضا نجده تحت طبقة \en{HAL} ، وجدول الواصفات العام - كما ذكرنا في الفصول السابقة- يحدد ويقسم لنا الذاكرة الرئيسية كأجزاء قابلة للتنفيذ وأجزاء تحوي بيانات وغيرها ، ونظراً لأن إنشاء هذا الجدول يعتمد على معمارية المعالج والأوامر المدعومة فيه فانه يجب ان يقع تحت طبقة \en{HAL}\footnote{من منظور آخر هذه الجداول (\en{GDT,LDT and IDT}) هي جداول للمعالج لذلك يجب أن تكون في طبقة \en{HAL}.} وهذا يعني أن نقل النظام الى معمارية حاسوب آخر يتطلب فقط إعادة برمجة طبقة \en{HAL} .
+
+بداية سنبدأ بتصميم الواجهة العامة لطبقة \en{HAL} ويجب أن نراعي أن تكون الواجهة مفصولة تماما عن التطبيق حتى يتمكن أي مطور من إعادة تطبيقها لاحقاّ على معمارية حاسوب آخر.
+
+% HAL Layer
+% kernel
+% HAL [ device driver ]
+% Hadrware
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=hal_interface,caption=include/hal.h:Hardware Abstraction Layer Interface]
+
+#ifndef HAL_H
+#define HAL_H
+
+#ifndef i386
+#error "HAL is not implemented in this platform"
+#endif
+
+#include <stdint.h>
+
+#ifdef _MSC_VER
+#define interrupt __declspec(naked)
+#else
+#define interrupt
+#endif
+
+#define far
+#define near
+
+
+/*	Interface	*/
+
+extern int _cdecl hal_init();
+extern int _cdecl hal_close();
+extern void _cdecl gen_interrupt(int);
+
+
+#endif // HAL_H
+\end{lstlisting}
+\end{english}
+
+وحالياً واجهة طبقة \en{HAL} مكونة من ثلاث دوال تم الإعلان عنها بأنها \cmd{extern} وهذا يعني أن أي تطبيق (\en{Implementation}) لهذه الواجهة يجب أن يُعرِّف هذه الدوال. الدالة الاولى هي \cmd{hal\_init()} والتي تقوم بتهيئة العتاد وجداول المعالج بينما الدالة الثانية \cmd{hal\_close()} تقوم بعملية الحذف والتحرير وأخيرا الدالة \cmd{gen\_interrupt} والتي تم وضعها لغرض تجربة إرسال مقاطعة برمجية والتأكد من أن دالة معالجة المقاطعة تعمل كما يرام.
+
+نعود بالحديث الى جدول الواصفات العام (\en{GDT}) \footnote{راجع \ref{sec:gdt}.} حيث سيتم انشائه بلغة السي وهذا ما سيسمح لنا باستخدام تراكيب عالية للتعبير عن الجدول و المؤشر مما يعطي وضوح ومقروئية أكثر في الشفرة.وسوف نحتاج  الى تعريف ثلاث دوال\footnote{لغرض التنظيم والتقسيم لا أكثر ولا أقل.}:
+
+\begin{itemize}
+\item الدالة \cmd{i386\_gdt\_init}: تقوم بتهيئة واصفة خالية وواصفة للشفرة وللبيانات وكذلك انشاء مؤشر الجدول.
+\item الدالة \cmd{i386\_gdt\_set\_desc}: دالة تهيئة الواصفة حيث تستقبل القيم وتعينها الى الواصفة المطلوبة.
+\item الدالة \cmd{gdt\_install}: تقوم بتحميل المؤشر الذي يحوي حجم الجدول وعنوان بدايته الى المسجل \en{GDTR}.  
+\end{itemize}
+والشفرة التالية توضح كيفية انشاء الجدول\footnote{راجع شفرة النظام لقراءة ملف الرأس \cmd{hal/gdt.h}.}.
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=gdt_c,caption=hal/gdt.cpp:Install GDT]
+
+#include <string.h>
+#include "gdt.h"
+ 
+static struct gdt_desc _gdt[MAX_GDT_DESC];
+static struct gdtr _gdtr;
+
+
+static void gdt_install();
+
+
+static void gdt_install() {
+#ifdef _MSC_VER
+	_asm lgdt [_gdtr];
+#endif
+}
+
+extern void i386_gdt_set_desc(uint32_t index,uint64_t base,uint64_t limit,uint8_t access,uint8_t grand) {
+	
+	if ( index > MAX_GDT_DESC )
+		return;
+		
+	// clear the desc.
+	memset((void*)&_gdt[index],0,sizeof(struct gdt_desc));
+	
+	// set limit and base.
+	_gdt[index].low_base = uint16_t(base & 0xffff);
+	_gdt[index].mid_base = uint8_t((base >> 16) & 0xff);
+	_gdt[index].high_base = uint8_t((base >> 24) & 0xff);
+	_gdt[index].limit = uint16_t(limit & 0xffff);
+	
+	// set flags and grandularity bytes
+	_gdt[index].flags = access;
+	_gdt[index].grand = uint8_t((limit >> 16) & 0x0f);
+	_gdt[index].grand = _gdt[index].grand | grand & 0xf0;
+}
+
+extern gdt_desc* i386_get_gdt_desc(uint32_t index) {
+	if ( index >= MAX_GDT_DESC )
+		return 0;
+	else
+		return &_gdt[index];
+}
+
+extern int i386_gdt_init() {
+	
+	// init _gdtr
+	_gdtr.limit = sizeof(struct gdt_desc) * MAX_GDT_DESC - 1;
+	_gdtr.base = (uint32_t)&_gdt[0];
+	
+	// set null desc.
+	i386_gdt_set_desc(0,0,0,0,0);
+	
+	// set code desc.
+	i386_gdt_set_desc(1,0,0xffffffff,
+		I386_GDT_CODE_DESC|I386_GDT_DATA_DESC|I386_GDT_READWRITE|I386_GDT_MEMORY, 	// 10011010
+		I386_GDT_LIMIT_HI|I386_GDT_32BIT|I386_GDT_4K 								// 11001111
+ 
+	);
+	
+	// set data desc.
+	i386_gdt_set_desc(2,0,0xffffffff,
+		I386_GDT_DATA_DESC|I386_GDT_READWRITE|I386_GDT_MEMORY, 	// 10010010
+		I386_GDT_LIMIT_HI|I386_GDT_32BIT|I386_GDT_4K			// 11001111
+	);
+	
+	// install gdtr
+	gdt_install();
+	
+	return 0;
+}
+
+\end{lstlisting}
+\end{english}
+
+\subsection{إنشاء جدول المقاطعات \en{IDT}}
+% يكمل لاحقا..
+
+\section{\en{Programmable Interrupt Controller}}
+
+\section{\en{Programmable Interval Timer}}
+
+\section{المقاطعات العتادية \en{Hardware Interrupts}}
+
+\end{document}

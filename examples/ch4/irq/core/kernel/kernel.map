@@ -1,0 +1,82 @@
+ kernel
+
+ Timestamp is 4bd2138e (Sat Apr 24 00:39:26 2010)
+
+ Preferred load address is 00100000
+
+ Start         Length     Name                   Class
+ 0001:00000000 00000ce5H .text                   CODE
+ 0002:00000000 00000452H .rdata                  DATA
+ 0003:00000000 00000004H .CRT$XCA                DATA
+ 0003:00000004 00000004H .CRT$XCZ                DATA
+ 0003:00000008 00000018H .data                   DATA
+ 0003:00000020 00000870H .bss                    DATA
+ 0004:00000000 00000058H .rsrc$01                DATA
+ 0004:00000060 00000390H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base       Lib:Object
+
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0001:00000000       ?kernel_entry@@YAXXZ       00100400 f   entry.obj
+ 0001:00000030       ?kernel_panic@@YAXPBDZZ    00100430 f   panic.obj
+ 0001:00000070       _main                      00100470 f   main.obj
+ 0001:00000220       ?divide_by_zero_fault@@YAXIII@Z 00100620 f   exception.obj
+ 0001:00000240       ?single_step_trap@@YAXIII@Z 00100640 f   exception.obj
+ 0001:00000260       ?nmi_trap@@YAXIII@Z        00100660 f   exception.obj
+ 0001:00000280       ?breakpoint_trap@@YAXIII@Z 00100680 f   exception.obj
+ 0001:000002a0       ?overflow_trap@@YAXIII@Z   001006a0 f   exception.obj
+ 0001:000002c0       ?bounds_check_fault@@YAXIII@Z 001006c0 f   exception.obj
+ 0001:000002e0       ?invalid_opcode_fault@@YAXIII@Z 001006e0 f   exception.obj
+ 0001:00000300       ?no_device_fault@@YAXIII@Z 00100700 f   exception.obj
+ 0001:00000320       ?double_fault_abort@@YAXIIII@Z 00100720 f   exception.obj
+ 0001:00000340       ?invalid_tss_fault@@YAXIIII@Z 00100740 f   exception.obj
+ 0001:00000360       ?no_segment_fault@@YAXIIII@Z 00100760 f   exception.obj
+ 0001:00000380       ?stack_fault@@YAXIIII@Z    00100780 f   exception.obj
+ 0001:000003a0       ?general_protection_fault@@YAXIIII@Z 001007a0 f   exception.obj
+ 0001:000003c0       ?page_fault@@YAXIIII@Z     001007c0 f   exception.obj
+ 0001:000003e0       ?fpu_fault@@YAXIII@Z       001007e0 f   exception.obj
+ 0001:00000400       ?alignment_check_fault@@YAXIIII@Z 00100800 f   exception.obj
+ 0001:00000420       ?machine_check_abort@@YAXIII@Z 00100820 f   exception.obj
+ 0001:00000440       ?simd_fpu_fault@@YAXIII@Z  00100840 f   exception.obj
+ 0001:00000460       ?kputc@@YAXE@Z             00100860 f   kdisplay.obj
+ 0001:000004d0       ?itoa@@YAXIIPAD@Z          001008d0 f   kdisplay.obj
+ 0001:00000540       ?itoa_s@@YAXHIPAD@Z        00100940 f   kdisplay.obj
+ 0001:00000570       ?kclear@@YAXG@Z            00100970 f   kdisplay.obj
+ 0001:000005b0       ?kputs@@YAXPAD@Z           001009b0 f   kdisplay.obj
+ 0001:000005f0       ?kset_color@@YAII@Z        001009f0 f   kdisplay.obj
+ 0001:00000600       ?kgoto_xy@@YAXII@Z         00100a00 f   kdisplay.obj
+ 0001:00000630       ?kprintf@@YAHPBDZZ         00100a30 f   kdisplay.obj
+ 0001:00000820       ?exit@@YAXXZ               00100c20 f   lib:cstd.obj
+ 0001:00000860       ?init_ctor@@YAXXZ          00100c60 f   lib:cstd.obj
+ 0001:000008a0       ?strlen@@YAIPBD@Z          00100ca0 f   lib:string.obj
+ 0001:000008c0       ?memset@@YAPAXPAXDI@Z      00100cc0 f   lib:string.obj
+ 0001:000008e0       ?int_done@@YAXI@Z          00100ce0 f   hal:hal.obj
+ 0001:00000910       ?outportb@@YAXGE@Z         00100d10 f   hal:hal.obj
+ 0001:00000920       ?enable_irq@@YAXXZ         00100d20 f   hal:hal.obj
+ 0001:00000930       ?disable_irq@@YAXXZ        00100d30 f   hal:hal.obj
+ 0001:00000940       ?set_vector@@YAXIA6AXXZ@Z  00100d40 f   hal:hal.obj
+ 0001:00000960       ?get_tick_count@@YAHXZ     00100d60 f   hal:hal.obj
+ 0001:00000970       ?hal_init@@YAHXZ           00100d70 f   hal:hal.obj
+ 0001:000009a0       ?i386_cpu_init@@YAHXZ      00100da0 f   hal:cpu.obj
+ 0001:000009c0       ?i386_pic_send_command@@YAXEE@Z 00100dc0 f   hal:pic.obj
+ 0001:000009f0       ?i386_pic_init@@YAXEE@Z    00100df0 f   hal:pic.obj
+ 0001:00000a90       ?i386_idt_install_ir@@YAHIGGP6AXXZ@Z 00100e90 f   hal:idt.obj
+ 0001:00000ae0       ?i386_idt_init@@YAHG@Z     00100ee0 f   hal:idt.obj
+ 0001:00000b70       ?i386_pit_get_tick_count@@YAIXZ 00100f70 f   hal:pit.obj
+ 0001:00000b80       ?i386_pit_start_counter@@YAXIEE@Z 00100f80 f   hal:pit.obj
+ 0001:00000be0       ?i386_pit_irq@@YAXXZ       00100fe0 f   hal:pit.obj
+ 0001:00000c00       ?i386_pit_init@@YAXXZ      00101000 f   hal:pit.obj
+ 0001:00000c20       ?i386_gdt_init@@YAHXZ      00101020 f   hal:gdt.obj
+ 0002:00000418       ??_C@_0DK@GOCDNPMH@?$CK?$CK?$CK?$CK?5?$FLI386?5HAL?$FN?5i386_default_han@ 00101618     hal:idt.obj
+ 0003:00000000       ?__xc_a@@3PAP6AXXZA        00101800     lib:cstd.obj
+ 0003:00000004       ?__xc_z@@3PAP6AXXZA        00101804     lib:cstd.obj
+ 0003:00000008       ?bchars@@3PADA             00101808     kdisplay.obj
+ 0003:0000001c       __fltused                  0010181c     lib:cstd.obj
+ 0003:00000020       ?tbuf@@3PADA               00101820     kdisplay.obj
+
+ entry point at        0000:00000000
+
+ Static symbols
+
+ 0001:00000a60       ?i386_default_handler@@YAXXZ 00100e60 f   hal:idt.obj

@@ -1,0 +1,31 @@
+ kernel
+
+ Timestamp is 4bbe2336 (Thu Apr 08 21:40:54 2010)
+
+ Preferred load address is 00100000
+
+ Start         Length     Name                   Class
+ 0001:00000000 000000c8H .text                   CODE
+ 0002:00000000 00000004H .CRT$XCA                DATA
+ 0002:00000004 00000004H .CRT$XCZ                DATA
+ 0002:00000008 00000008H .data                   DATA
+ 0002:00000010 00000008H .bss                    DATA
+ 0003:00000000 00000058H .rsrc$01                DATA
+ 0003:00000060 00000390H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base       Lib:Object
+
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0001:00000000       ?kernel_entry@@YAXXZ       00100400 f   entry.obj
+ 0001:00000040       _main                      00100440 f   main.obj
+ 0001:00000050       ?exit@@YAXXZ               00100450 f   lib:cstd.obj
+ 0001:00000090       ?init_ctor@@YAXXZ          00100490 f   lib:cstd.obj
+ 0002:00000000       ?__xc_a@@3PAP6AXXZA        00100600     lib:cstd.obj
+ 0002:00000004       ?__xc_z@@3PAP6AXXZA        00100604     lib:cstd.obj
+ 0002:0000000c       __fltused                  0010060c     lib:cstd.obj
+
+ entry point at        0000:00000000
+
+ Static symbols
+

@@ -1,0 +1,50 @@
+ kernel
+
+ Timestamp is 4bc38f97 (Tue Apr 13 00:24:39 2010)
+
+ Preferred load address is 00100000
+
+ Start         Length     Name                   Class
+ 0001:00000000 000006d5H .text                   CODE
+ 0002:00000000 000000beH .rdata                  DATA
+ 0003:00000000 00000004H .CRT$XCA                DATA
+ 0003:00000004 00000004H .CRT$XCZ                DATA
+ 0003:00000008 00000018H .data                   DATA
+ 0003:00000020 00000868H .bss                    DATA
+ 0004:00000000 00000058H .rsrc$01                DATA
+ 0004:00000060 00000390H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base       Lib:Object
+
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0001:00000000       ?kernel_entry@@YAXXZ       00100400 f   entry.obj
+ 0001:00000030       _main                      00100430 f   main.obj
+ 0001:000000a0       ?kputc@@YAXE@Z             001004a0 f   kdisplay.obj
+ 0001:00000110       ?itoa@@YAXIIPAD@Z          00100510 f   kdisplay.obj
+ 0001:00000180       ?itoa_s@@YAXHIPAD@Z        00100580 f   kdisplay.obj
+ 0001:000001b0       ?kclear@@YAXG@Z            001005b0 f   kdisplay.obj
+ 0001:000001f0       ?kputs@@YAXPAD@Z           001005f0 f   kdisplay.obj
+ 0001:00000230       ?kset_color@@YAII@Z        00100630 f   kdisplay.obj
+ 0001:00000240       ?kgoto_xy@@YAXII@Z         00100640 f   kdisplay.obj
+ 0001:00000270       ?kprintf@@YAHPBDZZ         00100670 f   kdisplay.obj
+ 0001:00000460       ?exit@@YAXXZ               00100860 f   lib:cstd.obj
+ 0001:000004a0       ?init_ctor@@YAXXZ          001008a0 f   lib:cstd.obj
+ 0001:000004e0       ?strlen@@YAIPBD@Z          001008e0 f   lib:string.obj
+ 0001:00000500       ?memset@@YAPAXPAXDI@Z      00100900 f   lib:string.obj
+ 0001:00000520       ?hal_init@@YAHXZ           00100920 f   hal:hal.obj
+ 0001:00000530       ?i386_cpu_init@@YAHXZ      00100930 f   hal:cpu.obj
+ 0001:00000580       ?i386_idt_init@@YAHG@Z     00100980 f   hal:idt.obj
+ 0001:00000610       ?i386_gdt_init@@YAHXZ      00100a10 f   hal:gdt.obj
+ 0002:00000084       ??_C@_0DK@GOCDNPMH@?$CK?$CK?$CK?$CK?5?$FLI386?5HAL?$FN?5i386_default_han@ 00100c84     hal:idt.obj
+ 0003:00000000       ?__xc_a@@3PAP6AXXZA        00100e00     lib:cstd.obj
+ 0003:00000004       ?__xc_z@@3PAP6AXXZA        00100e04     lib:cstd.obj
+ 0003:00000008       ?bchars@@3PADA             00100e08     kdisplay.obj
+ 0003:0000001c       __fltused                  00100e1c     lib:cstd.obj
+ 0003:00000020       ?tbuf@@3PADA               00100e20     kdisplay.obj
+
+ entry point at        0000:00000000
+
+ Static symbols
+
+ 0001:00000550       ?i386_default_handler@@YAXXZ 00100950 f   hal:idt.obj

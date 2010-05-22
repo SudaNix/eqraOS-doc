@@ -1,0 +1,96 @@
+
+
+\usepackage{color}
+\usepackage{xcolor}
+
+\usepackage{subfiles}
+
+\usepackage{graphicx}
+
+\usepackage{fontspec}
+%\linespread{1.1}
+
+
+\usepackage{hyperref}
+
+\hypersetup{% 
+    pdfborder = {0 0 0} 
+} 
+
+
+\usepackage[all]{hypcap}
+
+
+\usepackage{comment}
+
+
+\usepackage{todonotes}
+
+
+\input{listingsconf.tex}
+\renewcommand*\lstlistlistingname{الأمثلة التوضيحية}
+%\renewcommand*\lstlistingname{المثال}
+
+
+
+\providecommand{\newXeTeXintercharclass}[1]{\edef #1\relax}					% perevent errors in windows(MikeTex)
+\usepackage{polyglossia}
+
+
+\pagestyle{headings}
+
+\setmainlanguage{arabic}
+\setotherlanguage{english}
+
+\setmainfont[Script=Arabic,Scale=1.4,Mapping=arabicdigits]{Traditional Arabic}
+
+\newcommand{\en}[1]{%
+{\fontspec[Scale=1.1,Mapping=englishdigits]{Calibri}%Traditional Arabic
+{\beginL #1}{\endL}}}
+
+\newcommand{\cmd}[1]{%
+{\fontspec[Scale=1.1,Mapping=englishdigits]{Courier New}%Consolas
+{\beginL #1}{\endL}}}
+
+
+
+\setlength{\parindent}{0in}
+
+
+
+% Highlighting theme definition: 
+\usepackage{alltt}
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.16,0.16,1}{#1}}
+\newcommand{\hlesc}[1]{\textcolor[rgb]{1,0,1}{#1}}
+\newcommand{\hlstr}[1]{\textcolor[rgb]{1,0,0}{#1}}
+\newcommand{\hldstr}[1]{\textcolor[rgb]{0.51,0.51,0}{#1}}
+\newcommand{\hlslc}[1]{\textcolor[rgb]{0.51,0.51,0.51}{\it{#1}}}
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.51,0.51,0.51}{\it{#1}}}
+\newcommand{\hldir}[1]{\textcolor[rgb]{0,0.51,0}{#1}}
+\newcommand{\hlsym}[1]{\textcolor[rgb]{0,0,0}{#1}}
+\newcommand{\hlline}[1]{\textcolor[rgb]{0.33,0.33,0.33}{#1}}
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0,0,0}{\bf{#1}}}
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.51,0,0}{#1}}
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0,0}{\bf{#1}}}
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0,0.51}{#1}}
+\definecolor{bgcolor}{rgb}{1,1,1}
+
+
+\title{
+بَرْمَجَة وَ تَصْمِيمْ نظَام تَشْغِيلْ\\ "نظام إقرأ"
+}
+
+\author{
+أحمد بن عصام عبد الرحيم أحمد
+}
+
+\date{\today}
+
+%\makeatletter
+ %\AtBeginDocument{\let\@arabic\default@arabic}
+%\makeatother
+
+\makeatletter
+\@ifpackageloaded{caption}{\input{caption-xetex-bidi.def}}{}
+\makeatother

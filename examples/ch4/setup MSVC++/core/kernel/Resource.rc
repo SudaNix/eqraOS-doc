@@ -1,0 +1,34 @@
+
+
+#ifdef _WIN32
+
+1 VERSIONINFO
+FILEVERSION 0,0,0,1
+PRODUCTVERSION 0,0,0,1
+FILEOS 0x4
+FILETYPE 0x1
+{
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "040904b0"
+		{
+			VALUE "CompanyName", "sudancs.com"
+			VALUE "FileDescription", "eqraOS 32 bit kernel"
+			VALUE "FileVersion", "0, 0, 0, 1"
+			VALUE "InternalName", "eqraOS"
+			VALUE "LegalCopyright", "Copyright © 2010 Ahmad Essam"
+			VALUE "LegalTrademarks", " "
+			VALUE "OriginalFilename", "kernel.exe"
+			VALUE "ProductName", "eqraOS"
+			VALUE "ProductVersion", "0, 0, 0, 1"
+			VALUE "Comments", "eqraOS is a graduate project - University of Khartoum"
+		}
+	}
+
+	BLOCK "VarFileInfo"
+	{
+		VALUE "Translation", 0x0409 0x04B0
+	}
+}
+
+#endif
