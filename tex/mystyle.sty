@@ -16,9 +16,16 @@
 \usepackage{todonotes}
 %\usepackage[helvetica]{quotchap}
 
-\input{listingsconf.tex}
+%\input{listingsconf.tex}
+\usepackage{listings}
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+
 \renewcommand*\lstlistlistingname{الأمثلة التوضيحية}
-%\renewcommand*\lstlistingname{المثال}
+\renewcommand*\lstlistingname{\en{Example}}
 
 
 
@@ -45,25 +52,6 @@
 
 \setlength{\parindent}{0in}
 
-
-
-% Highlighting theme definition: 
-\usepackage{alltt}
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.16,0.16,1}{#1}}
-\newcommand{\hlesc}[1]{\textcolor[rgb]{1,0,1}{#1}}
-\newcommand{\hlstr}[1]{\textcolor[rgb]{1,0,0}{#1}}
-\newcommand{\hldstr}[1]{\textcolor[rgb]{0.51,0.51,0}{#1}}
-\newcommand{\hlslc}[1]{\textcolor[rgb]{0.51,0.51,0.51}{\it{#1}}}
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.51,0.51,0.51}{\it{#1}}}
-\newcommand{\hldir}[1]{\textcolor[rgb]{0,0.51,0}{#1}}
-\newcommand{\hlsym}[1]{\textcolor[rgb]{0,0,0}{#1}}
-\newcommand{\hlline}[1]{\textcolor[rgb]{0.33,0.33,0.33}{#1}}
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0,0,0}{\bf{#1}}}
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.51,0,0}{#1}}
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0,0}{\bf{#1}}}
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0,0.51}{#1}}
-\definecolor{bgcolor}{rgb}{1,1,1}
 
 
 \title{
