@@ -61,22 +61,13 @@
 وكأمثلة على أنظمة تشغيل تعمل بهذا التصميم هي أنظمة يونكس ولينوكس ، وأنظمة ال \en{DOS} القديمة وويندوز  ما قبل \en{NT}.
 
 \subsection{النواة المصغرة \en{MicroKernel}}
-
-الأنوية \en{MicroKernel} هي الأكثر ثباتا واستقرار ومرونة والأسهل في الصيانة والتعديل والتطوير وذلك نظرا لان النواة تكون أصغر ما يمكن ، حيث أن الوظائف الأساسية فقط تكون ضمن النواة وهي ادارة الذاكرة وادارة العمليات (مجدول العمليات،أساسيات \en{IPC})، أما بقية برامج النظام مثل نظام الملفات ومشغلات الأجهزة وغيرها تتبع لبرامج المستخدم وتعمل في نمط المستخدم (الحلقة 3) ، وهذا يعني في حالة حدوث خطأ في هذه البرامج فان النظام لن يتأثر كذلك يمكن تغيير هذه البرامج (مثلا تغيير نظام الملفات) دون الحاجة الى اعادة تشغيل الجهاز حيث أن برامج النظام تعمل كبرامج المستخدم . والشكل التالي يوضح مخطط هذه الأنوية.
-
 % MicroKernel  photo
-
-المشكلة الرئيسية لهذا التصميم هو بطئ عمل النظام وذلك بسبب أن برامج النظام عليها أن تتخاطب مع بعضها البعض عن طريق تمرير الرسائل (\en{Message Passing}) أو مشاركة جزء من الذاكرة (\en{Shared Memory}) وهذا ما يعرف ب \en{Interprocess Communication}.
-
-وأشهر مثال لنظام تشغيل يتبع هذا التصميم هو نظام مينكس الاصدار الثالث.
+الأنوية \en{MicroKernel} هي الأكثر ثباتا واستقرار ومرونة والأسهل في الصيانة والتعديل والتطوير وذلك نظرا لان النواة تكون أصغر ما يمكن ، حيث أن الوظائف الأساسية فقط تكون ضمن النواة وهي ادارة الذاكرة وادارة العمليات (مجدول العمليات،أساسيات \en{IPC})، أما بقية برامج النظام مثل نظام الملفات ومشغلات الأجهزة وغيرها تتبع لبرامج المستخدم وتعمل في نمط المستخدم (الحلقة 3) ، وهذا يعني في حالة حدوث خطأ في هذه البرامج فان النظام لن يتأثر كذلك يمكن تغيير هذه البرامج (مثلا تغيير نظام الملفات) دون الحاجة الى اعادة تشغيل الجهاز حيث أن برامج النظام تعمل كبرامج المستخدم . والشكل التالي يوضح مخطط هذه الأنوية. المشكلة الرئيسية لهذا التصميم هو بطئ عمل النظام وذلك بسبب أن برامج النظام عليها أن تتخاطب مع بعضها البعض عن طريق تمرير الرسائل (\en{Message Passing}) أو مشاركة جزء من الذاكرة (\en{Shared Memory}) وهذا ما يعرف ب \en{Interprocess Communication}. وأشهر مثال لنظام تشغيل يتبع هذا التصميم هو نظام مينكس الاصدار الثالث.
 
 
 \subsection{النواة الهجينة \en{Hybrid Kernel}}
-هذا التصميم للنواة ما هو إلا مزيج من التصميمين السابقين ، حيث تكون النواة \en{MicroKernel} لكنها تطبق ك \en{Monolithic Kernel} ، ويسمى هذا التصميم \en{Hybrid Kernel} أو \en{Modified MicroKernel}. والشكل التالي يوضح مخطط لهذا التصميم.
-
 %  Hybrid Kernel  photo
-
-وكأمثلة على أنظمة تعمل بهذا التصميم هو أنظمة ويندوز التي تعتمد على معمارية \en{NT} ، ونظام \en{BeOS} و \en{Plane 9}.
+هذا التصميم للنواة ما هو إلا مزيج من التصميمين السابقين ، حيث تكون النواة \en{MicroKernel} لكنها تطبق ك \en{Monolithic Kernel} ، ويسمى هذا التصميم \en{Hybrid Kernel} أو \en{Modified MicroKernel}. والشكل التالي يوضح مخطط لهذا التصميم. وكأمثلة على أنظمة تعمل بهذا التصميم هو أنظمة ويندوز التي تعتمد على معمارية \en{NT} ، ونظام \en{BeOS} و \en{Plane 9}.
 
 
 
@@ -104,11 +95,11 @@
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
 
 %ex4-1.cpp
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=pe_hdr,caption=\en{Portable Executable Header}]
 
 // header information format for PE files 
 
@@ -194,10 +185,10 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=kernel_entry,caption=\en{Getting Kernel entry}]
 
 		
 	mov ebx,[KERNEL_PMODE_BASE+60]
@@ -234,11 +225,11 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
 
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=newdelete,caption=\en{Global new/delete operator}]
 
 void* __cdecl ::operator new (unsigned int size){return 0;}
 void* __cdecl operator new[] (unsigned int size){return 0;}
@@ -255,10 +246,10 @@ void __cdecl operator delete[] (void * p){}
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=purevirtual,caption=\en{Pure virtual function call handler}]
 
 int __cdecl ::_purecall() { for (;;); return 0; }
 
@@ -271,9 +262,9 @@ int __cdecl ::_purecall() { for (;;); return 0; }
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=lst:fp,caption=\en{Floating Point Support}]
 
 
 extern "C" long __declspec (naked) _ftol2_sse() {
@@ -304,9 +295,9 @@ extern "C" int _fltused = 1;
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=objinit,caption=\en{Object Initializer}]
 
 // Function pointer typedef for less typing
 typedef void (__cdecl *_PVFV)(void);
@@ -358,9 +349,9 @@ void _cdecl init_ctor() {
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=del_obj,caption=\en{Delete Object}]
 
 /! function pointer table to global deinitializer table
 static _PVFV * pf_atexitlist = 0;
@@ -418,9 +409,9 @@ void _cdecl exit () {
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=newdelete,caption=Global new/delete operator]
+\begin{lstlisting}[label=kernel_entry_routine,caption=\en{Kernel Entry routine}]
 
 extern void _cdecl main ();		// main function.
 extern void _cdecl init_ctor();		// init constructor.
@@ -499,9 +490,9 @@ void _cdecl kernel_entry ()
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=null_def,caption=null.h:Definition of NULL in C and C++]
+\begin{lstlisting}[label=null_def,caption=\en{null.h:Definition of NULL in C and C++}]
 
 #ifndef NULL_H
 #define NULL_H
@@ -543,9 +534,9 @@ extern "C"
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=sizet_def,caption=size\_t.h:Definition of size\_t in C/C++]
+\begin{lstlisting}[label=sizet_def,caption=\en{size\_t.h:Definition of size\_t in C/C++}]
 
 #ifndef SIZE_T_H
 #define SIZE_T_H
@@ -574,9 +565,9 @@ typedef unsigned size_t;
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=type_def,caption=stdint.h:typedef data type]
+\begin{lstlisting}[label=type_def,caption=\en{stdint.h:typedef data type}]
 
 #ifndef STDINT_H
 #define STDINT_H`
@@ -607,9 +598,9 @@ typedef		unsigned long long	uint64_t;
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=type_def,caption=cstdint:C++ typedef data type]
+\begin{lstlisting}[label=type_def,caption=\en{cstdint:C++ typedef data type}]
 
 #ifndef CSTDINT_H
 #define CSTDINT_H
@@ -627,9 +618,9 @@ typedef		unsigned long long	uint64_t;
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
-\begin{lstlisting}[label=char_type,caption=ctype.h:determine character type]
+\begin{lstlisting}[label=char_type,caption=\en{ctype.h:determine character type}]
 
 #ifndef CTYPE_H
 #define CTYPE_H

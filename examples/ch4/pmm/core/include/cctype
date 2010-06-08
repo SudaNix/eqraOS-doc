@@ -1,0 +1,6 @@
+#ifndef CCTYPE_H
+#define CCTYPE_H
+
+#include <ctype.h>
+
+#endif //CCTYPE_H

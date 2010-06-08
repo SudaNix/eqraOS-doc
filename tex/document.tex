@@ -26,13 +26,23 @@
 
 \begin{document}
 
-\maketitle
+%\maketitle
+\input{title.tex}
+
+%\newpage
+%\thispagestyle{empty}
+%\mbox{}
+%\let\cleardoublepage\clearpage
+
 \pagenumbering{alph}
 \tableofcontents
 \lstlistoflistings
 \listoffigures
+\listoftables
+%\newpage
 
-\newpage
+% ملخص البحث
+\subfile{abstract.tex}
 
 \pagenumbering{arabic}
 

@@ -1,12 +1,12 @@
  kernel
 
- Timestamp is 4bd2138e (Sat Apr 24 00:39:26 2010)
+ Timestamp is 4c02f206 (Mon May 31 02:17:26 2010)
 
  Preferred load address is 00100000
 
  Start         Length     Name                   Class
  0001:00000000 00000ce5H .text                   CODE
- 0002:00000000 00000452H .rdata                  DATA
+ 0002:00000000 00000456H .rdata                  DATA
  0003:00000000 00000004H .CRT$XCA                DATA
  0003:00000004 00000004H .CRT$XCZ                DATA
  0003:00000008 00000018H .data                   DATA
@@ -19,34 +19,34 @@
  0000:00000000       ___safe_se_handler_count   00000000     <absolute>
  0000:00000000       ___safe_se_handler_table   00000000     <absolute>
  0001:00000000       ?kernel_entry@@YAXXZ       00100400 f   entry.obj
- 0001:00000030       ?kernel_panic@@YAXPBDZZ    00100430 f   panic.obj
- 0001:00000070       _main                      00100470 f   main.obj
- 0001:00000220       ?divide_by_zero_fault@@YAXIII@Z 00100620 f   exception.obj
- 0001:00000240       ?single_step_trap@@YAXIII@Z 00100640 f   exception.obj
- 0001:00000260       ?nmi_trap@@YAXIII@Z        00100660 f   exception.obj
- 0001:00000280       ?breakpoint_trap@@YAXIII@Z 00100680 f   exception.obj
- 0001:000002a0       ?overflow_trap@@YAXIII@Z   001006a0 f   exception.obj
- 0001:000002c0       ?bounds_check_fault@@YAXIII@Z 001006c0 f   exception.obj
- 0001:000002e0       ?invalid_opcode_fault@@YAXIII@Z 001006e0 f   exception.obj
- 0001:00000300       ?no_device_fault@@YAXIII@Z 00100700 f   exception.obj
- 0001:00000320       ?double_fault_abort@@YAXIIII@Z 00100720 f   exception.obj
- 0001:00000340       ?invalid_tss_fault@@YAXIIII@Z 00100740 f   exception.obj
- 0001:00000360       ?no_segment_fault@@YAXIIII@Z 00100760 f   exception.obj
- 0001:00000380       ?stack_fault@@YAXIIII@Z    00100780 f   exception.obj
- 0001:000003a0       ?general_protection_fault@@YAXIIII@Z 001007a0 f   exception.obj
- 0001:000003c0       ?page_fault@@YAXIIII@Z     001007c0 f   exception.obj
- 0001:000003e0       ?fpu_fault@@YAXIII@Z       001007e0 f   exception.obj
- 0001:00000400       ?alignment_check_fault@@YAXIIII@Z 00100800 f   exception.obj
- 0001:00000420       ?machine_check_abort@@YAXIII@Z 00100820 f   exception.obj
- 0001:00000440       ?simd_fpu_fault@@YAXIII@Z  00100840 f   exception.obj
- 0001:00000460       ?kputc@@YAXE@Z             00100860 f   kdisplay.obj
- 0001:000004d0       ?itoa@@YAXIIPAD@Z          001008d0 f   kdisplay.obj
- 0001:00000540       ?itoa_s@@YAXHIPAD@Z        00100940 f   kdisplay.obj
- 0001:00000570       ?kclear@@YAXG@Z            00100970 f   kdisplay.obj
- 0001:000005b0       ?kputs@@YAXPAD@Z           001009b0 f   kdisplay.obj
- 0001:000005f0       ?kset_color@@YAII@Z        001009f0 f   kdisplay.obj
- 0001:00000600       ?kgoto_xy@@YAXII@Z         00100a00 f   kdisplay.obj
- 0001:00000630       ?kprintf@@YAHPBDZZ         00100a30 f   kdisplay.obj
+ 0001:00000030       _main                      00100430 f   main.obj
+ 0001:000001e0       ?kputc@@YAXE@Z             001005e0 f   kdisplay.obj
+ 0001:00000250       ?itoa@@YAXIIPAD@Z          00100650 f   kdisplay.obj
+ 0001:000002c0       ?itoa_s@@YAXHIPAD@Z        001006c0 f   kdisplay.obj
+ 0001:000002f0       ?kclear@@YAXG@Z            001006f0 f   kdisplay.obj
+ 0001:00000330       ?kputs@@YAXPAD@Z           00100730 f   kdisplay.obj
+ 0001:00000370       ?kset_color@@YAII@Z        00100770 f   kdisplay.obj
+ 0001:00000380       ?kgoto_xy@@YAXII@Z         00100780 f   kdisplay.obj
+ 0001:000003b0       ?kprintf@@YAHPBDZZ         001007b0 f   kdisplay.obj
+ 0001:000005a0       ?divide_by_zero_fault@@YAXIII@Z 001009a0 f   exception.obj
+ 0001:000005c0       ?single_step_trap@@YAXIII@Z 001009c0 f   exception.obj
+ 0001:000005e0       ?nmi_trap@@YAXIII@Z        001009e0 f   exception.obj
+ 0001:00000600       ?breakpoint_trap@@YAXIII@Z 00100a00 f   exception.obj
+ 0001:00000620       ?overflow_trap@@YAXIII@Z   00100a20 f   exception.obj
+ 0001:00000640       ?bounds_check_fault@@YAXIII@Z 00100a40 f   exception.obj
+ 0001:00000660       ?invalid_opcode_fault@@YAXIII@Z 00100a60 f   exception.obj
+ 0001:00000680       ?no_device_fault@@YAXIII@Z 00100a80 f   exception.obj
+ 0001:000006a0       ?double_fault_abort@@YAXIIII@Z 00100aa0 f   exception.obj
+ 0001:000006c0       ?invalid_tss_fault@@YAXIIII@Z 00100ac0 f   exception.obj
+ 0001:000006e0       ?no_segment_fault@@YAXIIII@Z 00100ae0 f   exception.obj
+ 0001:00000700       ?stack_fault@@YAXIIII@Z    00100b00 f   exception.obj
+ 0001:00000720       ?general_protection_fault@@YAXIIII@Z 00100b20 f   exception.obj
+ 0001:00000740       ?page_fault@@YAXIIII@Z     00100b40 f   exception.obj
+ 0001:00000760       ?fpu_fault@@YAXIII@Z       00100b60 f   exception.obj
+ 0001:00000780       ?alignment_check_fault@@YAXIIII@Z 00100b80 f   exception.obj
+ 0001:000007a0       ?machine_check_abort@@YAXIII@Z 00100ba0 f   exception.obj
+ 0001:000007c0       ?simd_fpu_fault@@YAXIII@Z  00100bc0 f   exception.obj
+ 0001:000007e0       ?kernel_panic@@YAXPBDZZ    00100be0 f   panic.obj
  0001:00000820       ?exit@@YAXXZ               00100c20 f   lib:cstd.obj
  0001:00000860       ?init_ctor@@YAXXZ          00100c60 f   lib:cstd.obj
  0001:000008a0       ?strlen@@YAIPBD@Z          00100ca0 f   lib:string.obj
@@ -68,7 +68,7 @@
  0001:00000be0       ?i386_pit_irq@@YAXXZ       00100fe0 f   hal:pit.obj
  0001:00000c00       ?i386_pit_init@@YAXXZ      00101000 f   hal:pit.obj
  0001:00000c20       ?i386_gdt_init@@YAHXZ      00101020 f   hal:gdt.obj
- 0002:00000418       ??_C@_0DK@GOCDNPMH@?$CK?$CK?$CK?$CK?5?$FLI386?5HAL?$FN?5i386_default_han@ 00101618     hal:idt.obj
+ 0002:0000041c       ??_C@_0DK@GOCDNPMH@?$CK?$CK?$CK?$CK?5?$FLI386?5HAL?$FN?5i386_default_han@ 0010161c     hal:idt.obj
  0003:00000000       ?__xc_a@@3PAP6AXXZA        00101800     lib:cstd.obj
  0003:00000004       ?__xc_z@@3PAP6AXXZA        00101804     lib:cstd.obj
  0003:00000008       ?bchars@@3PADA             00101808     kdisplay.obj

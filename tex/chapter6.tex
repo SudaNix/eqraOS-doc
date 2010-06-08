@@ -427,6 +427,7 @@ extern int i386_gdt_init() {
 \end{table}
 
 \subsection{برمجة متحكم \en{PIC}}
+\label{sec:pic_porgramming}
 متحكم \en{PIC} يستقبل إشارات (\en{Signals}) من متحكمات العتاد والتي تكون موصولة به ومن ثم يقوم بتحويلها الى أرقام مقاطعات لكي يقوم المعالج بنقل التنفيذ الى دالة تخديمها ، ويراعي متحكم \en{PIC} أولية متحكمات العتاد ، فمثلا لو تم إرسال إشارتين في نفس الوقت الى متحكم \en{PIC} فان المتحكم سوف يراعي الأولية ويقوم بارسال رقم مقاطعة العتاد ذو الأولية أولا وبعد أن تنتهي دالة تخديم المقاطعة يقوم المتحكم بارسال الرقم الآخر . ونظراً لتعقيدات بناء المتحكم فانه يتعامل فقط مع 8 أجهزة مختلفة (أي 8 مقاطعات \en{IRQ}) وهذا ما أدى مصنعى الحاسب الى توفير متحكم \en{PIC} آخر يعرف بالمتحكم الثانوي (\en{Secondary/Slave PIC}) . المتحكم الرئيسي (\en{Primary PIC}) يوجد داخل المعالج ويرتبط مع المتحكم الثانوي والذي يتواجد في الجسر الجنوبي (\en{SouthBridge}) .
 
 \subsubsection{مشابك المتحكم \en{PIC's Pins}}
@@ -499,7 +500,7 @@ extern int i386_gdt_init() {
 
 
 \subsubsection{برمجة متحكم \en{PIC}}
-لبرمجة متحكم \en{PIC} وإعادة ترقيم المقاطعات فإن ذلك يتطلب إرسال بعض الأوامر الى المتحكم بحيث تأخذ هذه الأوامر نمط معين تُحَدَّد بها عمل المتحكم. وتوجد أريع أوامر يجب إرسالها لهذا الغرض تعرف ب \en{Initialization Control Words} وتختصر بأوامر تهيئة \en{ICW} . وفي حالة توفر أكثر من متحكم \en{PIC} على النظام فيجب أن تُرسل هذه الأوامر الى المتحكم الآخر كذلك. \textbf{الأمر الأول \en{ICW1}} وهو الأمر الرئيسي والذي يجب إرساله أولا الى المتحكم الرئيسي والثانوي ويأخذ 7 بتات ويوضح الجدول \ref{tbl:icw1} هذه البتات ووظيفة كل بت.
+لبرمجة متحكم \en{PIC} وإعادة ترقيم المقاطعات فإن ذلك يتطلب إرسال بعض الأوامر الى المتحكم بحيث تأخذ هذه الأوامر نمط معين تُحَدَّد بها عمل المتحكم. وتوجد أريع أوامر تهيئة يجب إرسالها لتهيئة المتحكم تعرف ب \en{Initialization Control Words} وتختصر بأوامر تهيئة \en{ICW} ، وكذلك توجد ثلاث أوامر تحكم في عمل متحكم \en{PIC} تعرف ب \en{Operation Control Words} وتختصر ب \en{OCW} . وفي حالة توفر أكثر من متحكم \en{PIC} على النظام فيجب أن تُرسل أوامر التهيئة الى المتحكم الآخر كذلك. \textbf{الأمر الأول \en{ICW1}} وهو أمر التهيئة الرئيسي والذي يجب إرساله أولا الى المتحكم الرئيسي والثانوي ويأخذ 7 بتات ويوضح الجدول \ref{tbl:icw1} هذه البتات ووظيفة كل بت.
 
 \begin{table}
 \caption{الأمر الأول \en{ICW1}}
@@ -643,12 +644,61 @@ extern int i386_gdt_init() {
 \end{lstlisting}
 \end{english}
 
-وبعد إرسال هذه الأوامر الأربع تكتمل عملية تهيئة متحكم \en{PIC} الرئيسي والثانوي ، وفي حالة حدوث أي مقاطعة من متحكم لعتاد ما ، فإن أرقام المقاطعات التي سترسل الى المعالج هي الأرقام التي قمنا بتعيينها في الأمر الثاني (وتبدأ من 32 الى 47) وهي تختلف بالطبع عن الأرقام التي يستخدمها المعالج.
+وبعد إرسال هذه الأوامر الأربع تكتمل عملية تهيئة متحكم \en{PIC} الرئيسي والثانوي ، وفي حالة حدوث أي مقاطعة من متحكم لعتاد ما ، فإن أرقام المقاطعات التي سترسل الى المعالج هي الأرقام التي قمنا بتعيينها في الأمر الثاني (وتبدأ من 32 الى 47) وهي تختلف بالطبع عن الأرقام التي يستخدمها المعالج. وبخصوص أوامر التحكم الثلاث \en{OCW} فلن نحتاج اليها جميعاً وسيتم الحديث عن الأمر الثاني \en{OCW2} نظراً لأنه يجب أن يُرسل دائماً بعد أن تنتهي دالة تخديم المقاطعة من عملها وذلك حتى يتم السماح لبقية المقاطعات أن تأخذ دوراً لمعالجتها. والجدول \ref{tbl:ocw2} يوضح البتات التي يجب إرسالها الى مسجل التحكم . 
+\begin{table}
+\caption{أمر التحكم الثاني \en{OCW2}}
+\centering
+\begin{tabular}{ | r | r | r |}
+\hline  
+ رقم البت & القيمة & الوصف   \\
+\hline \hline
+\en{0-2} & \en{L0/L1/L2} & \en{Interrupt level upon which the controller must react} \\
+\en{3-4} & \en{0} & محجوزة \\
+\en{5} & \en{EOI} &  \en{End of Interrupt (EOI)} \\
+\en{6} & \en{SL} & \en{Selection}\\
+\en{7} & \en{R} & \en{Rotation option}  \\
+ \hline  
+\end{tabular}
+\label{tbl:ocw2}
+\end{table}
+ويهمنا البتات 5-7 حيث أن قيمهم تحدد بعض الخصائص التي يوضحها الجدول \ref{tbl:eoi}.
+ \begin{table}
+\caption{أمر  \en{OCW2}}
+\centering
+\begin{tabular}{ | r | r | r | r |}
+\hline  
+\en{R Bit} & \en{SL Bit} & \en{EOI Bit} & \en{Description}   \\
+\hline \hline
+\en{0} & \en{0} & \en{0} & \en{Rotate in Automatic EOI mode (CLEAR)} \\
+\en{0} & \en{0} & \en{1} & \en{Non specific EOI command} \\
+\en{0} & \en{1} & \en{0} & \en{No operation} \\
+\en{0} & \en{1} & \en{1} & \en{Specific EOI command} \\
+\en{1} & \en{0} & \en{0} & \en{Rotate in Automatic EOI mode (SET)} \\
+\en{1} & \en{0} & \en{1} & \en{Rotate on non specific EOI} \\
+\en{1} & \en{1} & \en{0} & \en{Set priority command} \\
+\en{1} & \en{1} & \en{1} & \en{Rotate on specific EOI} \\
+ \hline  
+\end{tabular}
+\label{tbl:eoi}
+\end{table}
+والمثال \ref{lst:ocw2} يوضح كيفية إرسال إشارة نهاية عمل دالة تخديم المقاطعة (\en{EOI}) حيث يجب ضبط البتات لإختيار \en{Non specific EOI command}.
+\begin{english}
+\fontspec{Courier New}
 
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+
+\begin{lstlisting}[label=lst:ocw2,caption=\en{Send EOI}]
+	; send EOI to primary PIC
  
-\subsubsection{كيف تعمل مقاطعات العتاد}
-عندما يحتاج متحكم أي عتاد لفت انتباه المعالج الى شيء ما فأول خطوة يقوم بها هي إرسال إشارة الى متحكم \en{PIC} (وعلى سبيل المثال سنفرض أن هذا المتحكم هو متحكم المؤقتة \en{PIT} والتي ترتبط بالمشبك \en{IR0}) هذه الإشارة ترسل عبر مشبك \en{IR0} ، حينها يقوم متحكم \en{PIC} بتسجيل طلب المتحكم \en{IRQ} في مسجل يسمى مسجل طلبات المقاطعات (\en{Interrupt Request Register}) ويعرف اختصاراً بمسجل \en{IRR} . هذا المسجل بطول 8 بت كل بت فيه يمثل رقم \en{IRQ} ويتم تفعيل أي بت عند طلب مقاطعة من المتحكم ، وفي مثالنا سيتم تفعيل البت \en{0} بسبب أن المؤقتة ترتبط مع \en{IR0}. بعد ذلك يقوم متحكم \en{PIC} بفحص مسجل \en{Interrupt Mask Register} ليتأكد من أنه لا توجد هناك مقاطعة ذات أولية أعلى حيث في هذه الحالة على المقاطعة الجديدة أن تننظر حتى يتم تخديم كل المقاطعات ذات الأولوية. وبعد ذلك يُرسل \en{PIC} إشارة الى المعالج من خلال مشبك \en{INTA} لأخبار المعالج بأن هناك مقاطعة يجب تنفيذها. وهنا يأتي دور المعالج حيث يقوم بالإنتهاء من تنفيذ الأمر الحالي الذي يعمل عليه ومن ثم يقوم بفحص قيمة العلم \en{IF} حيث في حالة كانت غير مفعلة فان المعالج سوف يتجاهل طلب تنفيذ المقاطعة، أما إذا وجد المعالج قيمة العلم مفعلة فانه يقوم بارسال إشعار (\en{Acnowledges}) عبر مشبك \en{INTR} الى متحكم \en{PIC} الذي بدوره يستقبلها من مشبك \en{INTA} ويضع رقم المقاطعة ورقم \en{IRQ} في المشابك \en{D0-D7} ، وأخيرا يفعل قيمة البت 0 في مسجل \en{In Service Register} دلالة على أن مقاطعة المؤقتة جاري تنفيذها. وعندما يحصل المعالج على رقم المقاطعة فانه يقوم بوقف العملية التي يعمل عليها ويحفظ قيم مسجل الأعلام ومسجل \en{CS and EIP} وإذا كان المعالج يعمل في النمط الحقيقي فإنه يأخذ رقم المقاطعة ويذهب بها كدليل الى جدول المقطاعات \en{IVT} حيث يجد عنوان دالة تخديم المقاطعة ومن ثم ينقل التنفيذ اليها ، أما اذا كان المعالج يعمل في النمط المحمي فانه يأخذ رقم المقاطعة ويذهب بها الى جدول واصفات المقاطعات حيث يجد دالة تخديم المقاطعة. وعندما تنتهي دالة تخديم المقاطعة من عملها فانها يجب أن ترسل إشارة \en{EOI} حتى يتم تفعيل المقاطعات مجدداً.
+	mov	al, 0x20	; set bit 4 of OCW 2
+	out	0x20, al	; write to primary PIC command register
+\end{lstlisting}
+\end{english}
 
+
+\subsubsection{كيف تعمل مقاطعات العتاد}
+عندما يحتاج متحكم أي عتاد لفت انتباه المعالج الى شيء ما فأول خطوة يقوم بها هي إرسال إشارة الى متحكم \en{PIC} (وعلى سبيل المثال سنفرض أن هذا المتحكم هو متحكم المؤقتة \en{PIT} والتي ترتبط بالمشبك \en{IR0}) هذه الإشارة ترسل عبر مشبك \en{IR0} ، حينها يقوم متحكم \en{PIC} بتسجيل طلب المتحكم \en{IRQ} في مسجل يسمى مسجل طلبات المقاطعات (\en{Interrupt Request Register}) ويعرف اختصاراً بمسجل \en{IRR} . هذا المسجل بطول 8 بت كل بت فيه يمثل رقم \en{IRQ} ويتم تفعيل أي بت عند طلب مقاطعة من المتحكم ، وفي مثالنا سيتم تفعيل البت \en{0} بسبب أن المؤقتة ترتبط مع \en{IR0}. بعد ذلك يقوم متحكم \en{PIC} بفحص مسجل \en{Interrupt Mask Register} ليتأكد من أنه لا توجد هناك مقاطعة ذات أولية أعلى حيث في هذه الحالة على المقاطعة الجديدة أن تننظر حتى يتم تخديم كل المقاطعات ذات الأولوية. وبعد ذلك يُرسل \en{PIC} إشارة الى المعالج من خلال مشبك \en{INTA} لأخبار المعالج بأن هناك مقاطعة يجب تنفيذها. وهنا يأتي دور المعالج حيث يقوم بالإنتهاء من تنفيذ الأمر الحالي الذي يعمل عليه ومن ثم يقوم بفحص قيمة العلم \en{IF} حيث في حالة كانت غير مفعلة فان المعالج سوف يتجاهل طلب تنفيذ المقاطعة، أما إذا وجد المعالج قيمة العلم مفعلة فانه يقوم بارسال إشعار (\en{Acnowledges}) عبر مشبك \en{INTR} الى متحكم \en{PIC} الذي بدوره يستقبلها من مشبك \en{INTA} ويضع رقم المقاطعة ورقم \en{IRQ} في المشابك \en{D0-D7} ، وأخيرا يفعل قيمة البت 0 في مسجل \en{In Service Register} دلالة على أن مقاطعة المؤقتة جاري تنفيذها. وعندما يحصل المعالج على رقم المقاطعة فانه يقوم بوقف العملية التي يعمل عليها ويحفظ قيم مسجل الأعلام ومسجل \en{CS and EIP} وإذا كان المعالج يعمل في النمط الحقيقي فإنه يأخذ رقم المقاطعة ويذهب بها كدليل الى جدول المقطاعات \en{IVT} حيث يجد عنوان دالة تخديم المقاطعة ومن ثم ينقل التنفيذ اليها ، أما اذا كان المعالج يعمل في النمط المحمي فانه يأخذ رقم المقاطعة ويذهب بها الى جدول واصفات المقاطعات حيث يجد دالة تخديم المقاطعة. وعندما تنتهي دالة تخديم المقاطعة من عملها فانها يجب أن ترسل إشارة \en{EOI} حتى يتم تفعيل المقاطعات مجدداً. 
 
 
 \section{المؤقتة \en{Programmable Interval Timer}}
@@ -768,5 +818,641 @@ extern int i386_gdt_init() {
 	out	0x40, al	;MSB
 \end{lstlisting}
 \end{english}
+
+
+\section{توسعة طبقة \en{HAL}}
+طبقة \en{HAL} تبعد نواة النظام من التعامل المباشر مع العتاد وتعمل كواجهة أو طبقة ما بين النواة والعتاد ، وفيها نجد تعريفات العتاد. وسيتم إضافة أوامر برمجة متحكم \en{PIC} التي تقوم بإعادة تعيين أرقام المقاطعات بداخل هذه الطبقة وكذلك سيتم إضافة شفرة برمجة المؤقتة و التي تحدد الوقت اللازم للمؤقتة لكي تقوم بارسال طلب المقاطعة (\en{IRQ0}) . 
+
+\subsection{دعم \en{PIC}}
+في القسم \ref{sec:pic_porgramming} تم عرض متحكم \en{PIC} وكيفية برمجته بالتفصيل ، وفي هذا القسم سيتم تطبيق ما تم عرضه على نواة نظام إقرأ. ويوجد ملفين لمتحكم \en{PIC} الأول هو ملف الرأس (\en{hal/pic.h}) الذي يحوي الإعلان عن الدوال وكذلك الثوابت والثاني هو ملف التطبيق (\en{hal/pic.cpp}) الذي يحوي على تعريف تلك الدوال. والمثال \ref{lst:pic_interface} يعرض ملف الرأس الذي يغلف العديد من الأرقام والعناوين في صورة ثوابت (باستخدام الماكرو) بحيث تزيد من مقروئية ووضوح الشفرة\footnote{إرجع الى القسم \ref{sec:pic_porgramming} لمعرفة وظيفة هذه القيم الثابتة.}.
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:pic_interface,caption=\en{hal/pic.h: PIC Interface}]
+// PIC 1 Devices IRQ
+#define I386_PIC_IRQ_TIMER			0
+#define I386_PIC_IRQ_KEYBOARD		1
+#define I386_PIC_IRQ_SERIAL2		3
+#define I386_PIC_IRQ_SERIAL1		4
+#define I386_PIC_IRQ_PARALLEL2		5
+#define I386_PIC_IRQ_DESKETTE		6
+#define I386_PIC_IRQ_PARALLEL1		7
+
+// PIC 2 Devices IRQ
+#define I386_PIC_IRQ_CMOSTIMER		0
+#define I386_PIC_IRQ_CGARETRACE		1
+#define I386_PIC_IRQ_AUXILIRY		4
+#define I386_PIC_IRQ_FPU			5
+#define I386_PIC_IRQ_HDC			6
+
+// Operation Commamd Word 2 (OCW2)
+#define I386_PIC_OCW2_MASK_L1		1
+#define I386_PIC_OCW2_MASK_L2		2
+#define I386_PIC_OCW2_MASK_L3		4
+#define I386_PIC_OCW2_MASK_EOI		0x20
+#define I386_PIC_OCW2_MASK_SL		0x40
+#define I386_PIC_OCW2_MASK_ROTATE	0x80
+
+
+// Operation Commamd Word 3 (OCW3)
+#define I386_PIC_OCW3_MASK_RIS		1
+#define I386_PIC_OCW3_MASK_RIR		2
+#define I386_PIC_OCW3_MASK_MODE		4
+#define I386_PIC_OCW3_MASK_SMM		0x20
+#define I386_PIC_OCW3_MASK_ESMM		0x40
+#define I386_PIC_OCW3_MASK_D7		0x80
+
+
+// PIC 1 port address
+#define I386_PIC1_COMMAND_REG		0x20
+#define I386_PIC1_STATUS_REG		0x20
+#define I386_PIC1_IMR_REG			0x21
+#define I386_PIC1_DATA_REG			0x21
+
+
+// PIC 2 port address
+#define I386_PIC2_COMMAND_REG		0xa0
+#define I386_PIC2_STATUS_REG		0xa0
+#define I386_PIC2_IMR_REG			0xa1
+#define I386_PIC2_DATA_REG			0xa1
+
+// Initializing Commamd Word 1 (ICW1) Mask
+#define I386_PIC_ICW1_MASK_IC4		0x1
+#define I386_PIC_ICW1_MASK_SNGL		0x2
+#define I386_PIC_ICW1_MASK_ADI		0x4
+#define I386_PIC_ICW1_MASK_LTIM		0x8
+#define I386_PIC_ICW1_MASK_INIT		0x10
+
+
+// Initializing Commamd Word 4 (ICW4) Mask
+#define I386_PIC_ICW4_MASK_UPM		0x1
+#define I386_PIC_ICW4_MASK_AEOI		0x2
+#define I386_PIC_ICW4_MASK_MS		0x4
+#define I386_PIC_ICW4_MASK_BUF		0x8
+#define I386_PIC_ICW4_MASK_SFNM		0x10
+
+
+// Initializing command 1 control bits
+#define I386_PIC_ICW1_IC4_EXPECT			1
+#define I386_PIC_ICW1_IC4_NO				0
+#define I386_PIC_ICW1_SNGL_YES				2
+#define I386_PIC_ICW1_SNGL_NO				0
+#define I386_PIC_ICW1_ADI_CALLINTERVAL4		4
+#define I386_PIC_ICW1_ADI_CALLINTERVAL8		0
+#define I386_PIC_ICW1_LTIM_LEVELTRIGGERED	8
+#define I386_PIC_ICW1_LTIM_EDGETRIGGERED	0
+#define I386_PIC_ICW1_INIT_YES				0x10
+#define I386_PIC_ICW1_INIT_NO				0
+
+// Initializing command 4 control bits
+#define I386_PIC_ICW4_UPM_86MODE			1
+#define I386_PIC_ICW4_UPM_MCSMODE			0
+#define I386_PIC_ICW4_AEOI_AUTOEOI			2
+#define I386_PIC_ICW4_AEOI_NOAUTOEOI		0
+#define I386_PIC_ICW4_MS_BUFFERMASTER		4
+#define I386_PIC_ICW4_MS_BUFFERSLAVE		0
+#define I386_PIC_ICW4_BUF_MODEYES			8
+#define I386_PIC_ICW4_BUF_MODENO			0
+#define I386_PIC_ICW4_SFNM_NESTEDMODE		0x10
+#define I386_PIC_ICW4_SFNM_NOTNESTED		0
+
+
+extern uint8_t i386_pic_read_data(uint8_t pic_num);
+extern void i386_pic_send_data(uint8_t data,uint8_t pic_num);
+extern void i386_pic_send_command(uint8_t cmd,uint8_t pic_num);
+extern void i386_pic_init(uint8_t base0,uint8_t base1);
+
+\end{lstlisting}
+\end{english}
+
+وتحوي الواجهة 4 دوال منها دالتان للقراءة والكتابة من مسجل البيانات ودالة لإرسال الأوامر الى مسجل التحكم والدالة الأخيرة هي لتهئية المتحكم وهي الدالة التي يجب استدعائها. والمثال \ref{lst:pic_implementation} يوضح تعريف هذه الدوال.
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:pic_implementation,caption=\en{hal/pic.cpp: PIC Implementation}]
+uint8_t i386_pic_read_data(uint8_t pic_num) {
+	if (pic_num > 1)
+		return 0;
+	
+	uint8_t reg = (pic_num == 1)?I386_PIC2_DATA_REG:I386_PIC1_DATA_REG;
+	return inportb(reg);
+}
+
+void i386_pic_send_data(uint8_t data,uint8_t pic_num) {
+	if (pic_num > 1)
+		return;
+		
+	uint8_t reg = (pic_num == 1)?I386_PIC2_DATA_REG:I386_PIC1_DATA_REG;
+	outportb(reg,data);
+}
+
+void i386_pic_send_command(uint8_t cmd,uint8_t pic_num) {
+	
+	if (pic_num > 1)
+		return;
+		
+	uint8_t reg = (pic_num == 1)?I386_PIC2_COMMAND_REG:I386_PIC1_COMMAND_REG;
+	outportb(reg,cmd);
+}
+
+
+
+void i386_pic_init(uint8_t base0,uint8_t base1) {
+	
+	uint8_t icw = 0;
+	
+	disable_irq();			/* disable hardware interrupt (cli) */
+	
+	/* init PIC, send ICW1 */
+	icw = (icw & ~I386_PIC_ICW1_MASK_INIT) | I386_PIC_ICW1_INIT_YES;
+	icw = (icw & ~I386_PIC_ICW1_MASK_IC4) | I386_PIC_ICW1_IC4_EXPECT;
+	/* icw = 0x11 */
+	
+	i386_pic_send_command(icw,0);
+	i386_pic_send_command(icw,1);
+	
+	/* ICW2 : remapping irq */
+	i386_pic_send_data(base0,0);
+	i386_pic_send_data(base1,1);
+	
+	/* ICW3 : irq for master/slave pic*/
+	i386_pic_send_data(0x4,0);
+	i386_pic_send_data(0x2,1);
+	
+	/* ICW4: enable i386 mode. */
+	icw = (icw & ~I386_PIC_ICW4_MASK_UPM) | I386_PIC_ICW4_UPM_86MODE ; /* icw = 1 */
+	i386_pic_send_data(icw,0);
+	i386_pic_send_data(icw,1);
+	
+}
+\end{lstlisting}
+\end{english}
+
+
+\subsection{دعم \en{PIT}}
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:pit_interface,caption=\en{hal/pit.h: PIt Interface}]
+#define I386_PIT_COUNTER0_REG				0x40
+#define I386_PIT_COUNTER1_REG				0x41
+#define I386_PIT_COUNTER2_REG				0x42
+#define I386_PIT_COMMAND_REG				0x43
+
+#define I386_PIT_OCW_MASK_BINCOUNT			0x1
+#define I386_PIT_OCW_MASK_MODE				0xe
+#define I386_PIT_OCW_MASK_RL				0x30
+#define I386_PIT_OCW_MASK_COUNTER			0xc0
+
+
+#define I386_PIT_OCW_BINCOUNT_BINARY		0x0
+#define I386_PIT_OCW_BINCOUNT_BCD			0x1
+
+#define I386_PIT_OCW_MODE_TERMINALCOUNT		0x0
+#define I386_PIT_OCW_MODE_ONESHOT			0x2
+#define I386_PIT_OCW_MODE_RATEGEN			0x4
+#define I386_PIT_OCW_MODE_SQUAREWAVEGEN		0x6
+#define I386_PIT_OCW_MODE_SOFTWARETRIG		0x8
+#define I386_PIT_OCW_MODE_HARDWARETRIG		0xa
+
+#define I386_PIT_OCW_RL_LATCH				0x0
+#define I386_PIT_OCW_RL_LSBONLY				0x10
+#define I386_PIT_OCW_RL_MSBONLY				0x20
+#define I386_PIT_OCW_RL_DATA				0x30
+
+#define I386_PIT_OCW_COUNTER_0				0x0
+#define I386_PIT_OCW_COUNTER_1				0x40
+#define I386_PIT_OCW_COUNTER_2				0x80
+
+extern void i386_pit_send_command(uint8_t cmd);
+extern void i386_pit_send_data(uint16_t data,uint8_t counter);
+extern uint8_t i386_pit_read_data(uint16_t counter);
+extern uint32_t i386_pit_set_tick_count(uint32_t i);
+extern uint32_t i386_pit_get_tick_count();
+extern void i386_pit_start_counter(uint32_t freq,uint8_t counter,uint8_t mode);
+extern void _cdecl i386_pit_init();
+extern bool _cdecl i386_pit_is_initialized();
+\end{lstlisting}
+\end{english}
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:pit_implementation,caption=\en{hal/pit.cpp: PIT Implementation}]
+static volatile uint32_t _pit_ticks = 0;
+static bool _pit_is_init = false;
+
+void _cdecl i386_pit_irq();
+
+void i386_pit_send_command(uint8_t cmd) {
+	outportb(I386_PIT_COMMAND_REG,cmd);
+}
+
+void i386_pit_send_data(uint16_t data,uint8_t counter) {
+	uint8_t port;
+	
+	if (counter == I386_PIT_OCW_COUNTER_0)
+		port = I386_PIT_COUNTER0_REG;
+	else if ( counter == I386_PIT_OCW_COUNTER_1)
+		port = I386_PIT_COUNTER1_REG;
+	else
+		port = I386_PIT_COUNTER2_REG;
+		
+	outportb(port,uint8_t(data));
+}
+
+uint8_t i386_pit_read_data(uint16_t counter) {
+	uint8_t port;
+	
+	if (counter == I386_PIT_OCW_COUNTER_0)
+		port = I386_PIT_COUNTER0_REG;
+	else if ( counter == I386_PIT_OCW_COUNTER_1)
+		port = I386_PIT_COUNTER1_REG;
+	else
+		port = I386_PIT_COUNTER2_REG;
+		
+	return inportb(port);
+}
+
+uint32_t i386_pit_set_tick_count(uint32_t i) {
+	uint32_t prev = _pit_ticks;
+	_pit_ticks = i;
+	return prev;
+}
+
+uint32_t i386_pit_get_tick_count() {
+	return _pit_ticks;
+}
+
+void i386_pit_start_counter(uint32_t freq,uint8_t counter,uint8_t mode) {
+	if (freq == 0)
+		return;
+	
+	uint16_t divisor = uint16_t(1193181/uint16_t(freq));
+	
+	/*	send operation command	*/
+	uint8_t ocw = 0;
+	
+	ocw = (ocw & ~I386_PIT_OCW_MASK_MODE) | mode;
+	ocw = (ocw & ~I386_PIT_OCW_MASK_RL) | I386_PIT_OCW_RL_DATA;
+	ocw = (ocw & ~I386_PIT_OCW_MASK_COUNTER) | counter;
+	
+	i386_pit_send_command(ocw);
+	
+	/*	set frequency rate	*/
+	i386_pit_send_data(divisor & 0xff,0);
+	i386_pit_send_data((divisor >> 8) & 0xff,0);
+	
+	/*	reset ticks count	*/
+	_pit_ticks = 0;
+}
+
+void _cdecl i386_pit_init() {
+	set_vector(32,i386_pit_irq);
+	_pit_is_init = true;
+}
+
+bool _cdecl i386_pit_is_initialized() {
+	return _pit_is_init;
+}
+
+void _cdecl i386_pit_irq() {
+	
+	_asm {
+		add esp,12
+		pushad
+	}
+	
+	_pit_ticks++;
+	
+	int_done(0);
+	
+	_asm {
+		popad
+		iretd
+	}
+}
+\end{lstlisting}
+\end{english}
+
+\subsection{واجهة \en{HAL} الجديدة}
+المثال \ref{lst:hal_interface} يوضح الواجهة العامة لطبقة \en{HAL}
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:hal_interface,caption=\en{New HAL Interface}]
+extern int _cdecl hal_init();
+extern int _cdecl hal_close();
+extern void _cdecl gen_interrupt(int);
+extern void _cdecl int_done(unsigned int n);
+extern void _cdecl sound(unsigned int f);
+extern unsigned char _cdecl inportb(unsigned short port_num);
+extern void _cdecl outportb(unsigned short port_num,unsigned char value);
+extern void _cdecl enable_irq();
+extern void _cdecl disable_irq();
+extern void _cdecl set_vector(unsigned int int_num,void (_cdecl far & vect)());
+extern void (_cdecl far * _cdecl get_vector(unsigned int int_num))();
+extern const char* _cdecl get_cpu_vendor();
+extern int _cdecl get_tick_count();
+\end{lstlisting}
+\end{english}
+
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:hal_impelmentation,caption=\en{New HAL Impelmentation}]
+int _cdecl hal_init() {
+	i386_cpu_init();
+	i386_pic_init(0x20,0x28);
+	i386_pit_init();
+	i386_pit_start_counter(100,I386_PIT_OCW_COUNTER_0,I386_PIT_OCW_MODE_SQUAREWAVEGEN);
+	
+	/*	enable irq	*/
+	enable_irq();
+	
+	return 0;
+}
+
+int _cdecl hal_close() {
+	i386_cpu_close();
+	return 0;
+}
+
+void _cdecl gen_interrupt(int n) {
+#ifdef _MSC_VER
+	_asm {
+		mov al, byte ptr [n]
+		mov byte ptr [address+1], al
+		jmp address
+		
+		address:
+			int 0		// will execute int n.
+	}
+#endif
+}
+
+
+void _cdecl int_done(unsigned int n) {
+	if (n > 16)
+		return;
+		
+	if (n > 7)
+		/* send EOI to pic2	*/
+		i386_pic_send_command(I386_PIC_OCW2_MASK_EOI,1);
+		
+	/* also send toi the primary pic */
+	i386_pic_send_command(I386_PIC_OCW2_MASK_EOI,0);
+}
+
+void _cdecl sound(unsigned int f) {
+	outportb(0x61,3 | unsigned char(f << 2));
+}
+
+unsigned char _cdecl inportb(unsigned short port_num) {
+#ifdef _MSC_VER
+	_asm {
+		mov dx,word ptr [port_num]
+		in al,dx
+		mov byte ptr [port_num],al
+	}
+#endif
+
+	return unsigned char(port_num);
+}
+
+
+void _cdecl outportb(unsigned short port_num,unsigned char value) {
+#ifdef _MSC_VER
+	_asm {
+		mov al,byte ptr[value]
+		mov dx,word ptr[port_num]
+		out dx,al
+	}
+#endif
+}
+
+void _cdecl enable_irq() {
+#ifdef _MSC_VER
+	_asm sti
+#endif
+}
+
+void _cdecl disable_irq() {
+#ifdef _MSC_VER
+	_asm cli
+#endif
+}
+
+void _cdecl set_vector(unsigned int int_num,void (_cdecl far & vect)()) {
+	i386_idt_install_ir(int_num,I386_IDT_32BIT|I386_IDT_PRESENT /*10001110*/,0x8 /*code desc*/,vect);
+}
+
+void (_cdecl far * _cdecl get_vector(unsigned int int_num))() {
+	idt_desc* desc = i386_get_idt_ir(int_num);
+	
+	if (desc == 0)
+		return 0;
+		
+	uint32_t address = desc->base_low | (desc->base_high << 16);
+	
+	I386_IRQ_HANDLER irq = (I386_IRQ_HANDLER) address;
+	return irq;
+}
+
+const char* _cdecl get_cpu_vendor() {
+	return i386_cpu_vendor();
+}
+
+int _cdecl get_tick_count() {
+	return i386_pit_get_tick_count();
+}
+
+
+\end{lstlisting}
+\end{english}
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:main_function,caption=\en{kernel/main.cpp}]
+int _cdecl main()
+{
+	hal_init();
+	enable_irq();
+	
+	set_vector(0,(void (_cdecl &)(void))divide_by_zero_fault);
+	set_vector(1,(void (_cdecl &)(void))single_step_trap);
+	set_vector(2,(void (_cdecl &)(void))nmi_trap);
+	set_vector(3,(void (_cdecl &)(void))breakpoint_trap);
+	set_vector(4,(void (_cdecl &)(void))overflow_trap);
+	set_vector(5,(void (_cdecl &)(void))bounds_check_fault);
+	set_vector(6,(void (_cdecl &)(void))invalid_opcode_fault);
+	set_vector(7,(void (_cdecl &)(void))no_device_fault);
+	set_vector(8,(void (_cdecl &)(void))double_fault_abort);
+	set_vector(10,(void (_cdecl &)(void))invalid_tss_fault);
+	set_vector(11,(void (_cdecl &)(void))no_segment_fault);
+	set_vector(12,(void (_cdecl &)(void))stack_fault);
+	set_vector(13,(void (_cdecl &)(void))general_protection_fault);
+	set_vector(14,(void (_cdecl &)(void))page_fault);
+	set_vector(16,(void (_cdecl &)(void))fpu_fault);
+	set_vector(17,(void (_cdecl &)(void))alignment_check_fault);
+	set_vector(18,(void (_cdecl &)(void))machine_check_abort);
+	set_vector(19,(void (_cdecl &)(void))simd_fpu_fault);
+
+	...
+
+\end{lstlisting}
+\end{english}
+
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:exception.h,caption=\en{kernel/exception.h}]
+/*	Execption Handler	*/
+
+/* Divide by zero	*/
+extern void _cdecl divide_by_zero_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Single step	*/
+extern void _cdecl single_step_trap(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* No Maskable interrupt trap */
+extern void _cdecl nmi_trap(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Breakpoint hit */
+extern void _cdecl breakpoint_trap(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Overflow trap */
+extern void _cdecl overflow_trap(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Bounds check */
+extern void _cdecl bounds_check_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* invalid opcode instruction */
+extern void _cdecl invalid_opcode_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Device not available */
+extern void _cdecl no_device_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Double Fault */
+extern void _cdecl double_fault_abort(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* Invalid TSS */
+extern void _cdecl invalid_tss_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* Segment not present */
+extern void _cdecl no_segment_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* Stack fault */
+extern void _cdecl stack_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* General Protection Fault */
+extern void _cdecl general_protection_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* Page Fault */
+extern void _cdecl page_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* FPU error */
+extern void _cdecl fpu_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* Alignment Check */
+extern void _cdecl alignment_check_fault(uint32_t cs,uint32_t err,uint32_t eip,uint32_t eflags);
+
+/* Machine Check */
+extern void _cdecl machine_check_abort(uint32_t cs,uint32_t eip,uint32_t eflags);
+
+/* FPU Single Instruction Multiple Data (SIMD) error */
+extern void _cdecl simd_fpu_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
+\end{lstlisting}
+\end{english}
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:exception.cpp,caption=\en{kernel/exception.cpp}]
+/* Divide by zero	*/
+void _cdecl divide_by_zero_fault(uint32_t cs,uint32_t eip,uint32_t eflags) {
+	kernel_panic("Divide by 0");
+	for (;;);
+}
+\end{lstlisting}
+\end{english}
+
+\begin{english}
+\fontspec{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+
+\begin{lstlisting}[label=lst:panic.cpp,caption=\en{kernel/panic.cpp}]
+void _cdecl kernel_panic(const char* msg,...) {
+	
+	disable_irq();
+	
+	va_list args;
+	va_start(args,msg);
+	/* missing	*/
+	va_end(args);
+	
+	char* panic = "\nSorry, eqraOS has encountered a problem and has been shutdown.\n\n";
+	
+	kclear(0x1f);
+	kgoto_xy(0,0);
+	kset_color(0x1f);
+	kputs(panic);
+	kprintf("*** STOP: %s",msg);
+	
+	/* hang	*/
+	for (;;) ;
+}
+\end{lstlisting}
+\end{english}
+
+% أكمل الشرح ..
+\begin{figure}[h!]
+  \label{fig:irq} 
+  \caption{واجهة النظام بعد توسعة طبقة \en{HAL}}
+  \centering
+   \includegraphics[width=0.8\textwidth]{../img/irq}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \label{fig:default_irq} 
+  \caption{دالة تخديم المقاطعات الإفتراضية}
+  \centering
+   \includegraphics[width=0.8\textwidth]{../img/default_irq}
+\end{figure}
 
 \end{document}

@@ -56,9 +56,9 @@
 
 
 \label{lst:useless_bootloade}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\begin{lstlisting}[label=lst:useless_bootloader,caption=Smallest Bootloader]
+\begin{lstlisting}[label=lst:useless_bootloader,caption=\en{Smallest Bootloader}]
 
 ;Simple Bootloader do nothing.
 
@@ -70,9 +70,9 @@ start:				; label are pointer.
 		
 		times	510-($-$$)	db		0		; append zeros.
 		
-		; 	$ is the address of first instruction (should be 0x07c00).
-		;	$$ is the address of current line.
-		; 	$-$$ means how many byte between start and current.
+		; $ is the address of first instruction (should be 0x07c00).
+		; $$ is the address of current line.
+		;  $-$$ means how many byte between start and current.
 		
 		; if cli and hlt take 4 byte then time directive will fill
 		; 510-4 = 506 zero's.
@@ -94,9 +94,9 @@ start:				; label are pointer.
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\begin{lstlisting}[label=lst:hello_bootloader,caption=Hello\, World]
+\begin{lstlisting}[label=lst:hello_bootloader,caption=\en{Welcom to OS World}]
 
 ;Hello Bootloader
 
@@ -148,11 +148,9 @@ main:
 		;	intit registers
 		;---------------------
 		
-		; because bootloader are loaded at 0x07c00 we can refrence this location with many different combination
-		; of segment:offset addressing.
+		; because bootloader are loaded at 0x07c00 we can refrence this location with many different combination of segment:offset addressing.
 		
-		; So we will use either 0x0000:0x7c000 or 0x:07c0:0x0000
-		; and in this example we use 0x07c0 for segment and 0x0 for offset.
+		; So we will use either 0x0000:0x7c000 or 0x:07c0:0x0000 , and in this example we use 0x07c0 for segment and 0x0 for offset.
 		
 		mov ax,0x07c0			
 		mov ds,ax
@@ -179,7 +177,7 @@ main:
 %\missingfigure{welcome}
 
 الشيء الملاحظ في المثال السابق هو أن مقطع الكود \en{code segment} ومقطع البيانات \en{data segment} متواجدان في نفس المكان على الذاكرة (داخل ال \en{512} بايت) لذلك يجب تعديل قيم مسجلات المقاطع للاشارة الى المكان الصحيح.
-و بداية نذكر أن البايوس عندما ينقل التنفيذ الى برنامج محمل النظام الذي قمنا بكتابته فانه في حقيقة الأمر يقوم بعملية \en{far jump} والتي ينتج منها تصحيح قيم ال \cmd{cs:ip} لذلك لا داعي للقلق حول هذين المسجلين، لكن يجب تعديل قيم مسجلات المقاطع الاخرى مثل \cmd{ds,es,ss,fs,gs}. وكما نعلم أن العنوان الفيزيائي لمحمل النظام هو \cmd{0x07c00} يمكن الوصول اليه بأكثر من \en{4000} طريقة مختلفة ، لكن سوف نقتصر على استخدام \cmd{0x07c0:0x0} أو  \cmd{0x0:0x7c00} نظرأ لان هذه هي القيم الفعلية التي تستخدمها البايوس.
+و بداية نذكر أن البايوس عندما ينقل التنفيذ الى برنامج محمل النظام الذي قمنا بكتابته فانه في حقيقة الأمر يقوم بعملية \en{far jump} والتي ينتج منها تصحيح قيم ال \cmd{cs:ip} لذلك لا داعي للقلق حول هذين المسجلين، لكن يجب تعديل قيم مسجلات المقاطع الاخرى مثل \cmd{ds,es,ss,fs,gs}. وكما نعلم أن العنوان الفيزيائي لمحمل النظام هو \cmd{0x07c00} يمكن الوصول اليه بأكثر من \en{4000} طريقة مختلفة ، لكن سوف نقتصر على استخدام العنوان \cmd{0x07c0:0x0} أو العنوان \cmd{0x0:0x7c00} نظراً لان هذه هي القيم الفعلية التي تستخدمها البايوس.
 
 وفي حالة استخدام العنونة الاولى فان مسجلات المقاطع يجب أن تحوي القيمة \cmd{0x07c0} (كما في المثال اعلاه) أما بقية العنوانين (سواءا للمتغيرات وال \en{label}) فانها يجب أن تبدأ من القيمة \cmd{0x0}، وكما هو معروف ان المجمعات عندما تبدأ في عملية ترجمة الملف الى ملف ثنائي فانها تبدأ بترقيم العناوين بدءأ من العنوان \cmd{0x0} لذلك كانت وظيفة الموجه \cmd{org} هي عمل اعادة تعيين (\en{relocating}) للعناوين بالقيمة التي تم كتابتها ، وفي المثال أعلاه كانت القيمة هي \cmd{0x0} ، أما في حالة استخدام الطريقة الثانية للوصول الى مكان محمل النظام فان مسجلات المقاطع يجب أن تحوي القيمة \cmd{0x0} بينما المسجلات الاخرى يجب أن تبدأ قيمها من العنوان \cmd{0x7c00} ، وهذا لا يمكن بالوضع الطبيعي لان المجمعات ستبدأ من العنوان \cmd{0x0} لذلك يجب استخدام الموجه \cmd{org} وتحديد قيمة ال \en{relocate} بالقيمة \cmd{0x7c00} .
 
@@ -192,9 +190,9 @@ main:
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\begin{lstlisting}[label=lst:bpb,caption=Bios Parameter Block]
+\begin{lstlisting}[label=lst:bpb,caption=\en{Bios Parameter Block}]
 
 OEM_ID               db        "eqraOS  "    ; Name of your OS, Must be 8 byte! no more no less.
 
@@ -231,9 +229,9 @@ system_id            db        "fat12   "    ;  8 byte.
 \begin{english}
 \fontspec{Courier New}
 
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\begin{lstlisting}[label=lst:bpb_bootloader,caption=BPB example]
+\begin{lstlisting}[label=lst:bpb_bootloader,caption=\en{BPB example}]
 
 ;Hello Bootloader
 
@@ -349,7 +347,7 @@ main:
 \fontspec{Arial}
 
 
-\begin{lstlisting}[label=lst:bootloader_hex,caption=Hex value of bootloader]
+\begin{lstlisting}[label=lst:bootloader_hex,caption=\en{Hex value of bootloader}]
 
 
 Offset(h) 00 01 02 03 04 05 06 07
@@ -384,9 +382,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex3/ex3.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Complete Example}]{../examples/ch3/ex3/ex3.asm}
 \end{english}
 
 \subsection{تحميل قطاع من القرص باستخدام المقاطعة \cmd{int 0x13}}
@@ -411,9 +409,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 مثال:
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex4/ex4.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Reset Floppy Drive}]{../examples/ch3/ex4/ex4.asm}
 \end{english}
 
 \subsubsection{قراءة المقاطع \en{sectors}}
@@ -440,9 +438,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 مثال:\\
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex5/ex5.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Read Floppy Disk Sectors}]{../examples/ch3/ex5/ex5.asm}
 \end{english}
 
 
@@ -575,9 +573,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex6/stage2.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Hello Stage2}]{../examples/ch3/ex6/stage2.asm}
 \end{english}
 
 وسيتم تسمية الملف بالاسم \en{stage2.asm} أما الملف الناتج من عملية التجميع سيكون بالاسم \en{stage2.sys} ويمكن تسميته بأي اسم اخر بشرط أن لا يزيد الاسم عن \cmd{8} حروف والامتداد عن \cmd{3} حروف ، وفي حالة كان طول الاسم أقل فان درايفر \en{FAT12} سيقوم باضافة مسافات \en{Spaces} حتى لا يتضرر جدول \en{Root Directory}. ويمكننا أن نفرق بين اسماء الملفات الداخلية (وهي التي يتم اضافة مسافات عليها ويستخدمها نظام \en{FAT12}) والأسماء الخارجية (وهي التي ينشئها المستخدم).
@@ -589,18 +587,18 @@ Offset(h) 00 01 02 03 04 05 06 07
  
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex7/ex7.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Load Root directory}]{../examples/ch3/ex7/ex7.asm}
 \end{english}
 
 بعد تحميل هذا الجدول يجب البحث فيه عن اسم ملف المرحلة الثانية من محمل النظام ومن ثم حفظ رقم أول كلستر له في حالة كان الملف موجوداً ، أما اذا كان الملف غير موجود فنصدر رسالة خطأ ونوقف النظام عن العمل. والشفرة التالية توضح ذلك.
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex8/ex8.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Find Stage2 Bootloader}]{../examples/ch3/ex8/ex8.asm}
 \end{english}
 
 \subsubsection{تحميل جدول \en{FAT} الى الذاكرة}
@@ -609,9 +607,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex9/ex9.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Load FAT Table}]{../examples/ch3/ex9/ex9.asm}
 \end{english}
 
 \subsubsection{تحميل كلسترات الملف}
@@ -622,9 +620,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex10/ex10.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Convert Cluster number to LBA}]{../examples/ch3/ex10/ex10.asm}
 \end{english}
 
 
@@ -634,27 +632,27 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex11/ex11.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Convert LBA to CHS}]{../examples/ch3/ex11/ex11.asm}
 \end{english}
 
 ولتحميل كلستر من القرص يجب أولا الحصول على رقمه من جدول \en{Root Directory} وبعد ذلك نقوم بتحويل هذا الرقم الى عنوان \en{LBA} وبعدها نقوم بتحويل عنوان \en{LBA} الى عنوان مطلق \en{Abolsute Address} ومن ثم استخدام مقاطعة البايوس \cmd{int 0x13} لقراءة القطاعات من القرص، والشفرة التالية توضح ذلك.
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex12/ex12.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Load Cluster}]{../examples/ch3/ex12/ex12.asm}
 \end{english}
 
 ودالة قراءة القطاعات من القرص تستخدم مقاطعة البايوس \cmd{int 0x13} وهي تعمل فقط في النمط الحقيقي ويجب استبدالها لاحقا عند التحويل الى النمط المحمي بدالة اخرى \cmd{32-bit}.
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex13/ex13.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Read Sectors Routine}]{../examples/ch3/ex13/ex13.asm}
 \end{english}
 
 ولتحميل بقية كلسترات الملف يجب أخذ رقم أول كلستر للملف والذهاب به الى جدول \en{FAT} وقراءة القيمة المقابلة له والتي ستدل على ما اذا كان هذا آخر كلستر أم أن هنالك كلسترات اخرى يجب تحميلها.ويلزم الأخذ بالاعتبار بنية جدول \en{FAT} وانه يتكون من سجلات بطول \cmd{12} بت وتعادل بايت ونصف ، أي أنه اذا كان رقم الكلستر هو \cmd{0} فاننا يجب أن نقرأ السجل الاول من جدول \en{FAT} وبسبب انه لا يمكن قراءة \cmd{12} بت فسوف تتم قراءة \cmd{16} بت (السجل الاول بالاضافة الى نصف السجل الثاني) وعمل \en{mask} لاخر \cmd{4} بت (لازالة ما تم قرائته من السجل الثاني). وفي حالة كان رقم الكلستر هو  \cmd{1} فيجب قراءة السجل الثاني من جدول \en{FAT} والذي يبدأ من البت \cmd{12}-\cmd{23} وبسبب أنه لا يمكن قراءة \cmd{12} بت سنقوم بقراءة \cmd{16} بت أي من البت \cmd{8}-\cmd{23} وازالة أول \cmd{4} بت.\\
@@ -668,9 +666,9 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \begin{english}
 \fontspec{Courier New}
-\lstset{numberstyle=\tiny,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=Some Code]{../examples/ch3/ex14/ex14.asm}
+\lstinputlisting[label=lst:bootloader,caption=\en{Read FAT entry}]{../examples/ch3/ex14/ex14.asm}
 \end{english}
 
 \end{document}
