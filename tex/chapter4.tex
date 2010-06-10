@@ -98,7 +98,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{GDT}]{../examples/ch3/ex15/ex15.asm}
+\lstinputlisting[label=lst:gdt,caption=\en{GDT}]{../examples/ch3/ex15/ex15.asm}
 \end{english}
 
 هذا الجدول يبدأ بالواصفة الخالية \en{Null Descriptor} وحجمها \cmd{8} بايت ومتحوياتها تكون صفراً في العادة ، أما الواصفة التالية لها فهي واصفة مقطع الشفرة \en{Code Descriptor} وتوضح المقطع من الذاكرة الذي سيتسخدم كشفرة وما هي بدايته وحجمه وصلاحيات استخدامه حيث يمكن أن نسمح فقط للبرامج التي تعمل على مستوى النواة \en{Kernel Mode} بالدخول الى هذا المقطع.وفيما يلي شرح لمحتويات هذه الواصفة ويمكنك المطابقة مع الجدول الذي يوضح الشكل العام لكل واصفة.
@@ -141,7 +141,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Load GDT into GDTR}]{../examples/ch3/ex16/ex16.asm}
+\lstinputlisting[label=lst:load_gdt,caption=\en{Load GDT into GDTR}]{../examples/ch3/ex16/ex16.asm}
 \end{english}
 
 \subsection{العنونة في النمط المحمي \en{PMode Memory Addressing}}
@@ -160,7 +160,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Switching to Protected Mode}]{../examples/ch3/ex17/ex17.asm}
+\lstinputlisting[label=lst:switch_to_PMode,caption=\en{Switching to Protected Mode}]{../examples/ch3/ex17/ex17.asm}
 \end{english}
 
 
@@ -204,7 +204,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Enable A20 by System Control Port 0x92}]{../examples/ch3/ex18/ex18.asm}
+\lstinputlisting[label=lst:enable_a20_1,caption=\en{Enable A20 by System Control Port 0x92}]{../examples/ch3/ex18/ex18.asm}
 \end{english}
 
 ويجب ملاحظة أن هذه الطريقة لا تعمل في كل الاجهزة وربما يكون هناك ارقام مختلفة للمنافذ ، ويعتمد في الآخر على مصنعي اللوحات الام ويجب قراءة كتيباتها لمعرفة العناوين.
@@ -216,7 +216,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Enable A20 by BIOS int 0x15}]{../examples/ch3/ex19/ex19.asm}
+\lstinputlisting[label=lst:enable_a20_2,caption=\en{Enable A20 by BIOS int 0x15}]{../examples/ch3/ex19/ex19.asm}
 \end{english}
 
 \subsubsection{بواسطة متحكم لوحة المفاتيح}
@@ -249,7 +249,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Wait Input/Output}]{../examples/ch3/ex20/ex20.asm}
+\lstinputlisting[label=lst:enable_a20_3,caption=\en{Wait Input/Output}]{../examples/ch3/ex20/ex20.asm}
 \end{english}
 
 ولإرسال اوامر الي المتحكم فان يجب استخدام المنفذ \cmd{0x64} وتوجد الكثير من الأوامر ، ونظرا لان هذا الجزء غير مخصص لبرمجة متحكم لوحة المفاتيح فاننا سنناقش فقط الاوامر التي تهمنا حاليا ، وفي الفصل السادس سنعود الى الموضوع بالتفصيل ان شاء الله.
@@ -271,7 +271,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Enable A20 by Send 0xdd}]{../examples/ch3/ex21/ex21.asm}
+\lstinputlisting[label=lst:enable_a20_4,caption=\en{Enable A20 by Send 0xdd}]{../examples/ch3/ex21/ex21.asm}
 \end{english}
 
 وتوجد طريقة أخرى أكثر محمولية وهي عن طريق منفذ الخروج \en{Output Port} في متحكم لوحة المفاتيح ويمكن قراءة هذا المنفذ والكتابة اليه عن طريق ارسال الاوامر \cmd{0xd0} و \cmd{0xd1} على التوالي.
@@ -315,7 +315,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Enable A20 by write to output port of Keyboard Controller}]{../examples/ch3/ex22/ex22.asm}
+\lstinputlisting[label=lst:enable_a20_5,caption=\en{Enable A20 by write to output port of Keyboard Controller}]{../examples/ch3/ex22/ex22.asm}
 \end{english}
 
 حيث في البداية تم تعطيل لوحة المفاتيح (عن طريق ارسال الامر \cmd{0xad}) واستدعاء الدالة \en{wait input} للتأكد من أن الامر قد تم تنفيذه ومن ثم تم ارسال أمر قراءة منفذ الخروج لمتحم لوحة المفاتيح (الامر \cmd{0xda}) وانتظار المتحكم حتى ينتهي من تنفيذ الامر ، وقد تم استخدام الدالة \en{wait output} لانتظار قيمة منفذ الخروج ، وبعدها تم قراءة هذه القيمة وحفظها في المكدس (\en{Stack}) ،وبعد ذلك تم ارسال أمر الكتابة الى منفذ الخروج لمتحكم لوحة المفاتيح (الامر \cmd{0xd1}) وانتظار المتحكم حى ينتهي من تنفيذ الامر ومن قمنا بارسال قيمة المنفذ الخروج الجديدة بعد أن تم تفعيل البت رقم \cmd{1} وهو البت الذي يفعل بوابة \en{A20} ، وفي الاخير تم تفعيل لوحة المفاتيح مجددا.
@@ -350,7 +350,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Print 'A' character on screen}]{../examples/ch3/ex23/ex23.asm}
+\lstinputlisting[label=lst:print_A_on_screen,caption=\en{Print 'A' character on screen}]{../examples/ch3/ex23/ex23.asm}
 \end{english}
 
 \subsection{طباعة حرف على الشاشة}
@@ -431,7 +431,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{putch32 routine}]{../examples/ch3/ex24/ex24.asm}
+\lstinputlisting[label=lst:putch32_routine,caption=\en{putch32 routine}]{../examples/ch3/ex24/ex24.asm}
 \end{english}
 
 وتبدأ هذه الدالة بفحص الحرف المراد طباعته (موجود في المسجل \cmd{bl}) مع حرف الانتقال الى السطر الجديد \cmd{0xa} وفي حالة التساوي يتم نقل التنفيذ الى آخر جسم الدالة والذي يقوم بتصفير قيمة \en{x} وزيادة قيمة \en{y} دلالة على الانتقال الى السطر الجديد. أما في حالة كان الحرف هو أي حرف آخر فانه يجب حساب العنوان الذي يجب ارسال الحرف اليه حتى يمكن طباعته ، وكما ذكرنا أن النمط النصي \en{Mode 7} يستخدم بايتين لكل حرف لذا سيتم استخدام العلاقة التالية للتحويل ما بين (\en{x,y}) الى العنوان المطلوب.
@@ -450,7 +450,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{puts32 routine}]{../examples/ch3/ex25/ex25.asm}
+\lstinputlisting[label=lst:puts32_routine,caption=\en{puts32 routine}]{../examples/ch3/ex25/ex25.asm}
 \end{english}
 
 في هذه الدالة سيتم قراءة حرف حرف من السلسة النصية وطباعته الى أن نصل الى نهاية السلسلة (القيمة \cmd{0x0}) ، وبعد ذلك سيتم تحديث المؤشر وذلك عن طريق متحكم \en{CRT Controller} ونظراً لان التعامل معه بطئ قليلا فان تحديث المؤشر سيكون بعد طباعة السلسلة وليس بعد طباعة كل حرف .
@@ -504,7 +504,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Move Hardware Cursor}]{../examples/ch3/ex26/ex26.asm}
+\lstinputlisting[label=lst:move_cursor,caption=\en{Move Hardware Cursor}]{../examples/ch3/ex26/ex26.asm}
 \end{english}
 
 \subsection{تنظيف الشاشة \en{Clear Screen}}
@@ -514,7 +514,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Clear Screen}]{../examples/ch3/ex27/ex27.asm}
+\lstinputlisting[label=lst:clear_screen,caption=\en{Clear Screen}]{../examples/ch3/ex27/ex27.asm}
 \end{english}
 
 \section{تحميل النواة}
@@ -532,7 +532,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Hello Kernel}]{../examples/ch3/ex28/ex28.asm}
+\lstinputlisting[label=lst:hello_kernel,caption=\en{Hello Kernel}]{../examples/ch3/ex28/ex28.asm}
 \end{english}
 
 والمرحلة الثانية من محمل النظام ستكون هي المسؤولة عن البحث عن النواة وتحميلها ونقل التنفيذ اليها ، وسيتم تحميلها الى الذاكرة قبل الانتقال الى النمط المحمي وذلك حتى نتكمن من استخدام مقاطعة البايوس \cmd{int 0x13} وعند الانتقال الى النمط المحمي سيتم نسخ النواة الى عنوان \cmd{1} ميجا ونقل التحكم الى النواة.
@@ -545,7 +545,7 @@
 \fontspec{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
-\lstinputlisting[label=lst:bootloader,caption=\en{Loading and Executing Kernel: Full Example}]{../examples/ch3/ex29/ex29.asm}
+\lstinputlisting[label=lst:load_and_exec_kernel,caption=\en{Loading and Executing Kernel: Full Example}]{../examples/ch3/ex29/ex29.asm}
 \end{english}
 
 
