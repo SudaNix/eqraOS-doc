@@ -1,0 +1,146 @@
+ kernel
+
+ Timestamp is 4c2c96a6 (Thu Jul 01 16:22:46 2010)
+
+ Preferred load address is 00100000
+
+ Start         Length     Name                   Class
+ 0001:00000000 00001745H .text                   CODE
+ 0002:00000000 0000045eH .rdata                  DATA
+ 0003:00000000 00000004H .CRT$XCA                DATA
+ 0003:00000004 00000004H .CRT$XCZ                DATA
+ 0003:00000008 00000030H .data                   DATA
+ 0003:00000038 00000880H .bss                    DATA
+ 0004:00000000 00000058H .rsrc$01                DATA
+ 0004:00000060 00000390H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base       Lib:Object
+
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0001:00000000       ?kernel_entry@@YAXPAUmultiboot_info@@@Z 00100400 f   entry.obj
+ 0001:00000040       ?pmm_demo@@YAXXZ           00100440 f   main.obj
+ 0001:000000a0       ?eqraos_screen@@YAXXZ      001004a0 f   main.obj
+ 0001:000000f0       _main                      001004f0 f   main.obj
+ 0001:00000180       ?k_update_cursor@@YAXHH@Z  00100580 f   kdisplay.obj
+ 0001:00000190       ?kputc@@YAXE@Z             00100590 f   kdisplay.obj
+ 0001:00000230       ?itoa@@YAXIIPAD@Z          00100630 f   kdisplay.obj
+ 0001:000002a0       ?itoa_s@@YAXHIPAD@Z        001006a0 f   kdisplay.obj
+ 0001:000002d0       ?kputs@@YAXPAD@Z           001006d0 f   kdisplay.obj
+ 0001:00000310       ?kset_color@@YAII@Z        00100710 f   kdisplay.obj
+ 0001:00000330       ?kgoto_xy@@YAXII@Z         00100730 f   kdisplay.obj
+ 0001:00000360       ?kprintf@@YAHPBDZZ         00100760 f   kdisplay.obj
+ 0001:00000510       ?kclear@@YAXE@Z            00100910 f   kdisplay.obj
+ 0001:00000560       ?divide_by_zero_fault@@YAXIIII@Z 00100960 f   exception.obj
+ 0001:00000590       ?single_step_trap@@YAXIII@Z 00100990 f   exception.obj
+ 0001:000005b0       ?nmi_trap@@YAXIII@Z        001009b0 f   exception.obj
+ 0001:000005d0       ?breakpoint_trap@@YAXIII@Z 001009d0 f   exception.obj
+ 0001:000005f0       ?overflow_trap@@YAXIII@Z   001009f0 f   exception.obj
+ 0001:00000610       ?bounds_check_fault@@YAXIII@Z 00100a10 f   exception.obj
+ 0001:00000630       ?invalid_opcode_fault@@YAXIII@Z 00100a30 f   exception.obj
+ 0001:00000650       ?no_device_fault@@YAXIII@Z 00100a50 f   exception.obj
+ 0001:00000670       ?double_fault_abort@@YAXIIII@Z 00100a70 f   exception.obj
+ 0001:00000690       ?invalid_tss_fault@@YAXIIII@Z 00100a90 f   exception.obj
+ 0001:000006b0       ?no_segment_fault@@YAXIIII@Z 00100ab0 f   exception.obj
+ 0001:000006d0       ?stack_fault@@YAXIIII@Z    00100ad0 f   exception.obj
+ 0001:000006f0       ?general_protection_fault@@YAXIIII@Z 00100af0 f   exception.obj
+ 0001:00000710       ?page_fault@@YAXIIII@Z     00100b10 f   exception.obj
+ 0001:00000720       ?fpu_fault@@YAXIII@Z       00100b20 f   exception.obj
+ 0001:00000740       ?alignment_check_fault@@YAXIIII@Z 00100b40 f   exception.obj
+ 0001:00000760       ?machine_check_abort@@YAXIII@Z 00100b60 f   exception.obj
+ 0001:00000780       ?simd_fpu_fault@@YAXIII@Z  00100b80 f   exception.obj
+ 0001:000007a0       ?execption_init@@YAXXZ     00100ba0 f   exception.obj
+ 0001:00000890       ?mem_info_init_region@@YAXXZ 00100c90 f   mem_info.obj
+ 0001:000008f0       ?mem_info_dump_region@@YAXXZ 00100cf0 f   mem_info.obj
+ 0001:00000970       ?mem_info_dump_size@@YAXXZ 00100d70 f   mem_info.obj
+ 0001:00000990       ?mem_info_blocks_stat@@YAXXZ 00100d90 f   mem_info.obj
+ 0001:000009c0       ?mem_info_init@@YAXPAUmultiboot_info@@@Z 00100dc0 f   mem_info.obj
+ 0001:00000a10       ?kernel_panic@@YAXPBDZZ    00100e10 f   panic.obj
+ 0001:00000a50       ?pmm_init@@YAXII@Z         00100e50 f   pmm.obj
+ 0001:00000a90       ?pmm_init_region@@YAXII@Z  00100e90 f   pmm.obj
+ 0001:00000b00       ?pmm_deinit_region@@YAXII@Z 00100f00 f   pmm.obj
+ 0001:00000b60       ?pmm_dealloc@@YAXPAX@Z     00100f60 f   pmm.obj
+ 0001:00000ba0       ?pmm_deallocs@@YAXPAXI@Z   00100fa0 f   pmm.obj
+ 0001:00000c00       ?pmm_get_mem_size@@YAIXZ   00101000 f   pmm.obj
+ 0001:00000c10       ?pmm_get_block_count@@YAIXZ 00101010 f   pmm.obj
+ 0001:00000c20       ?pmm_get_used_block_count@@YAIXZ 00101020 f   pmm.obj
+ 0001:00000c30       ?pmm_get_free_block_count@@YAIXZ 00101030 f   pmm.obj
+ 0001:00000c40       ?pmm_get_block_size@@YAIXZ 00101040 f   pmm.obj
+ 0001:00000c50       ?pmm_enable_paging@@YAX_N@Z 00101050 f   pmm.obj
+ 0001:00000c80       ?pmm_is_paging@@YA_NXZ     00101080 f   pmm.obj
+ 0001:00000c90       ?pmm_load_PDBR@@YAXI@Z     00101090 f   pmm.obj
+ 0001:00000ca0       ?pmm_get_PDBR@@YAIXZ       001010a0 f   pmm.obj
+ 0001:00000cb0       ?mmap_find_first@@YAHXZ    001010b0 f   pmm.obj
+ 0001:00000d10       ?mmap_find_squence@@YAHI@Z 00101110 f   pmm.obj
+ 0001:00000e30       ?pmm_alloc@@YAPAXXZ        00101230 f   pmm.obj
+ 0001:00000e90       ?pmm_allocs@@YAPAXI@Z      00101290 f   pmm.obj
+ 0001:00000f10       ?vmm_alloc_page@@YA_NPAI@Z 00101310 f   vmm.obj
+ 0001:00000f40       ?vmm_free_page@@YAXPAI@Z   00101340 f   vmm.obj
+ 0001:00000f70       ?vmm_switch_page_dir_table@@YA_NPAUpage_dir_table@@@Z 00101370 f   vmm.obj
+ 0001:00000fa0       ?vmm_get_page_dir_table@@YAPAUpage_dir_table@@XZ 001013a0 f   vmm.obj
+ 0001:00000fb0       ?vmm_flush_tlb_entry@@YAXI@Z 001013b0 f   vmm.obj
+ 0001:00000fc0       ?vmm_page_table_clear@@YAXPAUpage_table@@@Z 001013c0 f   vmm.obj
+ 0001:00000fe0       ?vmm_vir_to_page_table_index@@YAII@Z 001013e0 f   vmm.obj
+ 0001:00001000       ?vmm_page_table_lookup_entry@@YAPAIPAUpage_table@@I@Z 00101400 f   vmm.obj
+ 0001:00001030       ?vmm_vir_to_page_dir_table_index@@YAII@Z 00101430 f   vmm.obj
+ 0001:00001050       ?vmm_page_dir_table_clear@@YAXPAUpage_dir_table@@@Z 00101450 f   vmm.obj
+ 0001:00001070       ?vmm_page_dir_table_lookup_entry@@YAPAIPAUpage_dir_table@@I@Z 00101470 f   vmm.obj
+ 0001:000010a0       ?vmm_init@@YAXXZ           001014a0 f   vmm.obj
+ 0001:00001170       ?pde_add_attrib@@YAXPAII@Z 00101570 f   vmm_pde.obj
+ 0001:00001180       ?pde_del_attrib@@YAXPAII@Z 00101580 f   vmm_pde.obj
+ 0001:00001190       ?pde_set_frame@@YAXPAII@Z  00101590 f   vmm_pde.obj
+ 0001:000011b0       ?pde_get_frame@@YAII@Z     001015b0 f   vmm_pde.obj
+ 0001:000011c0       ?pde_is_present@@YA_NI@Z   001015c0 f   vmm_pde.obj
+ 0001:000011d0       ?pde_is_writable@@YA_NI@Z  001015d0 f   vmm_pde.obj
+ 0001:000011e0       ?pde_is_user@@YA_NI@Z      001015e0 f   vmm_pde.obj
+ 0001:000011f0       ?pde_is_4mb@@YA_NI@Z       001015f0 f   vmm_pde.obj
+ 0001:00001200       ?pde_enable_global@@YAXI@Z 00101600 f   vmm_pde.obj
+ 0001:00001210       ?pte_add_attrib@@YAXPAII@Z 00101610 f   vmm_pte.obj
+ 0001:00001220       ?pte_del_attrib@@YAXPAII@Z 00101620 f   vmm_pte.obj
+ 0001:00001230       ?pte_set_frame@@YAXPAII@Z  00101630 f   vmm_pte.obj
+ 0001:00001250       ?pte_get_frame@@YAII@Z     00101650 f   vmm_pte.obj
+ 0001:00001260       ?pte_is_present@@YA_NI@Z   00101660 f   vmm_pte.obj
+ 0001:00001270       ?pte_is_writable@@YA_NI@Z  00101670 f   vmm_pte.obj
+ 0001:00001280       ?exit@@YAXXZ               00101680 f   lib:cstd.obj
+ 0001:000012c0       ?init_ctor@@YAXXZ          001016c0 f   lib:cstd.obj
+ 0001:00001300       ?strlen@@YAIPBD@Z          00101700 f   lib:string.obj
+ 0001:00001320       ?strcpy@@YAPADPADPBD@Z     00101720 f   lib:string.obj
+ 0001:00001340       ?memset@@YAPAXPAXDI@Z      00101740 f   lib:string.obj
+ 0001:00001360       ?int_done@@YAXI@Z          00101760 f   hal:hal.obj
+ 0001:00001390       ?outportb@@YAXGE@Z         00101790 f   hal:hal.obj
+ 0001:000013a0       ?enable_irq@@YAXXZ         001017a0 f   hal:hal.obj
+ 0001:000013b0       ?disable_irq@@YAXXZ        001017b0 f   hal:hal.obj
+ 0001:000013c0       ?set_vector@@YAXIA6AXXZ@Z  001017c0 f   hal:hal.obj
+ 0001:000013e0       ?hal_init@@YAHXZ           001017e0 f   hal:hal.obj
+ 0001:00001410       ?i386_cpu_init@@YAHXZ      00101810 f   hal:cpu.obj
+ 0001:00001430       ?i386_pic_send_command@@YAXEE@Z 00101830 f   hal:pic.obj
+ 0001:00001460       ?i386_pic_init@@YAXEE@Z    00101860 f   hal:pic.obj
+ 0001:00001500       ?i386_idt_install_ir@@YAHIGGP6AXXZ@Z 00101900 f   hal:idt.obj
+ 0001:00001550       ?i386_idt_init@@YAHG@Z     00101950 f   hal:idt.obj
+ 0001:000015e0       ?i386_pit_start_counter@@YAXIEE@Z 001019e0 f   hal:pit.obj
+ 0001:00001640       ?i386_pit_irq@@YAXXZ       00101a40 f   hal:pit.obj
+ 0001:00001660       ?i386_pit_init@@YAXXZ      00101a60 f   hal:pit.obj
+ 0001:00001680       ?i386_gdt_init@@YAHXZ      00101a80 f   hal:gdt.obj
+ 0002:00000424       ??_C@_0DK@GOCDNPMH@?$CK?$CK?$CK?$CK?5?$FLI386?5HAL?$FN?5i386_default_han@ 00102024     hal:idt.obj
+ 0003:00000000       ?__xc_a@@3PAP6AXXZA        00102200     lib:cstd.obj
+ 0003:00000004       ?__xc_z@@3PAP6AXXZA        00102204     lib:cstd.obj
+ 0003:00000008       ?video_memory@@3PAGA       00102208     kdisplay.obj
+ 0003:0000000c       ?bchars@@3PADA             0010220c     kdisplay.obj
+ 0003:0000001c       ?mem_types@@3PAPADA        0010221c     mem_info.obj
+ 0003:0000002c       ?region_ptr@@3PAUmem_region@@A 0010222c     mem_info.obj
+ 0003:00000034       __fltused                  00102234     lib:cstd.obj
+ 0003:00000038       ?tbuf@@3PADA               00102238     kdisplay.obj
+ 0003:00000058       ?_x_pos@@3EA               00102258     kdisplay.obj
+ 0003:00000059       ?_y_pos@@3EA               00102259     kdisplay.obj
+ 0003:0000005a       ?_color@@3EA               0010225a     kdisplay.obj
+ 0003:0000005c       ?boot_info@@3PAUmultiboot_info@@A 0010225c     mem_info.obj
+ 0003:00000060       ?kernel_size@@3IA          00102260     mem_info.obj
+ 0003:00000064       ?mem_size@@3IA             00102264     mem_info.obj
+ 0003:00000078       ?_cur_page_dir@@3PAUpage_dir_table@@A 00102278     vmm.obj
+ 0003:0000007c       ?_cur_page_dir_base_register@@3IA 0010227c     vmm.obj
+
+ entry point at        0000:00000000
+
+ Static symbols
+
+ 0001:000014d0       ?i386_default_handler@@YAXXZ 001018d0 f   hal:idt.obj

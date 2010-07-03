@@ -37,12 +37,12 @@
 بهذا الشكل لن نتمكن من تنفيذ أكثر من برنامج واحد ، حيث سيكون هناك برنامجا واحدا فقط يبدأ من العنوان \cmd{0x0} ، والحل لهذه المشاكل هو باستخدام مساحة العنونة التخيلية (\en{Virtual Address Space}) حيث يتم تخصيص مساحة تخيلية من الذاكرة لكل برنامج بحيث تبدأ العنونة تخيليا من \cmd{0x0} وبهذا تم حل مشكلة تحميل أكثر من برنامج وحل مشكلة \en{relocation}.
 ومساحة العنوان التخيلية (\en{VAS}) هي مساحة من العناوين لكل برنامج بحيث تيدأ من ال \cmd{0x0} ومفهوم هذه المساحة هو أن كل برنامج سيتعامل مع مساحة العناوين الخاصة به وهذا ما يؤدي الى حماية الذاكرة ، حيث لن يستطيع أي برنامج الوصول الى أي عنوان آخر بخلاف العناوين الموجودة في \en{VAS}.
 ونظراً لعدم ارتباط ال \en{VAS} مع الذاكرة الرئيسية فانه يمكن ان يشير عنوان تخيلي الى ذاكرة اخرى بخلاف الذاكرة الرئيسية (مثلا القرص الصلب). وهذا يحل مشكلة انتهاء المساحات الخالية في الذاكرة.
-ويجدر بنا ذكر أن التحويل بين العناوين التخيليه الى الحقيقية يتم عن طريق العتاد بواسطة وحدة ادارة الذاكرة بداخل المعالج (\en{Memory Management Unit}).وكذلك مهمة حماية الذاكرة والتحكم في الذاكرة \en{Cache} وغيرها من الخصائص والتي سيتم الإطلاع عليها في الفصل الثامن - بمشيئة الله-.
+ويجدر بنا ذكر أن التحويل بين العناوين التخيليه الى الحقيقية يتم عن طريق العتاد بواسطة وحدة ادارة الذاكرة بداخل المعالج (\en{Memory Management Unit}).وكذلك مهمة حماية الذاكرة والتحكم في الذاكرة \en{Cache} وغيرها من الخصائص والتي سيتم الإطلاع عليها في الفصل السابع - بمشيئة الله-.
 
 
-\subsection{إدارة العمليات}
+%\subsection{إدارة العمليات}
 
-\subsection{نظام الملفات}
+%\subsection{نظام الملفات}
 
 \section{هيكلة وتصميم النواة}
 توجد العديد من الطرق لتصميم الأنوية وسنستعرض بعض منها في هذا البحث ، لكن قبل ذلك يجب الحديث عن طريقة مفيدة في هيكلة وتصميم الأنوية الا وهي تجريد العتاد (\en{Hardware Abstraction}) أي بمعنى فصل النواة من التعامل المباشر مع العتاد ، وانشاء طبقة برمجية (\en{Software Layer}) تسمى طبقة \en{HAL} (اختصارا لكلمة \en{Hardware Abstraction Layer}) بين النواة وبين العتاد ، وظيفة طبقة \en{HAL} هي توفير واجهة لعتاد الحاسب بحيث تمكِّن النواة من التعامل مع العتاد.
@@ -52,7 +52,7 @@
 فصل النواة من العتاد تُتيح العديد من الفوائد ،أولاً شفرة النواة ستكون أكثر مقروئية وأسهل في الصيانة والتعديل لأن النواة ستتعامل مع واجهة أخرى أكثر سهولة من تعقيدات العتاد ، الميزة الثانية والأكثر أهمية هي امكانية نقل النواة (\en{Porting}) لأجهزة ذات عتاد مختلف (مثل \en{SPARC,MIPS,...etc}) بدون التغيير في شفرة النواة ، فقط سيتم تعديل طبقة \en{HAL} من ناحية التطبيق (\en{Implementation}) بالاضافة الى إعادة كتابة مشغلات الأجهزة (\en{Devcie Drivers}) مجدداً\footnote{أغلب أنوية أنظمة التشغيل الحالية تستخدم طبقة \en{HAL}، هل تسائلت يوما كيف يعمل نظام جنو/لينوكس على أجهزة سطح المكتب والأجهزة المضمنة!}.
 
 \subsection{النواة الضخمة \en{Monolithic Kernel}}
-تعتبر الأنوية المصممة بطريقة \en{Monolitic}\footnote{كلمة \en{Mono} تعني واحد ، أما كلمة \en{Lithic} فتعني حجري ، والمقصود بأن النواة تكون على شكل كتلة حجرية ليست مرنة وتطويرها وصيانتها معقد.} أسرع وأكفأ أنوية في العمل وذلك نظرا لان كل برامج النظام (\en{System Process}) تكون ضمن النواة وتعمل في الحلقة صفر ، والشكل التالي يوضح مخطط لهذه الأنوية.
+تعتبر الأنوية المصممة بطريقة \en{Monolitic}\footnote{كلمة \en{Mono} تعني واحد ، أما كلمة \en{Lithic} فتعني حجري ، والمقصود بأن النواة تكون على شكل كتلة حجرية ليست مرنة وتطويرها وصيانتها معقد.} أسرع وأكفأ أنوية في العمل وذلك نظرا لان كل برامج النظام (\en{System Process}) تكون ضمن النواة وتعمل في الحلقة صفر .% والشكل التالي يوضح مخطط لهذه الأنوية.
 
 % Monolithic kernel photo
 
@@ -62,12 +62,14 @@
 
 \subsection{النواة المصغرة \en{MicroKernel}}
 % MicroKernel  photo
-الأنوية \en{MicroKernel} هي الأكثر ثباتا واستقرار ومرونة والأسهل في الصيانة والتعديل والتطوير وذلك نظرا لان النواة تكون أصغر ما يمكن ، حيث أن الوظائف الأساسية فقط تكون ضمن النواة وهي ادارة الذاكرة وادارة العمليات (مجدول العمليات،أساسيات \en{IPC})، أما بقية برامج النظام مثل نظام الملفات ومشغلات الأجهزة وغيرها تتبع لبرامج المستخدم وتعمل في نمط المستخدم (الحلقة 3) ، وهذا يعني في حالة حدوث خطأ في هذه البرامج فان النظام لن يتأثر كذلك يمكن تغيير هذه البرامج (مثلا تغيير نظام الملفات) دون الحاجة الى اعادة تشغيل الجهاز حيث أن برامج النظام تعمل كبرامج المستخدم . والشكل التالي يوضح مخطط هذه الأنوية. المشكلة الرئيسية لهذا التصميم هو بطئ عمل النظام وذلك بسبب أن برامج النظام عليها أن تتخاطب مع بعضها البعض عن طريق تمرير الرسائل (\en{Message Passing}) أو مشاركة جزء من الذاكرة (\en{Shared Memory}) وهذا ما يعرف ب \en{Interprocess Communication}. وأشهر مثال لنظام تشغيل يتبع هذا التصميم هو نظام مينكس الاصدار الثالث.
+الأنوية \en{MicroKernel} هي الأكثر ثباتا واستقرار ومرونة والأسهل في الصيانة والتعديل والتطوير وذلك نظرا لان النواة تكون أصغر ما يمكن ، حيث أن الوظائف الأساسية فقط تكون ضمن النواة وهي ادارة الذاكرة وادارة العمليات (مجدول العمليات،أساسيات \en{IPC})، أما بقية برامج النظام مثل نظام الملفات ومشغلات الأجهزة وغيرها تتبع لبرامج المستخدم وتعمل في نمط المستخدم (الحلقة 3) ، وهذا يعني في حالة حدوث خطأ في هذه البرامج فان النظام لن يتأثر كذلك يمكن تغيير هذه البرامج (مثلا تغيير نظام الملفات) دون الحاجة الى اعادة تشغيل الجهاز حيث أن برامج النظام تعمل كبرامج المستخدم . %والشكل التالي يوضح مخطط هذه الأنوية.
+المشكلة الرئيسية لهذا التصميم هو بطئ عمل النظام وذلك بسبب أن برامج النظام عليها أن تتخاطب مع بعضها البعض عن طريق تمرير الرسائل (\en{Message Passing}) أو مشاركة جزء من الذاكرة (\en{Shared Memory}) وهذا ما يعرف ب \en{Interprocess Communication}. وأشهر مثال لنظام تشغيل يتبع هذا التصميم هو نظام مينكس الاصدار الثالث.
 
 
 \subsection{النواة الهجينة \en{Hybrid Kernel}}
 %  Hybrid Kernel  photo
-هذا التصميم للنواة ما هو إلا مزيج من التصميمين السابقين ، حيث تكون النواة \en{MicroKernel} لكنها تطبق ك \en{Monolithic Kernel} ، ويسمى هذا التصميم \en{Hybrid Kernel} أو \en{Modified MicroKernel}. والشكل التالي يوضح مخطط لهذا التصميم. وكأمثلة على أنظمة تعمل بهذا التصميم هو أنظمة ويندوز التي تعتمد على معمارية \en{NT} ، ونظام \en{BeOS} و \en{Plane 9}.
+هذا التصميم للنواة ما هو إلا مزيج من التصميمين السابقين ، حيث تكون النواة \en{MicroKernel} لكنها تطبق ك \en{Monolithic Kernel} ، ويسمى هذا التصميم \en{Hybrid Kernel} أو \en{Modified MicroKernel}. %والشكل التالي يوضح مخطط لهذا التصميم. 
+وكأمثلة على أنظمة تعمل بهذا التصميم هو أنظمة ويندوز التي تعتمد على معمارية \en{NT} ، ونظام \en{BeOS} و \en{Plane 9}.
 
 
 
@@ -93,7 +95,7 @@
 
 يوجد أربع اضافات(\en{headers}) لصيغة \en{PE} سنطلع عليها بشكل سريع وفي حالة قمنا بتطوير محمل خاص لهذه الصيغة فسيتم دراستها بالتفصيل. و يمكن أن نصف هذه الاضافات بلغة السي++ كالتالي.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -183,7 +185,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 %ex4-2.asm
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -223,7 +225,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 
 سيتم تعريف معامل حجز الذاكرة  (\cmd{new}) وتحريرها (\cmd{delete}) في لغة السي++ ، ولكن لاننا حاليا لم نبرمج مديراً للذاكرة فان التعريف سيكون خاليا.والمقطع التالي يوضح ذلك.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -244,7 +246,7 @@ void __cdecl operator delete[] (void * p){}
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -260,7 +262,7 @@ int __cdecl ::_purecall() { for (;;); return 0; }
 لدعم الفاصلة العائمة (\en{Floating Point}) في سي++ فانه يجب تعيين القيمة \cmd{1} للمتغير \cmd{fltused} ، وكذلك يجب تعريف الدالة \cmd{ftol2 sse()} والتي تحول من النوع \cmd{float} الى النوع \cmd{long} كالتالي.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -293,7 +295,7 @@ extern "C" int _fltused = 1;
 والشفرة التالية توضح ما سبق.
  
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -347,7 +349,7 @@ void _cdecl init_ctor() {
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -407,7 +409,7 @@ void _cdecl exit () {
 %kernel/entry.cpp
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -488,7 +490,7 @@ void _cdecl kernel_entry ()
 \subsubsection{تعريف \cmd{NULL}}
 في لغة سي++ يتم تعريف \cmd{NULL} على أنها القيمة \cmd{0} بينما في لغة السي تعرف ب \cmd{(void*)0}.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -532,7 +534,7 @@ extern "C"
 يتم تعريف \cmd{size\_t} على أنها عدد صحيح \cmd{32-bit} بدون إشارة (\cmd{unsigned}).
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -563,7 +565,7 @@ typedef unsigned size_t;
 أنواع البيانات (\en{Data Types}) تختلف حجمها بحسب المترجم والنظام الذي تم ترجمة البرنامج عليه ، ويفضل أن يتم اعادة تعريفها (\en{typedef}) لتوضيح الحجم والنوع في آن واحد .
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -596,7 +598,7 @@ typedef		unsigned long long	uint64_t;
 ولدعم ملفات الرأس للغة سي++ فان الملف السابق سيتم تضمينه في ملف \cmd{cstdint} وهي التسمية التي تتبعها السي++ في ملفات الرأس\footnote{ملفات الرأس للغة سي++ تتبع نفس هذا الأسلوب لذلك لن يتم ذكرها مجددا وسنكتفي بذكر ملفات الرأس للغة سي.}.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -616,7 +618,7 @@ typedef		unsigned long long	uint64_t;
 ملف \cmd{ctype.h} يحوي العديد من الماكرو (\en{Macros}) والتي تحدد نوع الحرف (عدد،حرف،حرف صغير،مسافة،حرف تحكم،...الخ).
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -665,9 +667,9 @@ extern char _ctype[];
 \end{lstlisting}
 \end{english}
 
-\subsubsection{دعم الدوال بعدد غير محدود من الوسائط}
+%\subsubsection{دعم الدوال بعدد غير محدود من الوسائط}
 % write it..
 
-\section{دالة طباعة المخرجات للنواة}
+%\section{دالة طباعة المخرجات للنواة}
 
 \end{document}

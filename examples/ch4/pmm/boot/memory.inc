@@ -94,7 +94,7 @@ get_memory_size_32bit:
 		xor ecx,ecx
 		xor edx,edx
 		
-		mov ax,0x881		; BIOS get memory size
+		mov ax,0xe881		; BIOS get memory size
 		int 0x15
 		
 		jc .error
@@ -123,6 +123,7 @@ get_memory_size_32bit:
 	
 ; --------------------------
 ; get memory size:
+; get a total memory size.except the first MB. 
 ;	return:
 ;		ax=KB between 1MB and 16MB
 ;		bx=number of 64K blocks above 16MB
@@ -135,7 +136,7 @@ get_memory_size:
 		xor ecx,ecx
 		xor edx,edx
 		
-		mov ax,0x801		; BIOS get memory size
+		mov ax,0xe801		; BIOS get memory size
 		int 0x15
 		
 		jc .error
@@ -175,7 +176,7 @@ get_conventional_memory_size:
 ;	ret ax=KB size above 1MB; ax= -1 on error
 ;--------------------------------------------	
 get_extended_memory_size:
-		mov ex,0x88
+		mov ax,0x88
 		int 0x15
 	
 		jc .error
@@ -188,7 +189,7 @@ get_extended_memory_size:
 	
 		ret
 	
-	.error
+	.error:
 		mov ax,-1
 		ret
 

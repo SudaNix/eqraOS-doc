@@ -5,6 +5,8 @@
 
 /*	Execption Handler	*/
 
+extern void _cdecl execption_init();
+
 /* Divide by zero	*/
 extern void _cdecl divide_by_zero_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
 

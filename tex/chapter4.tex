@@ -36,7 +36,7 @@
 \begin{itemize}
 \item البتات \cmd{0}-\cmd{15}: تحوي أول بايتين (من بت \cmd{0} -\cmd{15}) من حجم المقطع.
 \item البتات \cmd{16}-\cmd{39}: تحوي أول ثلاث بايتات من عنوان بداية المقطع \en{Base Address}.
-\item البت \cmd{40}: بت الوصول \en{Access Bit} (يستخدم مع الذاكرة الظاهرية \en{Virtual Memory}.
+\item البت \cmd{40}: بت الوصول \en{Access Bit} (يستخدم مع الذاكرة الظاهرية \en{Virtual Memory}).
 \item البتات \cmd{41-43}: نوع الواصفة \en{Descriptor Type}:
 \begin{itemize}
 \item البت \cmd{41}: القراءة والكتابة:
@@ -95,7 +95,7 @@
 وفي هذه المرحلة سنقوم ببناء هذا الجدول ويتكون من واصفة للكود وللبيانات \en{Code and Data Descriptor}، بحيث يمكن القراءة و الكتابة من أول بايت في الذاكرة الى آخر الذاكرة \cmd{0xffffffff}. 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:gdt,caption=\en{GDT}]{../examples/ch3/ex15/ex15.asm}
@@ -138,7 +138,7 @@
 وبعد إنشاء هذا الجدول (\en{GDT}) في الذاكرة ، يجب أن يَحمِل المسجل \cmd{gdtr}  على حجم هذا الجدول ناقصا واحد وعلى عنوان بداية الجدول، ويتم ذلك عن طريق إنشاء مؤشرا الى جدول \en{GDT} ومن ثم  استخدام الامر \cmd{lgdt} (وهو أمر يعمل فقط في الحلقة صفر \en{Ring0}) ، والشفرة التالية توضح ذلك.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:load_gdt,caption=\en{Load GDT into GDTR}]{../examples/ch3/ex16/ex16.asm}
@@ -157,7 +157,7 @@
 
  
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:switch_to_PMode,caption=\en{Switching to Protected Mode}]{../examples/ch3/ex17/ex17.asm}
@@ -178,7 +178,7 @@
 
 وبخصوص متحكم لوحة المفاتيح (متحكم \en{8042}) فغالبا ما تأتي على شكل شريحة \en{Integrated Circuit} أو تكون مضمنة داخل اللوحة الأم (\en{Motherboard}) وتكون في ال \en{South Bridge}.ويرتبط هذا المتحكم مع متحكم آخر بداخل لوحة المفاتيح ، وعند الضغط على زر ما فانه يتم توليد \en{Make Code} ويُرسل الى المتحكم الموجود بداخل لوحة المفاتيح والذي بدروه يقوم بارساله الى متحكم \en{8042} عن طريق منفذ الحاسب (\en{Hardware Port}) .وهنا يأتي دور متحكم \en{8042} حيث يقوم بتحويل \en{Make code} الى \en{Scan Code} ويحفظها في مسجلاته الداخلية \en{Buffer} هذا المسجل يحمل الرقم \cmd{0x60} في أجهزة \en{IBM and Compatible PC}، وهذا يعني أنه في حالة قراءة هذا المسجل (عن طريق الأمر \cmd{in}) فانه يمكن قراءة القيمة المدخلة.
 
-وفي الفصل السادس سيتم مناقشة متحكم لوحة المفاتيح بالتفصيل ، وسنكتفي هنا فقط بتوضيح الأجزاء المتعلقة بتفعيل بوابة \en{A20}.
+وفي الفصل الثامن سيتم مناقشة متحكم لوحة المفاتيح بالتفصيل ، وسنكتفي هنا فقط بتوضيح الأجزاء المتعلقة بتفعيل بوابة \en{A20}.
 
 
 
@@ -201,7 +201,7 @@
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:enable_a20_1,caption=\en{Enable A20 by System Control Port 0x92}]{../examples/ch3/ex18/ex18.asm}
@@ -213,7 +213,7 @@
 يمكن استخدام مقاطعة البايوس \cmd{int 0x15} الدالة \cmd{0x2401} لتفعيل بوابة \en{A20} ، والدالة \cmd{0x2400} لتعطيلها.مع التذكير بأن يجب أن يكون المعالج في النمط الحقيقي حتى نتمكن من استدعاء هذه المقاطعة، والكود التالي يوضح طريقة التفعيل باستخدام البايوس.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:enable_a20_2,caption=\en{Enable A20 by BIOS int 0x15}]{../examples/ch3/ex19/ex19.asm}
@@ -246,7 +246,7 @@
 والشفرة التالية توضح كيفية انتظار المتحكم حتى ينفذ الاوامر المرسله اليه (\en{wait input}) وكيفية انتظار المتحكم الى ان يأتي بنتيجة ما (\en{wait output}).
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:enable_a20_3,caption=\en{Wait Input/Output}]{../examples/ch3/ex20/ex20.asm}
@@ -268,7 +268,7 @@
 وعن طريق الأمر \cmd{0xdd} فانه يمكن تفعيل البوابة \en{A20} بسهولة كما في الشفرة التالية ، لكن أيضا هذه الطريقة لا تعمل على كل الاجهزة حيث هناك بعض المتحكمات لا تدعم هذا الأمر.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:enable_a20_4,caption=\en{Enable A20 by Send 0xdd}]{../examples/ch3/ex21/ex21.asm}
@@ -312,7 +312,7 @@
 والشفرة التالية توضح كيفية تفعيل بوابة \en{A20} عن طريق منفذ الخروج \en{Output Port} لمتحكم لوحة المفاتيح.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:enable_a20_5,caption=\en{Enable A20 by write to output port of Keyboard Controller}]{../examples/ch3/ex22/ex22.asm}
@@ -322,7 +322,7 @@
  
 
 \section{أساسيات ال \en{VGA}}
-في عام \en{1987} قامت \en{IBM} بتطوير مقياس لمتحكمات شاشة الحاسب وهو \en{Video Graphics Array} واختصاراً \en{VGA} وجائت تسميته ب \en{Array} نظرا لانه تم تطويره كشريحة واحدة \en{signle chip} حيث استبدلت العديد من الشرائح والتي كانت تستخدم في مقاييس اخرى مثل \en{MDA} و \en{CGA} و \en{EGA} ، ويتكون ال \en{VGA} من \en{Video Buffer}, \en{Video DAC} , \en{CRT Controller} , \en{Sequencer unit} , \en{Graphics Controller} و \en{Attribute Controller}\footnote{شرح هذه المكونات سيكون في الفصل الخامس باذن الله ، وسيتم التركيز على بعض الاشياء بحسب الحاجة حاليا.}.
+في عام \en{1987} قامت \en{IBM} بتطوير مقياس لمتحكمات شاشة الحاسب وهو \en{Video Graphics Array} واختصاراً \en{VGA} وجائت تسميته ب \en{Array} نظرا لانه تم تطويره كشريحة واحدة \en{signle chip} حيث استبدلت العديد من الشرائح والتي كانت تستخدم في مقاييس اخرى مثل \en{MDA} و \en{CGA} و \en{EGA} ، ويتكون ال \en{VGA} من \en{Video Buffer}, \en{Video DAC} , \en{CRT Controller} , \en{Sequencer unit} , \en{Graphics Controller} و \en{Attribute Controller}\footnote{شرح هذه المكونات سيكون لاحقا باذن الله ، وسيتم التركيز على بعض الاشياء بحسب الحاجة حاليا.}.
 
 ال \en{Video Buffer} هو مقطع من الذاكرة \en{segment of memory} يعمل كذاكرة للشاشة \en{Memory Mapped} ، وعند بداية التشغيل فان البايوس يخصص مساحة من الذاكرة بدءا من العنوان \cmd{0xa0000} كذاكرة للشاشة وفي حالة تم الكتابة الى هذه الذاكرة فان هذا سوف يغير في الشاشة ، هذا الربط يسمى \en{Memory Mapping}، أما ال \en{Graphics Controller} فهو الذي يقوم بتحديث محتويات الشاشة بناءاً على البيانات الموجودة في ال \en{Video buffer}.
  
@@ -347,7 +347,7 @@
 وعند الكتابة في هذه العناوين فان هذا سوف يؤثر في الشاشة واظهار القيم التي تم كتابتها ، والمثال التالي يوضح كيفية كتابة حرف \en{A} بلون أبيض وخلفية سوداء.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:print_A_on_screen,caption=\en{Print 'A' character on screen}]{../examples/ch3/ex23/ex23.asm}
@@ -428,7 +428,7 @@
 اذاً لطباعة حرف على النمط \en{Mode 7} فانه يجب ارسال الحرف وخصائصه الى ذاكرة العرض ، كما يجب مراعاة بعض الامور من تحديث المؤشر \en{Cursor} (هو خط  \en{underline} يظهر ويختفي للدلالة على الموقع الحالي) و الانتقال الى الصف التالي في حالة الوصول الى اخر حرف في العمود أو في حالة كان الحرف المراد طباعته هو حرف الانتقال الى سطر جديد \en{0xa} . والمثال التالي يوضح الدالة \en{putch32} والتي تستخدم لطباعة حرف على الشاشة في النمط المحمي \en{PMode}.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:putch32_routine,caption=\en{putch32 routine}]{../examples/ch3/ex24/ex24.asm}
@@ -447,7 +447,7 @@
 لطباعة سلسلة نصية سنستخدم دالة طباعة الحرف وسنقوم بأخذ حرف حرف من السلسة وارسالها الى دالة طباعة الحرف حتى تنتهي السلسلة ، والشفرة التالية توضح الدالة \en{puts32} لطباعة سلسلة نصية.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:puts32_routine,caption=\en{puts32 routine}]{../examples/ch3/ex25/ex25.asm}
@@ -501,7 +501,7 @@
 والشفرة التالية توضح عمل الدالة \en{move cursor} والتي تعمل على تحريك المؤشر.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:move_cursor,caption=\en{Move Hardware Cursor}]{../examples/ch3/ex26/ex26.asm}
@@ -511,7 +511,7 @@
 تنظيف الشاشة هي عملية ارسال حرف المسافة بعدد الحروف الموجودة (\cmd{25*80} في نمط \en{Mode 7}) و تصفير قيم (\en{x,y}) . والشفرة التالية توضح كيفية تنظيف الشاشة وتحديد اللون الازرق كخلفية لكل حرف.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:clear_screen,caption=\en{Clear Screen}]{../examples/ch3/ex27/ex27.asm}
@@ -529,7 +529,7 @@
 والشفرة التالية توضح نواة ترحيبية.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:hello_kernel,caption=\en{Hello Kernel}]{../examples/ch3/ex28/ex28.asm}
@@ -542,7 +542,7 @@
 والشفرة التالية توضح ملف المرحلة الثانية من المحمل \en{stage2.asm} ، وتم تقسيم الكود بشكل أكثر تنظيما حيث تم نقل أي دالة تتعلق بالقرص المرن الى الملف \en{floppy.inc} (ملف \en{.inc} هو ملف للتضمين في ملف آخر) ، والدوال المتعلقة بنظام الملفات موجودة على الملف \en{fat12.inc} ودوال الاخراج موجودة في \en{stdio.inc} ودوال تفعيل بوابة \en{A20} موجودة على الملف \en{a20.inc} ودالة تعيين جدول الواصفات العام وكذلك تفاصيل الجدول موجودة في الملف \en{gdt.inc} ، اخيرا تم انشاء ملف \en{common.inc} لحفظ بعض الثوابت المستخدمة دائما\footnote{جميع شفرات الملفات مرفقة مع البحث في مجلد \en{example/ch3/boot/} وشفرة المحمل النهائية ستكون ملحقة في نهاية البحث.}.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:load_and_exec_kernel,caption=\en{Loading and Executing Kernel: Full Example}]{../examples/ch3/ex29/ex29.asm}

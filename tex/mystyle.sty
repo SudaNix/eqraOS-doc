@@ -27,6 +27,8 @@
 } 
 
 \usepackage[all]{hypcap}
+\urlstyle{same}
+
 \usepackage{comment}
 \usepackage{todonotes}
 %\usepackage[helvetica]{quotchap}
@@ -57,11 +59,11 @@
 \setmainfont[Script=Arabic,Scale=1.4,Mapping=arabicdigits]{Traditional Arabic}
 
 \newcommand{\en}[1]{%
-{\fontspec[Scale=1.1,Mapping=englishdigits]{Calibri}%Traditional Arabic
+{\fontspec[Scale=1.0,Mapping=englishdigits]{Calibri}%Traditional Arabic
 {\beginL #1}{\endL}}}
 
 \newcommand{\cmd}[1]{%
-{\fontspec[Scale=1.1,Mapping=englishdigits]{Courier New}%Consolas
+{\fontspec[Scale=1.0,Mapping=englishdigits]{Courier New}%Consolas
 {\beginL #1}{\endL}}}
 
 
@@ -70,6 +72,9 @@
 
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+
+
 
 \title{
 بَرْمَجَة وَ تَصْمِيمْ نظَام تَشْغِيلْ\\ "نظام إقرأ"
@@ -87,4 +92,22 @@
 
 \makeatletter
 \@ifpackageloaded{caption}{\input{caption-xetex-bidi.def}}{}
+\makeatother
+
+\makeatletter
+\renewcommand\part{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+  \thispagestyle{empty}%
+  \if@twocolumn
+    \onecolumn
+    \@tempswatrue
+  \else
+    \@tempswafalse
+  \fi
+  \null\vfil
+  \secdef\@part\@spart}
 \makeatother

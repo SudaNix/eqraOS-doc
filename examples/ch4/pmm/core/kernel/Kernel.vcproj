@@ -212,6 +212,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath=".\color.h"
+			>
+		</File>
+		<File
 			RelativePath=".\exception.cpp"
 			>
 		</File>
@@ -220,7 +224,23 @@
 			>
 		</File>
 		<File
+			RelativePath=".\mem_info.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\mem_info.h"
+			>
+		</File>
+		<File
 			RelativePath=".\panic.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\pmm.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\pmm.h"
 			>
 		</File>
 		<File

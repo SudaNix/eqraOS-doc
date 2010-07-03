@@ -117,8 +117,8 @@ stage2:
 		xor ebx,ebx
 		call get_memory_size
 		
-		mov [boot_info+multiboot_info.mem_low],ax
-		mov [boot_info+multiboot_info.mem_high],bx
+		mov word[boot_info+multiboot_info.mem_low],ax
+		mov word[boot_info+multiboot_info.mem_high],bx
 		
 	;----------------
 	; Get Memory Map.

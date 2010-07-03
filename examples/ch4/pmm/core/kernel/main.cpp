@@ -20,104 +20,71 @@
 */
 
 #include <hal.h>
+#include <multiboot_info.h>
+
 #include "kdisplay.h"
 #include "exception.h"
+#include "pmm.h"
+#include "mem_info.h"
+#include "color.h"
 
-/* foreground color on background color	*/
-
-#define WHITE_ON_BLUE	0x1f
-#define WHITE_ON_RED	0x4f
-#define WHITE_ON_GREEN	0x2f
-#define WHITE_ON_BROWN	0x6f
-
-#define GRAY_ON_BLUE	0x17
-#define GRAY_ON_RED		0x47
-#define GRAY_ON_GREEN	0x27
-#define GRAY_ON_BROWN	0x67
-
-#define BLACK_ON_GRAY	0x70
-#define BLACK_ON_RED	0x40
-#define BLACK_ON_GREEN	0x20
-#define BLACK_ON_BROWN	0x60
+void eqraos_screen();
+void pmm_demo();
 
 
 
-int _cdecl main()
+int _cdecl main(multiboot_info* boot_info)
 {
-	/*kclear(0x18);		//blue
-	kgoto_xy(0,0);
+	mem_info_init(boot_info);
 
-	kset_color(0x70);  //black on gray
-	kputs("eqra Operating System (eqraOS) Preparing to load...");
+	eqraos_screen();
 
-	kgoto_xy(0,1);
-	kset_color(0x19);
-	kputs("eqraOS Starting Up...");
+	kset_color(GRAY_ON_BLUE);
+	kputs("eqraOS kernel executed\n");
 
-	kset_color(0x70);
-	kgoto_xy(0,24);
-	kputs(" Initializing Hardware Abstraction Layer (HAL.lib)... "); 
-
-	kset_color(0x19);
-	kgoto_xy(0,2);
-	*/
-	
+	mem_info_dump_size();
+	mem_info_dump_region();
 	hal_init();
 	enable_irq();
-	
-	set_vector(0,(void (_cdecl &)(void))divide_by_zero_fault);
-	set_vector(1,(void (_cdecl &)(void))single_step_trap);
-	set_vector(2,(void (_cdecl &)(void))nmi_trap);
-	set_vector(3,(void (_cdecl &)(void))breakpoint_trap);
-	set_vector(4,(void (_cdecl &)(void))overflow_trap);
-	set_vector(5,(void (_cdecl &)(void))bounds_check_fault);
-	set_vector(6,(void (_cdecl &)(void))invalid_opcode_fault);
-	set_vector(7,(void (_cdecl &)(void))no_device_fault);
-	set_vector(8,(void (_cdecl &)(void))double_fault_abort);
-	set_vector(10,(void (_cdecl &)(void))invalid_tss_fault);
-	set_vector(11,(void (_cdecl &)(void))no_segment_fault);
-	set_vector(12,(void (_cdecl &)(void))stack_fault);
-	set_vector(13,(void (_cdecl &)(void))general_protection_fault);
-	set_vector(14,(void (_cdecl &)(void))page_fault);
-	set_vector(16,(void (_cdecl &)(void))fpu_fault);
-	set_vector(17,(void (_cdecl &)(void))alignment_check_fault);
-	set_vector(18,(void (_cdecl &)(void))machine_check_abort);
-	set_vector(19,(void (_cdecl &)(void))simd_fpu_fault);
-	
-	kclear(WHITE_ON_RED);
-	kgoto_xy(0,0);
-	
-	kset_color(BLACK_ON_RED);
-	kprintf("    eqraOS Kernel executed.\n\n");
+	execption_init();
+	mem_info_blocks_stat();
 
-	kset_color(GRAY_ON_RED);
-
-	kprintf("                ___ ___ ________ _  / __ \\ / __/\n");
-	kprintf("               / -_) _ `/ __/ _ `/ / /_/ /_\\ \\  \n");
-	kprintf("               \\__/\\_, /_/  \\_,_/  \\____//___/  \n");
-	kprintf("                    /_/                         \n");
-	
-
-	kset_color(WHITE_ON_RED);
-
-	kprintf("Entering PMode ....................................[ok]\n");
-	kprintf("Initializing CRT ..................................[ok]\n");
-	kprintf("Initializing GDT ..................................[ok]\n");
-	kprintf("Initializing IDT ..................................[ok]\n");
-	kprintf("Initializing PIC ..................................[ok]\n");
-	kprintf("Initializing PIT ..................................[ok]\n");
-	kprintf("Setup Error/Exception Handler .....................[ok]\n");
-	
-	//kprintf("CPU vendor is: %s\n",get_cpu_vendor());
-	
-	kset_color(BLACK_ON_GRAY);
-
-
-	for (;;) {
-		kgoto_xy(0,24);
-		kprintf("Current tick count: %d\n",get_tick_count());
-	}
-	
+	// allocate and deallocate demos.
+	pmm_demo();
 	
 	return 0;
+}
+
+
+void pmm_demo() {
+	
+	kset_color(0x12);
+	
+	uint32_t* b1 = (uint32_t*)pmm_alloc();
+	uint32_t* b2 = (uint32_t*)pmm_allocs(2);
+	
+	kprintf("b1 allocataed 1 block at 0x%x: \n",b1);
+	kprintf("b2 allocataed 2 blocks at 0x%x: \n",b2);
+
+	pmm_dealloc(b1);
+	b1 = (uint32_t*)pmm_alloc();
+	kprintf("b1 re-allocataed at 0x%x: \n",b1);
+	
+	pmm_dealloc(b1);
+	pmm_deallocs(b2,2);
+}
+
+void eqraos_screen() {
+	kclear(0x13);
+	kgoto_xy(0,0);
+	kset_color(0x3F);
+	kputs("                                  eqraOS v0.1                                   ");
+	//kgoto_xy(0,1);
+	//kputs("                          Ahmad Essam [suda.nix@hotmail.com]                    ");
+	
+	kgoto_xy(0,24);
+	kset_color(0x3F);
+	kputs("                                                                                ");
+	
+	kgoto_xy(0,3);
 }

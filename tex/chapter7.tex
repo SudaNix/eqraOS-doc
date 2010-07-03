@@ -1,10 +1,831 @@
-\documentclass[document.tex]{subfiles} 
+\documentclass[document.tex]{subfiles}
 
 \begin{document}
 
 \chapter{إدارة الذاكرة}
+تعتبر ذاكرة الحاسب الرئيسية (\en{RAM}) من أهم الموارد التي يجب على نظام التشغيل إدارتها حيث يمثل المخزن الذي يقرأ المعالج منه الأوامر ويقوم بتنفيذها ، ولا يمكن للمعالج الوصول المباشر الى أحد الذواكر الثانوية مباشرة وإنما يتم تحميل البيانات والبرامج الى الذاكرة الرئيسية حتى تصبح متاحة للمعالج. وهنا يأتي دور مدير الذاكرة (\en{Memory Manager}) حيث يراقب هذا البرنامج أجزاء الذاكرة ويتعرف على ما هو مستخدم وما هو غير مستخدم كما يوفر دوالا لحجز مقاطع الذاكرة وتحريرها ، كذلك من الممكن أن يقوم بعملية إعادة تجزئة لمقاطع الذاكرة وذلك لتوفير مساحة واستغلال أفضل.وفي هذا الفصل سيتم دراسة مدير الذاكرة الفيزيائية والتخيلية وكيفية برمجتهم كذلك سيتم عرض بعض الطرق لحساب المساحة الكلية للذاكرة وعرض مقاطع الذاكرة المستخدمة من قبل النظام. 
+
 \section{إدارة الذاكرة الفيزيائية \en{Physical Memory Management}}
+الذاكرة الفيزيائية (\en{Physical Memoery}) هي كتلة ذاكرية توجد بداخل شريحة الذاكرة الرئيسية \en{RAM} وتختلف طريقة حفظ البيانات فيها بحسب نوع الذاكرة (فمثلا تستخدم المكثفات والترانزستورات لحفظ البتات في ذاكرة \en{DRAM}) ، ويتم التحكم في هذه الكتلة بواسطة شريحة داخل اللوحة الأم تسمى بمتحكم الذاكرة أو بالجسر الشمالي (\en{North Bridge}) حيث يقوم هذا المتحكم بعملية إنعاش المكثفات بداخل الذاكرة حتى تحافظ على محتوياتها من الضياع كذلك يعنون هذا المتحكم الذاكرة الفيزيائية بداية من أول 8 بتات حيث تأخذ العنوان الفيزيائي \en{0x0} ويليها العنوان \en{0x1} للثمانية بتات التالية ، وهكذا تتم عنونة الذاكرة من قبل المتحكم. وعند وصول طلب قراءة أو كتابة الى متحكم الذاكرة فان المتحكم يقوم بقراءة العنوان من مسار العناوين وبالتالي يتمكن من تفسير العنوان وتوجيهه الى المكان الصحيح حيث غالبا ما توجد أكثر من شريحة رام بداخل الحاسب. وتشكل مجموعة كل العناوين في كل شرائح الذاكرة مساحة عناوين فيزيائية (\en{Physical Address Space}) .لكن قد يكون هناك عددا من هذه العناوين غير مستخدمة فعليا وذلك في حالة وجود شريحة ذاكرة في المنفذ الأول والثالث وعدم وجود شريحة ذاكرة في المنفذ الثاني وفي هذه الحالة اذا كان حجم كل شريحة ذاكرة هي \en{n} فان العناوين من \en{n-1} الى \en{2n-1} هي عناوين غير موجودة حقيقة وتسمى فتحات (\en{Holes}) ، وعملية الكتابة في هذه الفتحات لا تؤثر شيء على النظام بينما عند القراءة من هذه الفتحات فان البيانات الموجودة في مسار البيانات هي التي يتم قرائتها على الرغم من أنها غير صحيحة. 
+
+وقبل الخوض في برمجة مدير الذاكرة يجب توفير عددا من المعلومات مثل جحم الذاكرة الكلي ومناطق الذاكرة المستخدمة وغير المستخدمة و الفتحات الموجودة ان كانت هناك فتحات ، وهذا حتى يتمكن مدير الذاكرة من إدارتها على النحو المطلوب. 
+ 
+\subsection{حساب حجم الذاكرة}
+توجد عدة طرق لحساب حجم الذاكرة بعضها تعتمد على النظام والأخرى لا تعتمد ، وفي بداية إقلاع الحاسب يقوم نظام البايوس بالتخاطب مع متحكم الذاكرة وأخذ حجم الذاكرة ويقوم بحفظها في أحد العناوين في منطقة بيانات البايوس في الذاكرة. وتعتبر هذه الطريقة هي الأكثر دقة في الحصول على حجم الذاكرة ولكن تبقى مشكلة أن مقاطعات البايوس لا يمكن استدعائها بداخل النواة والتي تعمل في النمط المحمي. لذلك سيتم استخدام المقاطعة الخاصة بجلب حجم الذاكرة قبل أن تبدأ النواة في عملها وتمرير هذا الحجم مع بعض المعلومات الاخرى و تسمى معلومات الإقلاع المتعدد الى النواة. 
+
+\subsubsection{المقاطعة \en{int 0x12}}
+تقوم هذا المقاطعة بجلب حجم الذاكرة من منطقة بيانات البايوس (بالتحديد من العنوان \en{0x413}) لكنها لا تستخدم حاليا نظرا لأنها تجلب حجم  64 كيلوبايت كحد أقصى وبالتالي اذا كانت الذاكرة لديك أكبر من هذا الحجم فانها لا تجلب الحجم الصحيح ، لذلك لا تستخدم هذه المقاطعة الان. والمثال \ref{lst:mem_size_int12} يوضح كيفية استخدامها 
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:mem_size_int12,caption=\en{Using int 0x12 to get size of memory}]
+
+;---------------------------------
+; get_conventional_memory_size
+;	ret ax=KB size from address 0
+;--------------------------------
+get_conventional_memory_size:
+	int 0x12
+	ret
+
+\end{lstlisting}
+\end{english}
+ 
+\subsubsection{المقاطعة \en{0x15} الدالة \en{0xe801}}
+تجلب هذه المقاطعة الحجم الصحيح وتستخدم دائما لهذا الغرض ، وتعود بالقيم:
+\begin{itemize}
+\item العلم \en{CF}: صفر في حالة نجاح عمل المقاطعة.
+\item المسجل \en{EAX}: عدد الكيلوبايتات من العنوان \en{1 MB} الى \en{16 MB}.
+\item المسجل \en{EBX}: عدد الوحدات المكونة من 64 كيلوبايت بدئا من العنوان \en{16 MB}، ويجب ضربها لاحقا بالعدد 64 حتى يتم تحويلها الى عدد الكيلوبايتات.
+\end{itemize}
+
+وفي بعض الأنظمة يستخدم البايوس المسجلين \en{ECX} و \en{EDX} بدلا من المسجلين \en{EAX} و \en{EBX}. والمثال \ref{lst:mem_size_int15} يوضح كيفية استخدام هذه المقاطعة.
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:mem_size_int15,caption=\en{Using int 0x15 Function 0xe801 to get size of memory}]
+
+; --------------------------
+; get memory size:
+; get a total memory size.except the first MB. 
+;	return:
+;		ax=KB between 1MB and 16MB
+;		bx=number of 64K blocks above 16MB
+;		bx=0 and ax= -1 on error
+; --------------------------		
+get_memory_size:
+
+		push ecx
+		push edx
+		xor ecx,ecx
+		xor edx,edx
+		
+		mov ax,0x801		; BIOS get memory size
+		int 0x15
+		
+		jc .error
+		cmp ah,0x86
+		je .error
+		cmp ah,0x80
+		je .error
+		
+		jcxz .use_eax
+		
+		mov ax,cx
+		mov bx,dx
+		
+	.use_eax:
+		pop edx
+		pop ecx
+		ret
+		
+	.error:
+		mov ax,-1
+		mov bx,0
+		pop edx
+		pop ecx
+		ret
+
+\end{lstlisting}
+\end{english}
+
+ويجدر ملاحظة أن هذا المقاطعة لا تحسب أول ميجا بايت من الذاكرة ، لذلك عند استخدام هذه الدالة يجب زيادة الحجم الكلي بمقدار 1024 كيلوبايت (الزيادة تكون في مسجل \en{ax}) ، كذلك يجب ضرب المسجل \en{bx} بالعدد 64 نظرا لان القيمة التي تضعها الدالة هي عدد الوحدات المكونة من 64 كيلوبايت ، وهذا يعني ان كان العدد هو 2 مثلا فان النتيجة يجب أن تكون \en{2*64} وتساوي \en{128} كيلوبايت.
+
+\subsection{خريطة الذاكرة \en{Memory Map}}
+بعد أن تم حساب حجم الذاكرة يجب الانتباه الى أن عددا منها محجوز لبعض الأغراض (راجع فقرة خريطة الذاكرة في فصل إقلاع الحاسب) وهنا يأتي دور خريطة الذاكرة التي تعرف وتحدد لنا مقاطع الذاكرة المستخدمة والغير مستخدمة. ويمكن الحصول على خريطة الذاكرة بواسطة مقاطعة البايوس \en{int 0x15} الدالة \en{e820} التي تأخذ المدخلات التالية:
+
+\begin{itemize}
+\item العلم \en{CF}: صفر في حالة نجاح عمل المقاطعة.
+\item المسجل \en{eax}: القيمة \en{0x534d4150} وتساوي \en{SMAP} بترميز \en{ASCII}، وفي حالة حدوث خطأ فان رقم الخطأ سيحفظ في المسجل \en{ah}.
+\item المسجل \en{ebx}: عنوان السجل التالي أو صفر في حالة الإنتهاء.
+\item المسجل \en{ecx}: طول المقطع بالبايت.
+\item المسجلان \en{es:di}: سجل واصفة المقطع.
+
+\end{itemize}
+
+وتعود بالمخرجات:
+\begin{itemize}
+\item المسجل \en{eax}: رقم الدالة وهي \en{0xe820}.
+\item المسجل \en{ebx}: عنوان البداية.
+\item المسجل \en{ecx}: حجم الذاكرة المؤقتة (\en{buffer}) وتساوي 20 بايت على الأقل.
+\item المسجل \en{edx}: القيمة \en{0x534d4150} وتساوي \en{SMAP} بترميز \en{ASCII}.
+\item المسجلان \en{es:di}: عنوان الذاكرة \en{buffer} التي ستحفظ بها النتائج.
+\end{itemize}
+
+وبعد تنفيذ المقاطعة فان الذاكرة \en{Buffer} يتم ملئها بأول سجل وهو بطول 24 بايت ويتم تكرار استدعاء المقاطعة الى أن تكون قيمة المسجل \en{ebx} مساوية للصفر. ومحتويات كل سجل يوضحها المثال \ref{lst:mmap_struc}.
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:mmap_struc,caption=\en{Memory Map Entry Structure}]
+
+; Memory Map Entry Structure
+struc memory_map_entry
+	.base_addr	resq	1
+	.length		resq	1
+	.type		resd	1
+	.acpi_null	resd	1
+endstruc
+\end{lstlisting}
+\end{english}
+
+وهي توصف مقطع الذاكرة حيث تحوي عنوان بداية المقطع وطوله ونوع المقطع وأخيرا بيانات محجوزة. ونوع المقطع يحدد ما إذا كان المقطع مستخدما أو محجوزا ويأخذ عدة قيم:
+
+\begin{itemize}
+\item القيمة \en{1}: تدل على أن المقطع متوفرا.
+\item القيمة \en{2}: تدل على أن المقطع محجوزا.
+\item القيمة \en{3}: \en{ACPI Reclaim Memory} وهي منطقة محجوزة لكي يستخدمها النظام.
+\item القيمة \en{4}:\en{ACPI NVS Memory} كذلك هي منقطة محجوزة للنظام.
+\item بقية القيم الأخرى تدل على أن المقطع غير معرف أو غير موجود.
+
+\end{itemize}
+
+والمثال \ref{lst:get_mmap} يوضح كيفية جلب مقاطع الذاكرة لكي يستفيد منها مدير الذاكرة لاحقا.
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:get_mmap,caption=\en{Get Memory Map}]
+; -------------------------------------------------
+; get_memory_map:
+;	Input:
+;		EAX = 0x0000E820
+;		EBX = continuation value or 0 to start at beginning of map
+;		ECX = size of buffer for result (Must be >= 20 bytes)
+;		EDX = 0x534D4150h ('SMAP')
+;		ES:DI = Buffer for result
+;
+;	Return:
+;		CF = clear if successful
+;		EAX = 0x534D4150h ('SMAP')
+;		EBX = offset of next entry to copy from or 0 if done
+;		ECX = actual length returned in bytes
+;		ES:DI = buffer filled
+;		If error, AH containes error code 
+; --------------------------------------------------
+get_memory_map:
+		
+		pushad
+		xor ebx,ebx
+		xor bp,bp
+		mov edx,'PAMS'		; 0x534D4150
+		mov eax,0xe820
+		mov ecx,24
+		int 0x15			; BIOS get memory map.
+		
+		jc .error
+		cmp eax,'PAMS'
+		jne .error
+		
+		test ebx,ebx
+		je .error
+		
+		jmp .start
+		
+	.next_entry:
+		mov edx,'PAMS'		; 0x534D4150
+		mov eax,0xe820
+		mov ecx,24
+		int 0x15			; BIOS get memory map.
+		
+	.start:
+		jcxz .skip_entry
+		
+		mov ecx,[es:di + memory_map_entry.length]
+		test ecx,ecx
+		jne short .good_entry
+		mov ecx,[es:di + memory_map_entry.length+4]
+		jecxz .skip_entry
+	
+	.good_entry:
+		inc bp
+		add di,24
+	
+	.skip_entry:
+		cmp ebx,0
+		jne .next_entry
+		jmp .done
+		
+	.error:
+		stc				; set carry flag
+		
+	.done:
+		popad
+		ret
+		
+endstruc
+\end{lstlisting}
+\end{english}
+
+
+\subsection{مواصفات الإقلاع المتعدد}
+العديد من محملات النظام (\en{Bootloader}) تدعم الإقلاع المتعدد لمختلف أنظمة التشغيل وذلك عبر مواصفات ومقاييس محددة يجب أن يلتزم بها محمل النظام عند تحميل نواة النظام. ومن ضمن هذا المقياس  تمرير بيانات الإقلاع المتعدد (\en{Multiboot Information}) من محمل النظام الى نواة نظام التشغيل. وما يهمنا حاليا هو تمرير حجم الذاكرة وخريطة الذاكرة الى النواة حتى يتمكن مدير الذاكرة من إدارتها بناءا على خريطة الذاكرة وحجمها. حيث ذكرنا سابقا أنه أثناء عمل النواة لا توجد طريقة مبسطة لتحديد حجم الذاكرة ومخطط المقاطع فيها ، لذلك تم اللجوء الى مقاطعات البايوس والإستفادة من خدماته ومن ثم تمرير النتائج الى نواة النظام عن طريق هيكلة قياسية\footnote{على الرغم من أنه يمكن تمرير هذه البيانات بأي طريقة إلا أن الإلتزام بهيكلة قياسية سيفيد لاحقا عند دعم الإقلاع المتعدد.}.
+
+\subsubsection{حالة الحاسب} 
+من ضمن هذه المقاييس أيضا توفر حالة معينة للحاسب (\en{Machine State}) ،وهي تنص على أنه عند تحميل نواة أي نظام تشغيل فان بعض المسجلات يجب أن تأخذ قيما محددة كالاتي:
+
+\begin{itemize}
+\item المسجل \en{eax}: يجب أن يأخذ الرقم \en{0x2BADB002} وهي إشارة لنواة النظام بأن محمل النظام يدعم الإقلاع المتعدد.
+\item المسجل \en{ebx}: تحتوي على عنوان بداية هيكلة الإقلاع المتعدد.
+\item المسجل \en{cs}: واصفة الشفرة يجب أن تكون 32 بت قراءة/تنفيذ بدءا من العنوان \en{0x0} وانتهاءا بالعنوان \en{0xffffffff}.
+\item المسجلات \en{ds,es,fs,gs,ss}: يجب أن تكون مقاطع القراءة والكتابة 32 بت وتبدأ من العنوان \en{0x0} وتنتهي بالعنوان \en{0xffffffff}.
+\item يجب تفعيل بوابة \en{a20}.
+\item مسجل التحكم \en{cr0}: البت \en{0} يجب أن يفعل (تفعيل النمط المحمي) والبت 31 يجب أن يعطل (تعطيل التصفيح).
+\end{itemize}
+
+\subsubsection{معلومات الإقلاع المتعدد} 
+تعتبر هيكلة معلومات المتعدد من أهم الهياكل التي يجب تمريرها الى النواة ، ويتم حفظ عنوانها في المسجل \en{ebx} وهي الطريقة القياسية التي يتم بها تمرير الهيكلة الى النواة ، لكن بسبب أننا في هذه المرحلة لا ندعم الإقلاع المتعدد فيمكن أن نمرر هذه البيانات بأي شكل كان كدفع عنوانها الى المكدس (\en{stack}). والمثال \ref{lst:multiboot_info} يوضح هيكلة معلومات الإقلاع المتعدد.
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:multiboot_info,caption=\en{Multiboot Inforamtion Structure}]
+boot_info:
+
+istruc multiboot_info
+	at multiboot_info.flags,				dd 0
+	at multiboot_info.mem_low,				dd 0
+	at multiboot_info.mem_high,				dd 0
+	at multiboot_info.boot_device,			dd 0
+	at multiboot_info.cmd_line,				dd 0
+	at multiboot_info.mods_count,			dd 0
+	at multiboot_info.mods_addr,			dd 0
+	at multiboot_info.sym0,					dd 0
+	at multiboot_info.sym1,					dd 0
+	at multiboot_info.sym2,					dd 0
+	at multiboot_info.mmap_length,			dd 0
+	at multiboot_info.mmap_addr,			dd 0
+	at multiboot_info.drives_length,		dd 0
+	at multiboot_info.drives_addr,			dd 0
+	at multiboot_info.config_table,			dd 0
+	at multiboot_info.bootloader_name,		dd 0
+	at multiboot_info.apm_table,			dd 0
+	at multiboot_info.vbe_control_info,		dd 0
+	at multiboot_info.vbe_mode_info,		dw 0
+	at multiboot_info.vbe_interface_seg,	dw 0
+	at multiboot_info.vbe_interface_off,	dw 0
+	at multiboot_info.vbe_interface_len,	dw 0
+iend
+\end{lstlisting}
+\end{english}
+
+ويحدد المقياس استخدام المتغير \en{flags} لتحديد البيانات المستخدمة في هيكلة معلومات الإقلاع المتعدد من غير المستخدمة ، فمثلا في حالة كانت قيمة البت \en{flags[0]} هي 1 فان المتغيرات \en{mem\_low} و \en{mem\_high} يمكن استخدامها وهكذا.وحاليا لن يتم التركيز على المتغير  \en{flags} وسيتم وضع قيم للمتغيرات \en{mem\_low} و \en{mem\_high} والتي تحوي حجم الذاكرة الفيزيائية والتي تم جلبها بواسطة البايوس ، وكذلك المتغيرات \en{mmap\_addr} و \en{mmap\_length} والتي توضح عنوان بداية مخطط الذاكرة الذي تم جلبه أيضا بواسطة البايوس وكذلك طولها.والمثال \ref{lst:stage2_multiboot} يوضح الأوامر التي تم إضافتها الى المرحلة الثانية من محمل النظام لدعم الإقلاع المتعدد وكيفية حفظ معلومات الإقلاع المتعدد وارسالها الى نواة نظام التشغيل.
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
+
+\begin{lstlisting}[label=lst:stage2_multiboot,caption=\en{snippet from stage2 bootloader}]
+
+...
+; when stage2 begin started, BIOS put drive number where stage1 are loaded from in dl 
+     mov [boot_info+multiboot_info.boot_device],dl
+...
+
+;----------------
+; Get Memory Size
+;----------------
+    xor eax,eax
+    xor ebx,ebx
+    call get_memory_size
+		
+    mov [boot_info+multiboot_info.mem_low],ax
+    mov [boot_info+multiboot_info.mem_high],bx
+
+...
+
+;-----------------------------------------
+; Pass MultiBoot Info to the Kernel
+;---------------------------------------
+    mov eax,0x2badb002
+    mov ebx,0
+    mov edx,[kernel_size]
+    push dword boot_info
+				
+    call ebp		; Call Kernel
+
+\end{lstlisting}
+\end{english}
+
+وعند استدعاء النواة فان البيانات التي تم دفعها الى المكدس تعتبر كوسيط للدالة ، وتم انشاء هيكلة بلغة السي (بداخل النواة) بنفس حجم الهيكلة التي تم دفعها الى المكدس وذلك لقراءة محتوياتها بشكل مبسط ومقروء.والمثال \ref{lst:kentry_boot_info} يوضح كيفية استقبال النواة لهذه الهيكلة.
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=lst:kentry_boot_info,caption=\en{Kernel Entry}]
+
+void _cdecl kernel_entry (multiboot_info* boot_info)
+{
+
+#ifdef i386
+	_asm {
+		cli						
+		
+		mov ax, 10h		// select data descriptor in GDT.
+		mov ds, ax
+		mov es, ax
+		mov fs, ax
+		mov gs, ax
+	}
+#endif
+
+	// Execute global constructors
+	init_ctor();
+
+	// Call kernel entry point
+	main(boot_info);
+
+	// Cleanup all dynamic dtors
+	exit();
+
+#ifdef i386
+	_asm {
+		cli
+		hlt
+	}
+#endif
+
+	for(;;);
+}
+
+\end{lstlisting}
+\end{english}
+
+
+\subsection{مدير الذاكرة الفيزيائية}
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=lst:pmm.h,caption=\en{Physical Memory Manager Interface}]
+
+#ifndef PMM_H
+#define PMM_H
+
+#include <stdint.h>
+
+extern void pmm_init(size_t size,uint32_t base);
+extern void pmm_init_region(uint32_t base,size_t size);
+extern void pmm_deinit_region(uint32_t base,size_t size);
+extern void* pmm_alloc();
+extern void* pmm_allocs(size_t size);
+extern void pmm_dealloc(void*);
+extern void pmm_deallocs(void*,size_t);
+extern size_t pmm_get_mem_size();
+extern uint32_t pmm_get_block_count();
+extern uint32_t pmm_get_used_block_count();
+extern uint32_t pmm_get_free_block_count();
+extern uint32_t pmm_get_block_size();
+extern void pmm_enable_paging(bool);
+extern bool pmm_is_paging();
+extern void pmm_load_PDBR(uint32_t);
+extern uint32_t pmm_get_PDBR();
+
+#endif // PMM_H
+
+\end{lstlisting}
+\end{english}
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=lst:pmm.cpp,caption=\en{Physical Memory Manager Implemetation}]
+
+#include <string.h>
+#include "pmm.h"
+#include "kdisplay.h"
+
+#define PMM_BLOCK_PER_BYTE	8
+#define PMM_PAGE_SIZE		4096
+#define PMM_BLOCK_SIZE		PMM_PAGE_SIZE
+#define PMM_BLOCK_ALIGN		PMM_BLOCK_SIZE
+
+static uint32_t _pmm_mem_size = 0;
+static uint32_t _pmm_max_blocks = 0;
+static uint32_t _pmm_used_blocks = 0;
+static uint32_t* _pmm_mmap = 0;
+
+inline void mmap_set(int bit) {
+	_pmm_mmap[bit/32] = _pmm_mmap[bit/32] | (1 << (bit%32)) ;
+}
+
+inline void mmap_unset(int bit) {
+	_pmm_mmap[bit/32] = _pmm_mmap[bit/32] & ~(1 << (bit%32));
+}
+
+inline bool mmap_test(int bit) {
+	return _pmm_mmap[bit/32] & (1 << (bit%32));
+}
+
+int mmap_find_first() {
+	
+	for (uint32_t i=0;i<pmm_get_free_block_count()/32;++i) {
+		if (_pmm_mmap[i] != 0xffffffff) {
+			for (int j=0;j<32;++j) {
+				int bit = 1 << j;
+				if (!(_pmm_mmap[i] & bit))
+					return i*32+j;
+			}
+		}
+	}
+	
+	return -1;
+}
+
+int mmap_find_squence(size_t s) {
+	if (s == 0)
+		return -1;
+	
+	if (s == 1)
+		return mmap_find_first();
+		
+	for (uint32_t i=0;i<pmm_get_free_block_count()/32;++i) {
+		if (_pmm_mmap[i] != 0xffffffff) {
+			for (int j=0;j<32;++j) {
+				int bit = 1 << j;
+				if (!(_pmm_mmap[i] & bit)) {
+					
+					int start_bit = i*32 + bit;
+					uint32_t free_bit = 0;
+					
+					for (uint32_t count=0;count<=s;++count) {
+						if (!(mmap_test(start_bit+count)))
+							free_bit++;
+							
+						if (free_bit == s)
+							return i*32+j;
+					}
+				}
+			}
+		}
+	}
+	
+	return -1;
+}
+
+
+void pmm_init(size_t size,uint32_t mmap_base) {
+	_pmm_mem_size = size;
+	_pmm_mmap = (uint32_t*)mmap_base;
+	_pmm_max_blocks = _pmm_mem_size*1024 / PMM_BLOCK_SIZE;
+	_pmm_used_blocks = _pmm_max_blocks;  // all memory used by default
+	
+	memset(_pmm_mmap,0xf,_pmm_max_blocks/PMM_BLOCK_PER_BYTE);
+}
+
+void pmm_init_region(uint32_t base,size_t size) {
+	int align = base/PMM_BLOCK_SIZE;
+	int blocks = size/PMM_BLOCK_SIZE;
+	
+	for (;blocks >=0;blocks--) {
+		mmap_unset(align++);
+		_pmm_used_blocks--;
+	}
+	
+	mmap_set(0);
+}
+
+void pmm_deinit_region(uint32_t base,size_t size) {
+	int align = base/PMM_BLOCK_SIZE;
+	int blocks = size/PMM_BLOCK_SIZE;
+	
+	for (;blocks >=0;blocks--) {
+		mmap_set(align++);
+		_pmm_used_blocks++;
+	}
+}
+
+void* pmm_alloc() {
+	if (pmm_get_free_block_count() <= 0)
+		return 0;
+		
+	int block = mmap_find_first();
+	
+	if (block == -1)
+		return 0;
+		
+	mmap_set(block);
+	
+	uint32_t addr = block * PMM_BLOCK_SIZE;
+	_pmm_used_blocks++;
+	
+	return (void*) addr;
+}
+
+void* pmm_allocs(size_t s) {
+	if (pmm_get_free_block_count() <= s)
+		return 0;
+		
+	int block = mmap_find_squence(s);
+	
+	if (block == -1)
+		return 0;	
+		
+	for (uint32_t i=0;i<s;++i) 
+		mmap_set(block+i);
+	
+	uint32_t addr = block * PMM_BLOCK_SIZE;
+	_pmm_used_blocks += s;
+	
+	return (void*) addr;
+}
+
+void pmm_dealloc(void* p) {
+	uint32_t addr = (uint32_t)p;
+	int block = addr / PMM_BLOCK_SIZE;
+	mmap_unset(block);
+	_pmm_used_blocks--;
+}
+
+void pmm_deallocs(void* p,size_t s) {
+	uint32_t addr = (uint32_t)p;
+	int block = addr / PMM_BLOCK_SIZE;
+	
+	for (uint32_t i=0;i<s;++i) 
+		mmap_unset(block+i);
+		
+	_pmm_used_blocks -= s;	
+}
+
+size_t pmm_get_mem_size() {
+	return _pmm_mem_size;
+}
+
+uint32_t pmm_get_block_count() {
+	return _pmm_max_blocks;
+}
+
+uint32_t pmm_get_used_block_count() {
+	return _pmm_used_blocks;
+}
+
+uint32_t pmm_get_free_block_count() {
+	return _pmm_max_blocks - _pmm_used_blocks;
+}
+
+uint32_t pmm_get_block_size() {
+	return PMM_BLOCK_SIZE;
+}
+
+void pmm_enable_paging(bool val) {
+#ifdef _MSC_VER
+	_asm {
+	
+		mov eax,cr0
+		cmp [val],1
+		je enable
+		jmp disable
+	
+	enable:
+		or eax,0x80000000  // set last bit
+		mov cr0,eax
+		jmp done
+		
+	disable:
+		and eax,0x7fffffff // unset last bit
+		mov cr0,eax
+	
+	done:
+	}
+	
+#endif
+}
+
+bool pmm_is_paging() {
+	uint32_t val = 0;
+#ifdef _MSC_VER
+	_asm {
+		mov eax,cr0
+		mov [val],eax
+	}
+	
+	if ( val & 0x80000000 )
+		false;
+	else
+		true;
+#endif
+}
+
+void pmm_load_PDBR(uint32_t addr) {
+#ifdef _MSC_VER
+	_asm {
+		mov eax,[addr]
+		mov cr3,eax
+	}
+#endif
+}
+
+uint32_t pmm_get_PDBR() {
+#ifdef _MSC_VER
+	_asm {
+		mov eax,cr3
+		ret
+	}
+#endif
+}
+
+
+\end{lstlisting}
+\end{english}
 
 \section{إدارة الذاكرة التخيلية \en{Virtual Memory Management}}
+
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=lst:vmm.h,caption=\en{Virtual  Memory Manager Interface}]
+
+#ifndef VMM_H
+#define VMM_H
+
+#include <stdint.h>
+
+#include "vmm_pte.h"
+#include "vmm_pde.h"
+
+#define PTE_N 1024
+#define PDE_N 1024
+
+struct page_table {
+	uint32_t pte[PTE_N];
+};
+
+struct page_dir_table {
+	uint32_t pde[PDE_N];
+};
+
+extern void vmm_init();
+extern bool vmm_alloc_page(uint32_t* e); 
+extern void vmm_free_page(uint32_t* e);
+extern bool vmm_switch_page_dir_table(page_dir_table*);
+extern page_dir_table* vmm_get_page_dir_table();
+extern void vmm_flush_tlb_entry(uint32_t addr);
+extern void vmm_page_table_clear(page_table* pt);
+extern uint32_t vmm_vir_to_page_table_index(uint32_t addr);
+extern uint32_t* vmm_page_table_lookup_entry(page_table* pt,uint32_t addr);
+extern uint32_t vmm_vir_to_page_dir_table_index(uint32_t addr);
+extern void vmm_page_dir_table_clear(page_dir_table* pd);
+extern uint32_t* vmm_page_dir_table_lookup_entry(page_dir_table* pd,uint32_t addr);
+
+
+#endif // VMM_H
+
+\end{lstlisting}
+\end{english}
+
+
+
+\begin{english}
+\fontspec[Scale=0.9]{Courier New}
+
+\lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
+
+\begin{lstlisting}[label=lst:vmm.cpp,caption=\en{Virtual Memory Manager Implemetation}]
+
+#include "vmm.h"
+
+#include <string.h>
+#include "vmm.h"
+#include "pmm.h"
+
+#define PAGE_SIZE 				4096
+#define PT_ADDRESS_SPACE_SIZE	0x400000
+#define PD_ADDRESS_SPACE_SIZE	0x100000000
+
+page_dir_table* _cur_page_dir = 0;
+uint32_t	_cur_page_dir_base_register = 0;
+
+void vmm_init() {
+	page_table* pt = (page_table*) pmm_alloc();
+	if (!pt)
+		return ;
+	
+	vmm_page_table_clear(pt);
+	
+	for (int i=0, frame =0; i < 1024 ; ++i, frame += 4096) {
+		uint32_t page = 0;
+		pte_add_attrib(&page,I386_PTE_PRESENT);
+		pte_set_frame(&page,frame);
+		
+		pt->pte[vmm_vir_to_page_table_index(frame)] = page;
+	}
+	
+	page_dir_table* pd = (page_dir_table*) pmm_allocs(3);
+	if (!pd)
+		return ;
+		
+	vmm_page_dir_table_clear(pd);
+	
+	uint32_t* pde = vmm_page_dir_table_lookup_entry(pd,0);
+	pde_add_attrib(pde,I386_PDE_PRESENT);
+	pde_add_attrib(pde,I386_PDE_WRITABLE);
+	pde_set_frame(pde,(uint32_t)pt);
+	
+	_cur_page_dir_base_register = (uint32_t) &pd->pde;
+	vmm_switch_page_dir_table(pd);
+	
+	pmm_enable_paging(true);
+	
+}
+
+bool vmm_alloc_page(uint32_t* e) {
+	void* p = pmm_alloc();
+	if (!p)
+		return false;
+	
+	pte_set_frame(e,(uint32_t)p);
+	pte_add_attrib(e,I386_PTE_PRESENT);
+	
+	return true;
+}
+
+void vmm_free_page(uint32_t* e) {
+	void* p = (void*)pte_get_frame(*e);
+	
+	if (p)
+		pmm_dealloc(p);
+		
+	pte_del_attrib(e,I386_PTE_PRESENT);
+	
+}
+
+
+bool vmm_switch_page_dir_table(page_dir_table* pd) {
+	if (!pd)
+		return false;
+	
+	_cur_page_dir = pd;
+	pmm_load_PDBR(_cur_page_dir_base_register);
+	return true;
+}
+
+page_dir_table* vmm_get_page_dir_table() {
+	return _cur_page_dir;
+}
+
+void vmm_flush_tlb_entry(uint32_t addr) {
+#ifdef _MSC_VER
+	_asm {
+		cli
+		invlpg addr
+		sti
+	}
+#endif
+}
+
+void vmm_page_table_clear(page_table* pt) {
+	if (pt)
+		memset(pt,0,sizeof(page_table));
+}
+
+uint32_t vmm_vir_to_page_table_index(uint32_t addr) {
+	if ( addr  >= PT_ADDRESS_SPACE_SIZE )
+		return 0;
+	else
+		return addr / PAGE_SIZE;
+}
+
+uint32_t* vmm_page_table_lookup_entry(page_table* pt,uint32_t addr) {
+	if (pt)
+		return &pt->pte[vmm_vir_to_page_table_index(addr)];
+	else
+		return 0;
+}
+
+uint32_t vmm_vir_to_page_dir_table_index(uint32_t addr) {
+	if ( addr >= PD_ADDRESS_SPACE_SIZE )
+		return 0;
+	else
+		return addr / PAGE_SIZE;
+}
+
+void vmm_page_dir_table_clear(page_dir_table* pd) {
+	if (pd)
+		memset(pd,0,sizeof(page_dir_table));
+}
+
+uint32_t* vmm_page_dir_table_lookup_entry(page_dir_table* pd,uint32_t addr) {
+	if (pd)
+		return &pd->pde[vmm_vir_to_page_table_index(addr)];
+	else 
+		return 0;
+}
+
+
+\end{lstlisting}
+\end{english}
 
 \end{document}

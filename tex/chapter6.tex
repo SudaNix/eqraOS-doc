@@ -30,44 +30,48 @@
 \end{itemize}
 \end{english}
 
-ويتكون الجدول من \cmd{256} مقاطعة (وبحسبة بسيطة يكون حجم الجدول هو \cmd{1024} بايت وهي ناتجة من ضرب عدد المقاطعات في حجم كل سجل )، بعض منها محجوز والبعض الاخر يستخدمه المعالج والبقية متروكة لمبرمج نظام التشغيل لدعم المزيد من المقطاعات. وبسبب أن الجدول يتكون فقط من عناوين لدوال معالجة المقاطعات فان هذا يمكننا من وضع الدالة في أي مكان على الذاكرة ومن ثم وضع عنوانها داخل هذا السجل (يتم هذا عن طريق مقاطعات البايوس)، والجدول التالي يوضح \en{IVT} والمقاطعات الموجودة فيه.
+ويتكون الجدول من \cmd{256} مقاطعة (وبحسبة بسيطة يكون حجم الجدول هو \cmd{1024} بايت وهي ناتجة من ضرب عدد المقاطعات في حجم كل سجل )، بعض منها محجوز والبعض الاخر يستخدمه المعالج والبقية متروكة لمبرمج نظام التشغيل لدعم المزيد من المقطاعات. وبسبب أن الجدول يتكون فقط من عناوين لدوال معالجة المقاطعات فان هذا يمكننا من وضع الدالة في أي مكان على الذاكرة ومن ثم وضع عنوانها داخل هذا السجل (يتم هذا عن طريق مقاطعات البايوس)، والجدول \ref{tbl:ivt_real_mode} يوضح \en{IVT} والمقاطعات الموجودة فيه.
 
-\begin{english}
-\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
-\begin{tabular}{ | l | l | l |}
+
+\begin{table}
+\caption{\en{Interrupt Vector Table}}
+\centering
+\begin{tabular}[h!]{ | l | l | l |}
 \hline  
-Base Address & Interrupt Number & Description \\
+\en{Base Address} & \en{Interrupt Number} & \en{Description} \\
 \hline \hline
-0x000	& 0 & Divide by 0 \\
-0x004	& 1 & Single step (Debugger) \\
-0x008	& 2 & Non Maskable Interrupt (NMI) Pin \\
-0x00C	& 3 & Breakpoint (Debugger) \\
-0x010	& 4 & Overflow \\
-0x014	& 5 & Bounds check \\
-0x018	& 6 & Undefined Operation Code \\
-0x01C	& 7 & No coprocessor \\
-0x020	& 8 & Double Fault \\
-0x024	& 9 & Coprocessor Segment Overrun \\
-0x028	& 10 & Invalid Task State Segment (TSS) \\
-0x02C	& 11 & Segment Not Present \\
-0x030	& 12 & Stack Segment Overrun \\
-0x034	& 13 & General Protection Fault (GPF) \\
-0x038	& 14 & Page Fault \\
-0x03C	& 15 & Unassigned \\
-0x040	& 16 & Coprocessor error \\
-0x044	& 17 & Alignment Check (486+ Only) \\
-0x048	& 18 & Machine Check (Pentium/586+ Only) \\
-0x05C	& 19-31 & Reserved exceptions \\
-0x068 - 0x3FF & 32-255 & Interrupts free for software use \\
+\en{0x000}	& \en{0} & \en{Divide by 0} \\
+\en{0x004}	& \en{1} & \en{Single step (Debugger)} \\
+\en{0x008}	& \en{2} & \en{Non Maskable Interrupt (NMI) Pin} \\
+\en{0x00C}	& \en{3} & \en{Breakpoint (Debugger)} \\
+\en{0x010}	& \en{4} & \en{Overflow} \\
+\en{0x014}	& \en{5} & \en{Bounds check} \\
+\en{0x018}	& \en{6} & \en{Undefined Operation Code} \\
+\en{0x01C}	& \en{7} & \en{No coprocessor} \\
+\en{0x020}	& \en{8} & \en{Double Fault} \\
+\en{0x024}	& \en{9} & \en{Coprocessor Segment Overrun} \\
+\en{0x028}	& \en{10} & I\en{nvalid Task State Segment (TSS)} \\
+\en{0x02C}	& \en{11} & \en{Segment Not Present} \\
+\en{0x030}	& \en{12} & \en{Stack Segment Overrun} \\
+\en{0x034}	& \en{13} & \en{General Protection Fault (GPF)} \\
+\en{0x038}	& \en{14} & \en{Page Faul}t \\
+\en{0x03C}	& \en{15} & \en{Unassigned} \\
+\en{0x040}	& \en{16} & \en{Coprocessor error} \\
+\en{0x044}	& \en{17} & \en{Alignment Check (486+ Only)} \\
+\en{0x048}	& \en{18} & \en{Machine Check (Pentium/586+ Only)} \\
+\en{0x05C}	& \en{19-31} & \en{Reserved exceptions} \\
+\en{0x068 - 0x3FF} & \en{32-255} & \en{Interrupts free for software use} \\
  \hline  
 \end{tabular}
-\end{english}
+\label{tbl:ivt_real_mode}
+\end{table}
+
 
 \subsection{المقاطعات في النمط المحمي}
 في النمط المحمي يستخدم المعالج جدولاً خاصاً يسمى بجدول واصفات المقاطعات (\en{Interrupt Descriptor Table}) ويختصر ب \en{IDT} ، هذا الجدول يشابه جدول \en{IVT} حيث يتكون من \cmd{256} واصفة كل واصفة مخصصة لمقاطعة ما (اذاً الجدول يحوي \cmd{256} مقاطعة) ، حجم كل واصفة هو \cmd{8} بايت  تحوي عنوان دالة معالجة المقاطعة (\en{IR}) و نوع الناخب (\en{selector type: code or data}) في جدول \en{GDT}  الذي تعمل عليه دالة معالجة المقاطعة ، بالاضافة الى مستوى الحماية المطلوب والعديد من الخصائص توضحها التركيبة التالية.
 
 \begin{english}
-\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\fontspec[Scale=0.9,Mapping=englishdigits]{Calibri}
 
 \begin{itemize}
 \item Bits 0-15:
@@ -126,7 +130,7 @@ Base Address & Interrupt Number & Description \\
 والمثال التالي يوضح انشاء واصفة واحدة بلغة التجميع حتى يسهل تتبع القيم ، وسيتم كتابة مثال كامل لاحقا بلغة السي.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -149,7 +153,7 @@ idt_descriptor:
 وبعد أن يتم انشاء أغلب الواصفات بشكل متسلسل (في أي مكان على الذاكرة) ، يجب أن ننشئ جدول \en{IDT} وهذا يتم عن طريق حفظ عنوان أول واصفة في متغير وليكن \cmd{idt\_start} وعنوان نهاية الواصفات في المتغير \cmd{idt\_end} ومن ثم انشاء مؤشراً يسمى \cmd{idt\_ptr} والذي يجب أن يكون في صورة معينة بحيث يحفظ عنوان بداية الجدول ونهايته :
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -166,7 +170,7 @@ idt_ptr:
 وعند حدوث أي مقاطعة فان المعالج ينهي الأمر الذي يعمل عليه و يأخذ رقم المقاطعة ويذهب به الى جدول \en{IDT} (عنوان هذا الجدول يتواجد بداخل المسجل \en{IDTR}) ، وبعد ذلك يقوم بحساب مكان الواصفة بالمعادلة \cmd{int\_num * 8} وذلك بسبب أن حجم كل واصفة في جدول \en{IDT} هو \cmd{8} بايت. وقبل أن ينقل التنفيذ الى دالة معالجة المقاطعة فانه يجب أن يقوم بعملية حفظ للمكان الذي توقف فيه حتى يستطيع أن يتابع عمله عندما تعود دالة معالجة المقاطعة . ويتم حفظ الأعلام \cmd{EFLAGS} ومسجل مقطع الشفرة \cmd{CS} ومسجل عنوان التعليمة التالية \cmd{IP} في المكدس (\en{Stack})  الحالي ، وفي حالة حدوث خطأ ما فانه يتم دفع شفرة الخطأ (\en{Error Code}) الى المكدس أيضا. وشفرة الخطأ هي بطول \cmd{32-bit} وتتبع التركيبة التالية.
 
 \begin{english}
-\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\fontspec[Scale=0.9,Mapping=englishdigits]{Calibri}
 
 \begin{itemize}
 \item Bit 0: External event
@@ -203,40 +207,42 @@ idt_ptr:
 \item الخطأ \en{Abort}: لا يوجد عنوان للعودة ، ولن يكمل البرنامج عمله بعد انتهاء دالة معالجة الخطأ. 
 \end{itemize}
 
-والجدول التالي يوضح أخطاء المعالج والمقاطعات التي يقوم بتوليدها.
+والجدول \ref{tbl:x86_execeptions} يوضح أخطاء المعالج والمقاطعات التي يقوم بتوليدها.
 
 % x86 Processor Exceptions Table.
-\begin{english}
-\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\begin{table}
+\caption{\en{x86 Processor Exceptions Table}}
+\centering
 \begin{tabular}{ | l | l | l |}
 \hline  
-Interrupt Number & Class & Description \\
+\en{Interrupt Number} & \en{Class} & \en{Description} \\
 \hline \hline
-0 & Fault & Divide by 0 \\
-1 & Trap/Fault & Single step\\
-2 & Unclassed & Non Maskable Interrupt (NMI) Pin \\
-3 & Trap & Breakpoint\\
-4 & Trap & Overflow \\
-5 & Fault & Bounds check \\
-6 & Fault & Unvalid OPCode \\
-7 & Fault & Device not available \\
-8 & Abort & Double Fault \\
-9 & Abort & Coprocessor Segment Overrun \\
-10 & Fault & Invalid Task State Segment\\
-11 & Fault & Segment Not Present \\
-12 & Fault & Stack Fault Exception \\
-13 & Fault & General Protection Fault\\
-14 & Fault & Page Fault \\
-15 & -	& Unassigned \\
-16 & Fault & x87 FPU Error \\
-17 & Fault & Alignment Check \\
-18 & Abort & Machine Check  \\
-19 & Fault & SIMD FPU Exception \\
-20-31 & - & Reserved \\
-32-255 & - & Avilable for software use  \\
+\en{0} & \en{Fault} & \en{Divide by 0} \\
+\en{1} & \en{Trap/Fault} & \en{Single step}\\
+\en{2} & \en{Unclassed} & \en{Non Maskable Interrupt (NMI) Pin} \\
+\en{3} & \en{Trap} & \en{Breakpoint}\\
+\en{4} & \en{Trap} & \en{Overflow} \\
+\en{5} & \en{Fault} & \en{Bounds check} \\
+\en{6} & \en{Fault} & \en{Unvalid OPCode} \\
+\en{7} & \en{Fault} & \en{Device not available} \\
+\en{8} & \en{Abort} & \en{Double Fault} \\
+\en{9} & \en{Abort} & \en{Coprocessor Segment Overrun} \\
+\en{10} & \en{Fault} & \en{Invalid Task State Segment}\\
+\en{11} & \en{Fault} & \en{Segment Not Present} \\
+\en{12} & \en{Fault} & \en{Stack Fault Exception} \\
+\en{13} & \en{Fault} & \en{General Protection Fault}\\
+\en{14} & \en{Fault} & \en{Page Fault} \\
+\en{15} & \en{-}	& \en{Unassigned} \\
+\en{16} & \en{Fault} & \en{x87 FPU Error} \\
+\en{17} & \en{Fault} & \en{Alignment Check} \\
+\en{18} & \en{Abort} & \en{Machine Check}  \\
+\en{19} & \en{Fault} & \en{SIMD FPU Exception} \\
+\en{20-31} & \en{-} &\en{ Reserved} \\
+\en{32-255} & \en{-} & \en{Avilable for software use}  \\
  \hline  
 \end{tabular}
-\end{english}
+\label{tbl:x86_execeptions}
+\end{table}
 
 ويجدر بنا الوقوف على ملاحظة كنّا قد ذكرناها في الفصول السابقة وهي إلغاء المقاطعات (بواسطة الأمر \cmd{cli}) عند الانتقال الى النمط المحمي حتى لا يتسبب في حدوث خطأ \en{General Protection Fault} وبالتالي توقف النظام عن العمل وسبب ذلك هو أن عدم تنفيذ الأمر \cmd{cli} يعني أن المقاطعات العتادية مفعلة وبالتالي أي عتاد يمكنه أن يرسل مقاطعة الى المعالج لكي ينقل التنفيذ الى دالة تخديمها . وعند بداية الانتقال الى النمط المحمي فان جدول المقاطعات \en{IDT} لم يتم انشائه وأي محاولة لاستخدامه سيؤدي الى هذا الخطأ. أحد المتحكمات التي ترسل مقاطعات الى المعالج بشكل ثابت هو متحكم \en{Prpgrammable Interval Timer} وتختصر بمتحكم \en{PIT} وهي تمثل ساعة النظام \en{System Timer} بحيث ترسل مقاطعة بشكل دائم الى المعالج والذي بدوره ينقل التنفيذ الى دالة تخديم هذه المقاطعة . وبسبب أن جدول المقطاعات غير متواجد في بداية المرحلة الثانية من محمل النظام وكذلك لا توجد دالة لتخديم هذه المقاطعة فان هذا يؤدي الى توقف النظام ، لذلك يجب ايقاف المقاطعات العتادية لحين انشاء جدول المقطاعات وكتابة دوال معالجة المقاطعات. كذلك توجد مشكلة أخرى لبعض المقاطعات العتادية حيث انها تستخدم نفس أرقام المقاطعات التي يستخدمها المعالج للإستثناءات وحلها هو بإعادة برمجة الشريحة المسؤولة عن استقبال الاشارات من العتاد وتحويلها الى مقاطعات وارسالها الى المعالج ، هذه الشريحة تسمى \en{Programmable Interrupt Controller} وتختصر ب \en{PIC} ويجب إعادة برمجتها وتغيير ارقام المقاطعات للأجهزة التي تستخدم أرقاماً متشابهة.
 
@@ -253,7 +259,7 @@ Interrupt Number & Class & Description \\
 % Hadrware
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -300,7 +306,7 @@ extern void _cdecl gen_interrupt(int);
 \end{itemize}
 والشفرة التالية توضح كيفية انشاء الجدول\footnote{راجع شفرة النظام لقراءة ملف الرأس \cmd{hal/gdt.h}.}.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -380,17 +386,17 @@ extern int i386_gdt_init() {
 \end{lstlisting}
 \end{english}
 
-\subsection{إنشاء جدول المقاطعات \en{IDT}}
+%\subsection{إنشاء جدول المقاطعات \en{IDT}}
 % يكمل لاحقا..
 
 \section{متحكم المقاطعات القابل للبرمجة \en{Programmable Interrupt Controller}}
-السبب الرئيسي في تعطيل المقاطعات العتادية عند الإنتقال الى النمط المحمي (\en{PMode}) هو بسبب عدم توفر دوال لمعالجة المقاطعات في تلك اللحظة ، وحتى لو قمنا بتوفير ال 256 دالة لمعالجة المقاطعات فان هنالك مشكلة استخدام نفس رقم المقاطعة لأكثر من غرض ، فمثلا مؤقتة النظام \en{PIT} التي ترسل مقاطعات بشكل دائم تستخدم المقاطعة رقم 8 والتي هي أيضا أحد استثناءات المعالج ، لذلك في كلتا الحالات سيتم استدعاء دالة تخديم واحدة وهو شيء مرفوض تماماً. لذلك الحل الوحيد هو بإعادة برمجة المتحكم المسؤول عن استقبال الإشارات من متحكمات العتاد  وتعيين أرقام مختلفة بخلاف تالك الأرقام التي يستخدمها المعالج للأخطاء والاستثناءات ، هذا المتحكم (انظر الشكل \ref{fig:pic}) وظيفته هي استقبال إشارات من متحكمات العتاد ومن ثم يقوم بتحويلها الى أرقام مقاطعات تُرسل بعد ذلك الى المعالج الذي يقوم بنقل التنفيذ اليها ، ويعرف هذا المتحكم بمتحكم \en{PIC} اختصاراً ل \en{Programmable Interrupt Controller} ويعرف أيضا بالإسم \en{8259A} ، وفي هذا البحث سنستخدم المسمى متحكم \en{PIC}.
+السبب الرئيسي في تعطيل المقاطعات العتادية عند الإنتقال الى النمط المحمي (\en{PMode}) هو بسبب عدم توفر دوال لمعالجة المقاطعات في تلك اللحظة ، وحتى لو قمنا بتوفير ال 256 دالة لمعالجة المقاطعات فان هنالك مشكلة استخدام نفس رقم المقاطعة لأكثر من غرض ، فمثلا مؤقتة النظام \en{PIT} التي ترسل مقاطعات بشكل دائم تستخدم المقاطعة رقم 8 والتي هي أيضا أحد استثناءات المعالج ، لذلك في كلتا الحالات سيتم استدعاء دالة تخديم واحدة وهو شيء مرفوض تماماً. لذلك الحل الوحيد هو بإعادة برمجة المتحكم المسؤول عن استقبال الإشارات من متحكمات العتاد  وتعيين أرقام مختلفة بخلاف تلك الأرقام التي يستخدمها المعالج للأخطاء والاستثناءات ، هذا المتحكم (انظر الشكل \ref{fig:pic}) وظيفته هي استقبال إشارات من متحكمات العتاد ومن ثم يقوم بتحويلها الى أرقام مقاطعات تُرسل بعد ذلك الى المعالج الذي يقوم بنقل التنفيذ اليها ، ويعرف هذا المتحكم بمتحكم \en{PIC} اختصاراً ل \en{Programmable Interrupt Controller} ويعرف أيضا بالإسم \en{8259A} ، وفي هذا البحث سنستخدم المسمى متحكم \en{PIC}.
 
 % يجب شرح Level Triggered Mode and Edge Triggered Mode 
 \begin{figure}[h!]
   \caption{متحكم المقاطعات القابل للبرمجة \en{8259A}}
   \centering
-   \includegraphics[width=0.5\textwidth]{../img/Intel-D8259A}
+   \includegraphics[width=0.3\textwidth]{../img/Intel-D8259A}
 \label{fig:pic} 
 \end{figure}
 
@@ -433,10 +439,10 @@ extern int i386_gdt_init() {
 \subsubsection{مشابك المتحكم \en{PIC's Pins}}
 تعتبر مشابك المتحكم هي  طريقة ارسال البيانات من المتحكم الى المعالج (أو الى متحكم رئيسي) ، ونظراً لان كل مشبك لديه وظيفة محددة فانه يجب دراسة هذه المشابك ولكن لن نفصِّل كثيراً حيث أن الموضوع متشعب ويخص دراسي المنطق الرقمي (\en{Digital Logic}). ويوضح الشكل \ref{fig:pic_pins} هذه المشابك.
 
-\begin{wrapfigure}{l}{0.5\textwidth}
+\begin{wrapfigure}{l}{0.4\textwidth}
   \vspace{-20pt}
   \begin{center}
-    \includegraphics[width=0.48\textwidth]{../img/pic_pins}
+    \includegraphics[width=0.20\textwidth]{../img/pic_pins}
   \end{center}
   \vspace{-20pt}
   \caption{مشابك متحكم \en{PIC}}
@@ -524,7 +530,7 @@ extern int i386_gdt_init() {
 حيث أن البت الأول يحدد ما اذا كان يجب إرسال أمر التحكم \en{ICW4} أم لا وفي حالة كان قيمة البت هي 1 فإنه يجب إرسال الأمر \en{ICW4} أما البت الثاني فغالباً يأخذ القيمة صفر دلالة على أن هناك أكثر من متحكم \en{PIC} في النظام ، والبت الثالث غير مستخدم أما الرابع فيحدد نمط عمل المقاطعة هل هي \en{Level Triggered Mode} أم \en{Edge Triggered Mode} ، أما البت الخامس فيجب أن يأخذ القيمة 1 دلالة على أننا سنقوم بتهيئة متحكم \en{PIC} وبقية البتات غير مستخدمة في حواسيب \en{x86}. والشفرة \ref{icw1}  توضح إرسال الأمر الأول الى متحكم \en{PIC} الرئيسي والثانوي.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -541,7 +547,7 @@ extern int i386_gdt_init() {
 
 \textbf{الأمر الثاني \en{ICW2}} يستخدم لإعادة تغيير عنواين جدول \en{IVT} الرئيسية للطلبات المقاطعات \en{IRQ} وبالتالي عن طريق هذا الأمر يمكن أن نغير أرقام المقاطعات لل \en{IRQ} الى أرقام أخرى . ويجب أن يرسل هذا الأمر مباشرة بعد الأمر الأول كذلك يجب أن يتم اختيار أرقاما غير مستخدمة من قبل المعالج حتى لا نقع في نفس المشكلة السابقة ( وهي أكثر من \en{IRQ} يستخدم نفس رقم المقاطعة وبالتالي لديهم دالة تخديم واحدة). والمثال \ref{icw2} يوضح كيفية تغيير أرقام \en{IRQ} لمتحكم \en{PIC} الرئيسي والثانوي بحيث يتم استخدام أرقام المقاطعات 32-39 للمتحكم الأول والأرقام من 40-47 للمتحكم الثانوي وهي أرقاماً خالية لا يستخدمها المعالج وتقع مباشرة بعد آخر مقاطعة للمعالج الذي يستخدم 32 مقاطعة بدءاً من الصفر وانتهاءاً بالمقاطعة 31.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -592,7 +598,7 @@ extern int i386_gdt_init() {
 ويجب إرسال الأمر بحسب الصيغة التي يقبلها مسجل البيانات للمتحكم ، فمتحكم \en{PIC} الرئيسي يستقبل رقم \en{IRQ} على شكل 7 بت بحيث يتم تفعيل رقم البت المقابل لرقم \en{IRQ} وفي مثالثا يرتبط المتحكم الرئيسي مع الثانوي عبر \en{IRQ2} لذلك يجب تفعيل قيمة البت 2 (أي يجب إرسال القيمة \en{0000100b} وهي تعادل \en{0x4})  بينما المتحكم الثانوي يقبل رقم \en{IRQ} عن طريق إرسال قيمته على الشكل الثنائي وهي 2 (وتعادل بالترميز الثنائي \en{010}) وبقية البتات محجوزة (انظر جدول \ref{tbl:icw_spic}) ، والمثال \ref{icw3} يوضح كيفية إرسال الأمر الثالث الى المتحكمين.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -630,7 +636,7 @@ extern int i386_gdt_init() {
 وفي الغالب لا يوجد حوجة لتفعيل كل هذه الخصائص ، فقط أول بت يجب تفعيله حيث يستخدم مع حواسيب \en{x86} . والمثال \ref{icw4} يوضح كيفة إرسال الأمر الرابع الى المتحكم \en{PIC} الرئيسي والثانوي.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -683,7 +689,7 @@ extern int i386_gdt_init() {
 \end{table}
 والمثال \ref{lst:ocw2} يوضح كيفية إرسال إشارة نهاية عمل دالة تخديم المقاطعة (\en{EOI}) حيث يجب ضبط البتات لإختيار \en{Non specific EOI command}.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -707,18 +713,18 @@ extern int i386_gdt_init() {
 \begin{figure}[h!]
   \caption{المؤقتة القابلة للبرمجة \en{8253}}
   \centering
-   \includegraphics[width=0.5\textwidth]{../img/Intel-P8253-5}
+   \includegraphics[width=0.3\textwidth]{../img/Intel-P8253-5}
   \label{fig:pit} 
 \end{figure}
 
 \subsection{برمجة المؤقتة \en{PIT}}
-مؤخراً تم نقل المؤقتة من اللوحة الأم (\en{MotherBoard}) كشريحة \en{DIP} مستلقة الى الجسر الشمالي (\en{SouthBridge}). وسوف نركز على برمجة العداد الأول وهو مؤقت النظام حيث أنه يوفر الدعم العتادي اللازم للنظام حتى يدعم تعدد العمليات والمسالك.
+مؤخرا تم نقل المؤقتة من اللوحة الأم (\en{MotherBoard}) كشريحة \en{DIP} مستلقة الى الجسر الشمالي (\en{SouthBridge}). وسوف نركز على برمجة العداد الأول وهو مؤقت النظام حيث أنه يوفر الدعم العتادي اللازم للنظام حتى يدعم تعدد العمليات والمسالك.
 
 \subsubsection{مشابك المؤقتة \en{PIT's Pins}}
 \begin{wrapfigure}{l}{0.5\textwidth}
   \vspace{-20pt}
   \begin{center}
-    \includegraphics[width=0.48\textwidth]{../img/pit_pins}
+    \includegraphics[width=0.30\textwidth]{../img/pit_pins}
   \end{center}
   \vspace{-20pt}
   \caption{مشابك المؤقتة \en{PIT}}
@@ -753,7 +759,7 @@ extern int i386_gdt_init() {
 \end{table}
 وتوضح التركيبة التالية ماهية البتات المستخدمة في مسجل التحكم (وهو مسجل بطول 8 بت) حيث يجب إرسال قيم معينة حتى نتمكن من القراءة أو الكتابة في عداد ما.
 \begin{english}
-\fontspec[Scale=1.2,Mapping=englishdigits]{Calibri}
+\fontspec[Scale=0.9,Mapping=englishdigits]{Calibri}
 
 \begin{itemize}
 \item  Bit 0: (BCP) Binary Counter
@@ -793,7 +799,7 @@ extern int i386_gdt_init() {
 والمثال \ref{lst:timer} يوضح كيفية برمجة عداد مؤقت النظام لإرسال طلب مقاطعة كل \en{100Hz} (كل 10 \en{milliseconds}) ، وهذا يتم عن طريق إرسال أمر التحكم أولاً ومن ثم إرسال الوقت المطلوب الى العداد المطلوب.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -827,7 +833,7 @@ extern int i386_gdt_init() {
 في القسم \ref{sec:pic_porgramming} تم عرض متحكم \en{PIC} وكيفية برمجته بالتفصيل ، وفي هذا القسم سيتم تطبيق ما تم عرضه على نواة نظام إقرأ. ويوجد ملفين لمتحكم \en{PIC} الأول هو ملف الرأس (\en{hal/pic.h}) الذي يحوي الإعلان عن الدوال وكذلك الثوابت والثاني هو ملف التطبيق (\en{hal/pic.cpp}) الذي يحوي على تعريف تلك الدوال. والمثال \ref{lst:pic_interface} يعرض ملف الرأس الذي يغلف العديد من الأرقام والعناوين في صورة ثوابت (باستخدام الماكرو) بحيث تزيد من مقروئية ووضوح الشفرة\footnote{إرجع الى القسم \ref{sec:pic_porgramming} لمعرفة وظيفة هذه القيم الثابتة.}.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -931,7 +937,7 @@ extern void i386_pic_init(uint8_t base0,uint8_t base1);
 
 وتحوي الواجهة 4 دوال منها دالتان للقراءة والكتابة من مسجل البيانات ودالة لإرسال الأوامر الى مسجل التحكم والدالة الأخيرة هي لتهئية المتحكم وهي الدالة التي يجب استدعائها. والمثال \ref{lst:pic_implementation} يوضح تعريف هذه الدوال.
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -999,7 +1005,7 @@ void i386_pic_init(uint8_t base0,uint8_t base1) {
 \subsection{دعم \en{PIT}}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1047,7 +1053,7 @@ extern bool _cdecl i386_pit_is_initialized();
 \end{english}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1152,7 +1158,7 @@ void _cdecl i386_pit_irq() {
 \subsection{واجهة \en{HAL} الجديدة}
 المثال \ref{lst:hal_interface} يوضح الواجهة العامة لطبقة \en{HAL}
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1176,7 +1182,7 @@ extern int _cdecl get_tick_count();
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1293,7 +1299,7 @@ int _cdecl get_tick_count() {
 \end{english}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1330,7 +1336,7 @@ int _cdecl main()
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1395,7 +1401,7 @@ extern void _cdecl simd_fpu_fault(uint32_t cs,uint32_t eip,uint32_t eflags);
 \end{english}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 
@@ -1410,7 +1416,7 @@ void _cdecl divide_by_zero_fault(uint32_t cs,uint32_t eip,uint32_t eflags) {
 \end{english}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=C++}
 

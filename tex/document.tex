@@ -14,7 +14,7 @@
 
 % preamble
 
-\documentclass[a4paper,twoside,headsepline,10pt]{scrbook}
+\documentclass[a4paper,twoside,headsepline,11pt]{scrbook}
 \usepackage{mystyle}
 
 
@@ -39,17 +39,24 @@
 \lstlistoflistings
 \listoffigures
 \listoftables
-%\newpage
+
 
 % ملخص البحث
 \subfile{abstract.tex}
 
+
+% المقدمة
+\subfile{intro.tex}
+
+
+\cleardoublepage
 \pagenumbering{arabic}
 
 %*************************************************
 %	part 1: الاساسيات Basics
 %*************************************************
 \part{الأساسيات \en{Basics}}
+
 
 % مقدمة عن أنظمة التشغيل وتاريخ ظهورها
 \subfile{chapter1.tex}
@@ -101,10 +108,17 @@
 
 
 % أنظمة الملفات
-\subfile{chapter9.tex}
+%\subfile{chapter9.tex}
 
 
 %*************************************************
+
+% الخاتمة
+\subfile{end.tex}
+
+
+% المراجع
+\subfile{ref.tex}
 
 % appendix
 \subfile{appx.tex}

@@ -3,7 +3,7 @@
 \begin{document}
 
 \chapter{إقلاع الحاسب ومحمل النظام \en{Bootloader}}
-أحد أهم الأساسيات في برمجة نظام تشغيل هي كتابة محملٌ له ، هذا المحمل يعمل على نسخ نواة النظام من أحد الأقراص الى الذاكرة الرئيسية ثم ينقل التنفيذ الى النواة ، وهكذا تنتهي دورة عمل المحمل ويبدأ نظام التشغيل متمثلا في النواة بالبدء بتنفيذ الاوامر والمهمات وتلبية إحتياجات المستخدم. في هذا الفصل سندرس كيفية برمجة المحمل وماهيته وسيتم الاقلاع من قرص مرن بنظام \en{FAT12} ، فالغرض هذه المرحلة هو دراسة أساسيات المحمل وتحميل وتنفيذ نواة مبسطة ، وفي الفصل الثالث سنعود مجددا الى الحديث عن أنظمة الملفات.
+أحد أهم الأساسيات في برمجة نظام تشغيل هي كتابة محملٌ له ، هذا المحمل يعمل على نسخ نواة النظام من أحد الأقراص الى الذاكرة الرئيسية ثم ينقل التنفيذ الى النواة ، وهكذا تنتهي دورة عمل المحمل ويبدأ نظام التشغيل متمثلا في النواة بالبدء بتنفيذ الاوامر والمهمات وتلبية إحتياجات المستخدم. في هذا الفصل سندرس كيفية برمجة المحمل وماهيته وسيتم الاقلاع من قرص مرن بنظام \en{FAT12} ، فالغرض هذه المرحلة هو دراسة أساسيات المحمل وتحميل وتنفيذ نواة مبسطة .
 
 \section{إقلاع الحاسب}
 
@@ -43,8 +43,18 @@
 كل هذا لا يجعل عملية كتابة محمِّل النظام بلغة السي مستحيلا ! فهناك كمٌّ كبير من المحملات تستخدم لغة السي والتجميع في آن واحد ( مثل \en{GRUB,NTLDR,LILO...etc} ) ، لكن قبل برمجة مثل هذه المحملات يجب برمجة بعض ملفات ال \en{run-time} لتوفير بيئة لكي تعمل برامج السي عليها ، أيضا يجب كتابة \en{loader} لكي يقرأ الصيغة الناتجة من برنامج السي ويبدأ التنفيذ من دالة ال \en{main} .
 
 \section{مخطط الذاكرة}
-أثناء مرحلة الإقلاع وعندما يُنقل التنفيذ الى محمل النظام فان الذاكرة الرئيسية ل
-%\missingfigure{Memory Map}
+% راجع هنا
+\begin{figure}[h!]
+  \caption{مخطط محتويات الذاكرة الرئيسية}
+  \centering
+   \includegraphics[width=0.5\textwidth]{../img/mmap16}
+\label{fig:mmap16} 
+\end{figure}
+
+أثناء مرحلة الإقلاع وعندما يُنقل التنفيذ الى محمل النظام فان الذاكرة الرئيسية تأخذ الشكل \ref{fig:mmap16} .وأول 1024 بايت تستخدم من قبل جدول المقاطعات الذي يحوي عنوان دالة التنفيذ لكل مقاطعة للبايوس ، يليها منطقة بيانات البايوس ثم مساحة ذاكرة خالية تحوي العنوان \en{0x07c00} وهو العنوان الذي ينقل البابوس التنفيذ اليه (عنوان برنامج محمل النظام) ، ويليها منطقة بيانات بايوس الموسعة وذاكرة الفيديو والتي بمجرد الكتابة عليها تظهر الأحرف على الشاشة (\en{Memory Mapped}) ويليها البايوس على ذاكرة الفيديو ومناطق محجوزة من الذاكرة لبعض أجهزة الإدخال والإخراج ومن ثم البايوس والذي يبدأ من العنوان \en{0xf0000} وهو موجود على ذاكرة الروم (\en{Memory Mapped}) .
+
+
+
 
 \section{برمجة محمل النظام}
 المثال \ref{lst:useless_bootloader} يوضح أصغر محمل للنظام يمكن كتابته وتنفيذه ، باستخدام المجمع \en{NASM}\footnote{راجع الملحق \ref{apx:compile_link} لمعرفة كيفية استخدام المجمع لترجمة المحمل وكيفية نسخه الى \en{floppy disk or CD} ليتم القلاع منه سواءاً كان على جهاز فعلي أو على جهاز تخيلي (\en{Virtual Machine}) .} وهو مجمع متعدد المنصات ويوفر ميزة انتاج ملفات ثنائية \en{object code} .\\
@@ -52,7 +62,7 @@
 %\lstinputlisting[language=Assembler]{./examples/ex1.asm}
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \begin{lstlisting}[label=lst:useless_bootloader,caption=\en{Smallest Bootloader}]
@@ -89,7 +99,7 @@ start:				; label are pointer.
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -170,7 +180,7 @@ main:
 \end{english}
 
 
-النتيجة :\\
+%النتيجة :\\
 %\missingfigure{welcome}
 
 الشيء الملاحظ في المثال السابق هو أن مقطع الكود \en{code segment} ومقطع البيانات \en{data segment} متواجدان في نفس المكان على الذاكرة (داخل ال \en{512} بايت) لذلك يجب تعديل قيم مسجلات المقاطع للاشارة الى المكان الصحيح.
@@ -185,7 +195,7 @@ main:
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -224,7 +234,7 @@ system_id            db        "fat12   "    ;  8 byte.
 
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
@@ -341,7 +351,7 @@ main:
 
 
 \begin{english}
-\fontspec{Arial}
+\fontspec[Scale=0.9]{Arial}
 
 
 \begin{lstlisting}[label=lst:bootloader_hex,caption=\en{Hex value of bootloader}]
@@ -378,7 +388,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 ويمكن الاستفادة من هذه المحررات والتعديل المباشر في قيم الهيكس للملف الثنائي\footnote{في حالة لم نتمكن من الوصول الى ملف المصدر \en{source code}.}، فمثلا يمكن حذف التوقيع واستبداله بأي رقم ومحاولة الإقلاع من القرص ! بالتأكيد لا يمكن الاقلاع بسبب أن البايوس لن يتعرف على القرص بأنه قابل للإقلاع ، كذلك كمثال يمكن عمل حلقة لا نهائية وطباعة الجملة الترحيبة في كل تكرار ، ويجب أولا اعادة تجميع الملف الثنائي باستخدام أي من برامج ال \en{Disassembler} وإدخال تعليمة قفز بعد استدعاء دالة طباعة السلسلة الى ما قبلها.\\
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:bootloader_compelete,caption=\en{Complete Example}]{../examples/ch3/ex3/ex3.asm}
@@ -386,7 +396,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \subsection{تحميل قطاع من القرص باستخدام المقاطعة \cmd{int 0x13}}
 
-بعد أن تم تشغيل محمل النظام لعرض رسالة ترحيبة ، فان مهمة المحمل الفعلية هي تحميل وتنفيذ المرحلة الثانية له حيث كما ذكرنا سابقا أن برمجة محمل النظام ستكون على مرحلتين وذلك بسبب القيود على حجم المرحلة الاولى ، وتكمن وظيفة المرحلة الاولى في البحث عن المرحلة الثانية من محمل النظام ونقل التنفيذ اليها ، وبعدها يأتي دور المرحلة الثانية في البحث عن نواة النظام ونقل التحكم اليها. وسنتناول الان كيفية تحميل مقطع من القرص المرن الى الذاكرة الرئيسية ونقل التحكم اليها باستخدام مقاطعة البايوس \cmd{int 0x13} وفي الفصل السادس سيتم دراسة الموضوع بالتفصيل عن طريق البرمجة المباشرة  لمتحكم \en{controller} القرص المرن.
+بعد أن تم تشغيل محمل النظام لعرض رسالة ترحيبة ، فان مهمة المحمل الفعلية هي تحميل وتنفيذ المرحلة الثانية له حيث كما ذكرنا سابقا أن برمجة محمل النظام ستكون على مرحلتين وذلك بسبب القيود على حجم المرحلة الاولى ، وتكمن وظيفة المرحلة الاولى في البحث عن المرحلة الثانية من محمل النظام ونقل التنفيذ اليها ، وبعدها يأتي دور المرحلة الثانية في البحث عن نواة النظام ونقل التحكم اليها. وسنتناول الان كيفية تحميل مقطع من القرص المرن الى الذاكرة الرئيسية ونقل التحكم اليها باستخدام مقاطعة البايوس \cmd{int 0x13} .%وفي الفصل السادس سيتم دراسة الموضوع بالتفصيل عن طريق البرمجة المباشرة  لمتحكم \en{controller} القرص المرن.
 
 \subsubsection{إعادة القرص المرن}
 عند تكرار القراءة من القرص المرن فانه يجب في كل مرة أن نعيد مكان القراءة والكتابة الى أول مقطع \en{sector} في القرص وذلك لكي نضمن عدم حدوث مشاكل، وتستخدم الدالة \cmd{0x0} من المقاطعة \cmd{int 0x13} لهذا الغرض.
@@ -405,7 +415,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 مثال:
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:reset_floppy_drive,caption=\en{Reset Floppy Drive}]{../examples/ch3/ex4/ex4.asm}
@@ -434,7 +444,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 مثال:\\
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:read_floppy_disk_sector,caption=\en{Read Floppy Disk Sectors}]{../examples/ch3/ex5/ex5.asm}
@@ -452,7 +462,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \end{itemize}  
 
-وحيث أن برمجة برنامج القراءة والكتابة تعتمد كلياُ على هيكلة نظام الملفات على القرص ، فاننا سنبدأ بالحديث عنها أولا وسوف نأخذ نظام \en{FAT12} على قرص مرن كمثال ، نظراً لبساطة هذا النظام وخلوه من التعقيدات وفي الفصل الخامس -بإذن الله- سيتم التطرق الى أنظمة ملفات أخرى بالتفصيل.
+وحيث أن برمجة برنامج القراءة والكتابة تعتمد كلياُ على هيكلة نظام الملفات على القرص ، فاننا سنبدأ بالحديث عنها أولا وسوف نأخذ نظام \en{FAT12} على قرص مرن كمثال ، نظراً لبساطة هذا النظام وخلوه من التعقيدات.% وفي الفصل الخامس -بإذن الله- سيتم التطرق الى أنظمة ملفات أخرى بالتفصيل.
 
 \subsection{قيود نظام \en{FAT12}}
 يعتبر نظام \en{FAT12} من أقدم أنظمة الملفات ظهوراً وقد انتشر استخدامه في الاقراص المرنة منذ أواخر السبعينات ، ويعيب نظام \en{FAT12} :
@@ -471,8 +481,14 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 
 \subsection{هيكلة نظام \en{FAT12} على القرص}
-عند تهئية القرص المرن\footnote{سواءاً كانت التهئية من قبل درايفر نظام الملفات الذي سنقوم ببرمجته أو كانت من قبل نظام الشتغيل المستخدم أثناء عملية التطوير ، فمثلا في ويندوز يمكن إعادة تهئية القرص المرن بنظام \en{FAT12} .} (\en{Format}) بنظام \en{FAT12} فان تركيبة القرص تكون على الشكل التالي:\\
+عند تهئية القرص المرن\footnote{سواءاً كانت التهئية من قبل درايفر نظام الملفات الذي سنقوم ببرمجته أو كانت من قبل نظام الشتغيل المستخدم أثناء عملية التطوير ، فمثلا في ويندوز يمكن إعادة تهئية القرص المرن بنظام \en{FAT12} .} (\en{Format}) بنظام \en{FAT12} فان تركيبة القرص تكون على الشكل \ref{fig:fat12structure} :\\
 %\missingfigure{fat12structure}
+\begin{figure}[h!] 
+  \caption{هيكلة نظام \en{FAT12} على القرص}
+  \centering
+   \includegraphics[width=0.7\textwidth]{../img/fat12}
+ \label{fig:fat12structure} 
+\end{figure}
 
 وأول مقطع هو مقطع الاقلاع (\en{Boot Sector}) ويحوي شفرة محمل النظام (المرحلة الاولى) بالاضافة الى بيانات ومعلومات \en{BPB and OEM id} ، هذا المقطع عنوانه الفيزيائي على القرص هو : المقطع \cmd{1} المسار \cmd{0} الرأس \cmd{0} وهذا العنوان هو الذي يجب تمرير الى مقاطعة البايوس \cmd{int 0x13} التي تقوم بالقراءة من القرص كذلك في حالة ما أردنا التعامل المباشر مع متحكم القرص المرن.
 ونظرً لصعوبة هذه العنونة والتي تعرف ب \en{Absolute Sector} فان أنظمة الملفات تتعامل مع نظام عنونة مختلف للوصول الى محتويات القرص ، فبدلاً من ذكر كل من المقطع والمسار والرأس للوصول الى مقطع ما فان هذه العنونة تستخدم فقط رقم للمقطع .
@@ -481,7 +497,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 المقطع الثالث هو جدول \en{FAT} ، وهو جدول يحوي سجلات بطول \cmd{12} بت عن كل كلستر (\en{Cluster}) في القرص ، بيانات هذا السجل توضح ما اذا كان الكلستر قيد الاستخدام أم لا ، وهل هو آخر كلستر للملف أم لا وإذا كان ليس باخر فانه يوضح لنا الكلستر التالي للملف ، ويوضح الشكل التالي تركيبة هذا الجدول\\
 %\missingfigure{fat}
 
-اذاً هذا وظيفة هذا الجدول هي معرفة الكاسترات الخالية من غيرها كذلك الوظيفة الاخرى هي معرفة جميع الكلسترات لملف ما ويتم ذلك بالنظر الى قيمة السجل (قيمة ال \cmd{12} بت) ، والقيم هي :
+اذاً هذا وظيفة هذا الجدول هي معرفة الكلسترات الخالية من غيرها كذلك الوظيفة الاخرى هي معرفة جميع الكلسترات لملف ما ويتم ذلك بالنظر الى قيمة السجل (قيمة ال \cmd{12} بت) ، والقيم هي :
 
 \begin{itemize}
 \item القيمة \cmd{0x00}: تدل على أن الكلستر خالي.
@@ -546,7 +562,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 \subsection{هيكلة القرص المرن}
 يتكون القرص المرن من قرص \en{Platter} (أو عدة أقراص) مقسمة الى مسارات (\en{Tracks}) وكل من هذه المسارات يتكون من العديد من القطاعات ويوجد عادة رأسين للقراءة والكتابة على كل قرص. وفي الاقراص المرنة ذات الحجم \cmd{1.44 MB} يوجد \cmd{80} مساراً (من المسار \cmd{0} الى المسار \cmd{79}) وكل مسار يتكون من \cmd{18} قطاع ، وبالتالي فان عدد القطاعات الكلية هي \en{$80*18*2$} وتساوي \cmd{2880} قطاعاً.
 
-ولتخزين بيانات على القرص فانه يجب تحديد العنوان الحقيقي والذي يتكون من عنوان القطاع والمسار والرأس ، وأول قطاع في القرص (قطاع الاقلاع) يأخذ العنوان: القطاع \cmd{1} المسار \cmd{0} الرأس \cmd{0} ، والقطاع الثاني يأخذ العنوان: القطاع \cmd{2} المسار \cmd{0} الرأس \cmd{0} ، وهكذا يستمر نظام التخزين في القرص المرن الى أن يصل الى العنوان \cmd{18} المسار \cmd{0} الرأس \cmd{0} وهو عنوان آخر قطاع على المسار الاول والرأس الاول ، وسيتم حفظ البيانات التالية في الرأس الثاني على العنوان: القطاع \cmd{1} المسار \cmd{0} الرأس \cmd{1} ويستمر الى أن يصل الى آخر قطاع في هذا المسار على الرأس الثاني، وبعدها سيتم حفظ البيانات التالية في الرأس الاول المسار الثاني ... ،وهكذا. والصورة التالية توضح شكل القرص المرن بعد عمل تهئية (\en{Format}) له.\\
+ولتخزين بيانات على القرص فانه يجب تحديد العنوان الحقيقي والذي يتكون من عنوان القطاع والمسار والرأس ، وأول قطاع في القرص (قطاع الاقلاع) يأخذ العنوان: القطاع \cmd{1} المسار \cmd{0} الرأس \cmd{0} ، والقطاع الثاني يأخذ العنوان: القطاع \cmd{2} المسار \cmd{0} الرأس \cmd{0} ، وهكذا يستمر نظام التخزين في القرص المرن الى أن يصل الى العنوان \cmd{18} المسار \cmd{0} الرأس \cmd{0} وهو عنوان آخر قطاع على المسار الاول والرأس الاول ، وسيتم حفظ البيانات التالية في الرأس الثاني على العنوان: القطاع \cmd{1} المسار \cmd{0} الرأس \cmd{1} ويستمر الى أن يصل الى آخر قطاع في هذا المسار على الرأس الثاني، وبعدها سيتم حفظ البيانات التالية في الرأس الاول المسار الثاني ... ،وهكذا. %والصورة التالية توضح شكل القرص المرن بعد عمل تهئية (\en{Format}) له.\\
 %\missingfigure{floppyforamtted}
 
 \subsection{القراءة و الكتابة من نظام \en{FAT12} }
@@ -566,10 +582,10 @@ Offset(h) 00 01 02 03 04 05 06 07
 
 \subsubsection{إنشاء المرحلة الثانية من محمل النظام}
 
-بداية سنقوم بإنشاء المرحلة الثانية من محمل النظام ونسخها الى القرص المرن ، ونظراً لان تطوير نظامنا الخاص يجب ان يتم تحت نظام آخر فان هذا النظام الآخر غالبا ما يحوي درايفر لنظام ملفات \en{FAT12} حيث يتكفل بعملية كتابة البيانات الى جدول \en{Root Directory} بالاضافة الى البحث عن كلسترات خالية في جدول \en{FAT} دون أي تدخل من قبل مطور النظام الجديد، لذلك في هذه المرحلة من التطوير سنتجاهل جزئية الكتابة في نظام \en{FAT12} ونترك المهمة لنظام التشغيل الذي نعتمد عليه في عملية تطوير النظام الجديد ، وبهذا سيكون الدرايفر الذي سننشئه في هذا الفصل ما هو الا جزء من الدرايفر الكامل الذي سيتم تكلمته في الفصل الخامس بمشيئة الله.والشفرة التالية توضح مثال للمرحلة الثانية من المحمل لعرض رسالة بسيطة.
+بداية سنقوم بإنشاء المرحلة الثانية من محمل النظام ونسخها الى القرص المرن ، ونظراً لان تطوير نظامنا الخاص يجب ان يتم تحت نظام آخر فان هذا النظام الآخر غالبا ما يحوي درايفر لنظام ملفات \en{FAT12} حيث يتكفل بعملية كتابة البيانات الى جدول \en{Root Directory} بالاضافة الى البحث عن كلسترات خالية في جدول \en{FAT} دون أي تدخل من قبل مطور النظام الجديد، لذلك في هذه المرحلة من التطوير سنتجاهل جزئية الكتابة في نظام \en{FAT12} ونترك المهمة لنظام التشغيل الذي نعتمد عليه في عملية تطوير النظام الجديد ، وبهذا سيكون الدرايفر الذي سننشئه في هذا الفصل ما هو الا جزء من الدرايفر الكامل الذي سيتم تكلمته لاحقا بمشيئة الله.والشفرة التالية توضح مثال للمرحلة الثانية من المحمل لعرض رسالة بسيطة.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:hello_stage2,caption=\en{Hello Stage2}]{../examples/ch3/ex6/stage2.asm}
@@ -583,7 +599,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 وقبل تحميل هذا الجدول فانه يجب علينا أولاً معرفة عنوان أول قطاع فيه وحساب عدد القطاعات التي يشغلها هذا الجدول ، كذلك يجب تحديد المساحة الخالية (\en{Buffer}) لكي يتم نقل هذا الجدول اليها. والشفرة التالية توضح كيفية عمل ذلك.
  
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:load_root_dir,caption=\en{Load Root directory}]{../examples/ch3/ex7/ex7.asm}
@@ -592,7 +608,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 بعد تحميل هذا الجدول يجب البحث فيه عن اسم ملف المرحلة الثانية من محمل النظام ومن ثم حفظ رقم أول كلستر له في حالة كان الملف موجوداً ، أما اذا كان الملف غير موجود فنصدر رسالة خطأ ونوقف النظام عن العمل. والشفرة التالية توضح ذلك.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:find_stage2,caption=\en{Find Stage2 Bootloader}]{../examples/ch3/ex8/ex8.asm}
@@ -603,7 +619,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 وبنفس الطريقة التي قمنا بها لتحميل جدول \en{Root Directory} سيتم بها تحميل جدول \en{FAT} حيث يجب تحدد عنوان أول قطاع للجدول و عدد القطاعات التي يشغلها الجدول ، وكذلك المساحة الخالية في الذاكرة لكي يتم حفظ الحدول بها . والشفرة التالية توضح ذلك.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:load_fat,caption=\en{Load FAT Table}]{../examples/ch3/ex9/ex9.asm}
@@ -616,7 +632,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 التحويل من رقم \en{Cluster} الى عنوان \en{LBA} يتم كالاتي:
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:cluster_to_lba,caption=\en{Convert Cluster number to LBA}]{../examples/ch3/ex10/ex10.asm}
@@ -628,7 +644,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 وللتحويل من عنوان \en{LBA} الى عنوان \en{Absolute Address} :
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:lba_to_cluster,caption=\en{Convert LBA to CHS}]{../examples/ch3/ex11/ex11.asm}
@@ -637,7 +653,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 ولتحميل كلستر من القرص يجب أولا الحصول على رقمه من جدول \en{Root Directory} وبعد ذلك نقوم بتحويل هذا الرقم الى عنوان \en{LBA} وبعدها نقوم بتحويل عنوان \en{LBA} الى عنوان مطلق \en{Abolsute Address} ومن ثم استخدام مقاطعة البايوس \cmd{int 0x13} لقراءة القطاعات من القرص، والشفرة التالية توضح ذلك.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:load_cluster,caption=\en{Load Cluster}]{../examples/ch3/ex12/ex12.asm}
@@ -646,7 +662,7 @@ Offset(h) 00 01 02 03 04 05 06 07
 ودالة قراءة القطاعات من القرص تستخدم مقاطعة البايوس \cmd{int 0x13} وهي تعمل فقط في النمط الحقيقي ويجب استبدالها لاحقا عند التحويل الى النمط المحمي بدالة اخرى \cmd{32-bit}.
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:read_sector_routine,caption=\en{Read Sectors Routine}]{../examples/ch3/ex13/ex13.asm}
@@ -662,7 +678,7 @@ Offset(h) 00 01 02 03 04 05 06 07
  وقراءة \cmd{16} بت ، وفي حالة ما اذا كان رقم الكلستر هو رقم زوجي فيجب عمل \en{Mask} لاخر \cmd{4} بت ، أما اذا كان رقم الكلستر فردي فيجب ازالة أول \cmd{4} بت . والشفرة التالية توضح كيفية تحميل جميع كلسترات المرحلة الثانية من محمل النظام الى الذاكرة ونقل التنفيذ اليها .
 
 \begin{english}
-\fontspec{Courier New}
+\fontspec[Scale=0.9]{Courier New}
 \lstset{numberstyle=\tiny,numbers=left,stepnumber=1,numbersep=5pt,tabsize=2,extendedchars=true,breaklines=true,frame=b,showspaces=false, showtabs=false,xleftmargin=10pt,framexleftmargin=10pt,framexrightmargin=5pt,framexbottommargin=4pt,showstringspaces=false,language=[x86masm]Assembler}
 
 \lstinputlisting[label=lst:read_fat_entry,caption=\en{Read FAT entry}]{../examples/ch3/ex14/ex14.asm}
